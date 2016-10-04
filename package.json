@@ -1,0 +1,44 @@
+{
+  "name": "producr",
+  "version": "0.0.1",
+  "description": "Help producers to get micropayment for their creations",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test",
+    "start": "node src/server",
+    "dev": "nodemon src/server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pakokrew/producr.git"
+  },
+  "keywords": [
+    "bitcoin",
+    "producer",
+    "music",
+    "micropayment",
+    "nodejs",
+    "blockchain",
+    "soundcloud"
+  ],
+  "author": "Paco ngfar (pakokrew@gmail.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pakokrew/producr/issues"
+  },
+  "homepage": "https://github.com/pakokrew/producr#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "express-session": "^1.14.1",
+    "koa": "^1.2.4",
+    "passport": "^0.3.2",
+    "passport-soundcloud": "^0.2.0",
+    "request": "^2.75.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.17.0",
+    "babel-preset-es2015": "^6.16.0"
+  }
+}
