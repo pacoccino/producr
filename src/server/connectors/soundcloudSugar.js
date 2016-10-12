@@ -29,13 +29,27 @@ const SoundCloudSugar = (SoundCloud) => {
                     history = history.map(play => {
                         play.date = moment(new Date(play.played_at)).format();
                         play.name = play.urn;
+                        var trackResource = ResourceObject.fromUrn(play.urn);
+                        SoundCloud.askResource(trackResource)
+                            .then((track) => {
+                                play.name = trackResource.resourceId + ': ' + track.title + ' - ' + track.user.username;
+                            })
+                            .catch((err) => {
+                                play.name = trackResource.resourceId + ' (Unkonwn)';
+                            });
                         return play;
                     });
-                    resolve(history);
+                    setTimeout(() => {
+                        resolve(history);
+                    }, 1000)
                 })
                 .catch(err => {
                     reject(err);
                 });
+        }),
+        
+        getSong: (songId) => new Promise((resolve, reject) => {
+            
         })
     };
 };

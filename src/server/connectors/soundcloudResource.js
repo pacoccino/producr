@@ -83,13 +83,17 @@ class ResourceObject {
         this.requestData = data;
     }
 
-    fromUrn(urn = "") {
+    static fromUrn(urn = "") {
         const parts = urn.split(':');
         if(parts.length !== 3) {
             throw "Invalid URN"
         }
-        this.resource = parts[1];
-        this.resourceId = parts[2];
+
+        const ro = new ResourceObject();
+        ro.resource = parts[1];
+        ro.resourceId = parts[2];
+
+        return ro;
     }
 }
 
