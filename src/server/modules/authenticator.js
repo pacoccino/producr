@@ -18,13 +18,14 @@ const Authenticator = (app) => {
                 .then(profile => {
                     Users.findOrCreate(profile.id)
                         .then(user => {
-                            if (!user.profile) {
+                            if (!user.sc) {
                                     user.sc = profile;
                                     user.token = token;
                                 }
+                            Users.updateUser(user.id, user);
                             cb(null, user);
-                        }
-                    );
+                        })
+                        .catch(cb);
                 }).catch(cb);
         }));
 
@@ -50,6 +51,11 @@ const Authenticator = (app) => {
         }
     );
 
+    app.get('/logout',
+        function(req, res){
+            req.logout();
+            res.redirect('/');
+        });
 };
 
 module.exports = Authenticator;
