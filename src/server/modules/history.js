@@ -64,13 +64,13 @@ const History = {
 
         return SoundCloud.askResource(resourceObject)
             .then(resource => { updateData.newHistory = resource.collection; })
-            .then(() => {
-                DBWrapper.collections.UserHistory
-                    .find({userId: user.id}, {lastFetched: 1})
-                    .next();
-            })
+            .then(() => DBWrapper.collections.UserHistory
+                .find({userId: user.id}, {lastFetched: 1, history : { $slice : [0 , 1] } })
+                .next()
+            )
             .then(userHistory => {
                 updateData.userHistory = userHistory;
+                //if(userHistory)
                 const lastFetched = userHistory && userHistory.lastFetched || 0;
 
                 updateData.newHistory = History.computeDiff(updateData.newHistory);
@@ -79,38 +79,30 @@ const History = {
 
                 return updateData;
             })
-            .then(updateData => {
-                // L'historique etait present, on update
-                if(updateData.userHistory) {
-                    return DBWrapper.collections.UserHistory
-                        .updateOne({userId: user.id}, {
-                            '$set': {
-                                lastFetched: updateData.fetchTime,
-                            },
-                            '$push': {
-                                'history': {
-                                    '$each': updateData.newHistory,
-                                    '$position': 0,
-                                }
-                            }
-                        });
-                // On a jamais rempli l'historique, on insere
-                } else {
-                    return DBWrapper.collections.UserHistory
-                        .insert({
-                            userId: user.id,
-                            lastFetched: updateData.fetchTime,
-                            history: updateData.newHistory
-                        });
-                }
-            });
+            .then(updateData => DBWrapper.collections.UserHistory
+                .updateOne({userId: user.id}, {
+                    '$set': {
+                        lastFetched: updateData.fetchTime,
+                    },
+                    '$push': {
+                        'history': {
+                            '$each': updateData.newHistory,
+                            '$position': 0,
+                        }
+                    }
+                }, { upsert: true })
+            );
 
     },
 
     hydrateHistory: (userHistory) => {
-        const history = userHistory.history;
+        const hydratedUserHistory = {
+            userId: userHistory.userId,
+            lastFetched: moment(new Date(userHistory.lastFetched)).format("DD-MM-YYYY HH:mm:ss"),
+        };
+
         return new Promise((resolve, reject) => {
-            async.map(history, (play, cb) => {
+            async.map(userHistory.history, (play, cb) => {
                 play.date = moment(new Date(play.played_at)).format("DD-MM-YYYY HH:mm:ss");
                 var trackResource = ResourceObject.fromUrn(play.urn);
                 SoundCloud.cachedResource(trackResource)
@@ -127,8 +119,8 @@ const History = {
                 if(err) {
                     reject(err);
                 } else {
-                    userHistory.history = results;
-                    resolve(userHistory);
+                    hydratedUserHistory.history = results;
+                    resolve(hydratedUserHistory);
                 }
             });
         });

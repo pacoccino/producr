@@ -9,7 +9,7 @@ const ApiRouter = () => {
 
     router.get('/history', ensureLoggedIn(),
         (req, res, next) => {
-            History.getUserHistory(req.user, true)
+            History.getUserHistory(req.user, req.query.hr !== undefined)
                 .then(history => {
                     res.json( history );
                 })
@@ -19,9 +19,8 @@ const ApiRouter = () => {
     router.get('/update', ensureLoggedIn(),
         (req, res, next) => {
             History.updateUserHistory(req.user)
-                .then(History.getUserHistory(req.user))
                 .then(history => {
-                    res.json( history );
+                    res.redirect( '/api/history' );
                 })
                 .catch(next);
         }
