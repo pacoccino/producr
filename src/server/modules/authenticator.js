@@ -53,8 +53,16 @@ const Authenticator = (app) => {
 
     app.get('/logout',
         function(req, res){
-            req.logout();
-            res.redirect('/');
+            if(req.user) {
+                Users.delete(req.user.id).then(() => {
+                    req.logout();
+                    res.redirect('/');
+                });
+
+            } else {
+                req.logout();
+                res.redirect('/');
+            }
         });
 };
 
