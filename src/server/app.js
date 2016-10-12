@@ -7,7 +7,7 @@ const Router = require('./modules/router');
 const Authenticator = require('./modules/authenticator');
 const ErrorMiddleware = require('./modules/errorMiddleware');
 
-const Config = require('./config');
+const Config = require('./modules/config');
 
 const App = () => {
 

@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const request = require('request');
 
-const Config = require('../config');
+const Config = require('../modules/config');
 
 const Sugar = require('./soundcloudSugar');
 const CacheWrapper = require('../modules/wrappers').Cache;
@@ -14,8 +14,8 @@ const SoundCloud = {
                 url: "https://api.soundcloud.com/oauth2/token",
                 method: "POST",
                 form: {
-                    client_id: Config.MAGIC_CLIENT_ID,
-                    client_secret: Config.MAGIC_CLIENT_SECRET,
+                    client_id: Config.services.soundcloud.MAGIC_CLIENT_ID,
+                    client_secret: Config.services.soundcloud.MAGIC_CLIENT_SECRET,
                     scope: 'non-expiring',
                     grant_type: 'password',
                     username,
@@ -135,7 +135,7 @@ const SoundCloud = {
             var url = SoundCloud.buildApiUrl(resourceObject);
 
             var params = {};
-            params.client_id = Config.SOUNDCLOUD_CLIENT_ID;
+            params.client_id = Config.services.soundcloud.client_id;
             // TODO request options
 
             var headers = {
@@ -164,9 +164,10 @@ const SoundCloud = {
                 if (error || response.statusCode !== 200) {
                     var reqError = {
                         request: options,
-                        code: response.statusCode,
-                        message: response.statusMessage,
-                        body
+                        response: response && response.statusCode,
+                        message: response && response.statusMessage,
+                        body,
+                        error
                     };
                     reject(reqError);
                 } else {

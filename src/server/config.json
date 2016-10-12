@@ -1,4 +1,22 @@
 {
-  "SOUNDCLOUD_CLIENT_ID": "",
-  "SOUNDCLOUD_CLIENT_SECRET": ""
+  "port": 3000,
+  "staticFolder": "../public",
+
+  "services": {
+    "soundcloud": {
+      "client_id": "",
+      "client_secret": "",
+
+      "MAGIC_CLIENT_ID": "",
+      "MAGIC_CLIENT_SECRET": ""
+    }
+  },
+
+  "connections": {
+    "mongoUrl": "mongodb://127.0.0.1:32775/producr",
+    "redis": {
+      "host": "127.0.0.1",
+      "port": 32774
+    }
+  }
 }
