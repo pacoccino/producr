@@ -50,56 +50,56 @@ const History = {
     },
 
     updateUserHistoryDatabase: (user) => {
-        return new Promise((resolve, reject) => {
-            const fetchTime = Date.now();
+        let updateData = {
+            fetchTime: Date.now()
+        };
 
-            var resourceObject = new ResourceObject(user.token);
-            resourceObject.recentlyPlayed();
-            resourceObject.tracks();
-            resourceObject.get();
+        var resourceObject = new ResourceObject(user.token);
+        resourceObject.recentlyPlayed();
+        resourceObject.tracks();
+        resourceObject.get();
 
-            SoundCloud.askResource(resourceObject)
-                .then(resource => {
-                    let newHistory = resource.collection;
 
-                    DBWrapper.collections.UserHistory
-                        .find({userId: user.id}, {lastFetched: 1})
-                        .next()
-                        .then(userHistory => {
-                            const lastFetched = userHistory && userHistory.lastFetched || 0;
+        return SoundCloud.askResource(resourceObject)
+            .then(resource => { updateData.newHistory = resource.collection; })
+            .then(() => {
+                DBWrapper.collections.UserHistory
+                    .find({userId: user.id}, {lastFetched: 1})
+                    .next();
+            })
+            .then(userHistory => {
+                updateData.userHistory = userHistory;
+                const lastFetched = userHistory && userHistory.lastFetched || 0;
 
-                            newHistory = History.computeDiff(newHistory);
-                            newHistory = History.setListenedState(newHistory);
-                            newHistory = newHistory.filter(play => play.played_at > lastFetched);
+                updateData.newHistory = History.computeDiff(updateData.newHistory);
+                updateData.newHistory = History.setListenedState(updateData.newHistory);
+                updateData.newHistory = updateData.newHistory.filter(play => play.played_at > lastFetched);
 
-                            if(userHistory) {
-
-                                DBWrapper.collections.UserHistory
-                                    .updateOne({userId: user.id}, {
-                                        '$set': {
-                                            lastFetched: fetchTime,
-                                        },
-                                        '$push': {
-                                            'history': {
-                                                '$each': newHistory,
-                                                '$position': 0,
-                                            }
-                                        }
-                                    })
-                                    .then(resolve, reject);
-                            } else {
-
-                                DBWrapper.collections.UserHistory
-                                    .insert({
-                                        userId: user.id,
-                                        lastFetched: fetchTime,
-                                        history: newHistory
-                                    })
-                                    .then(resolve, reject);
+                return updateData;
+            })
+            .then(updateData => {
+                if(updateData.userHistory) {
+                    return DBWrapper.collections.UserHistory
+                        .updateOne({userId: user.id}, {
+                            '$set': {
+                                lastFetched: updateData.fetchTime,
+                            },
+                            '$push': {
+                                'history': {
+                                    '$each': updateData.newHistory,
+                                    '$position': 0,
+                                }
                             }
                         });
-                });
-        });
+                } else {
+                    return DBWrapper.collections.UserHistory
+                        .insert({
+                            userId: user.id,
+                            lastFetched: updateData.fetchTime,
+                            history: updateData.newHistory
+                        });
+                }
+            });
 
     },
 
