@@ -36,7 +36,6 @@ class ResourceObject {
             this.resource = resource;
         }
 
-        // TODO null ?
         if(this.isResource() && !_.isNil(id)) {
             this.resourceId = id;
         }
@@ -81,6 +80,15 @@ class ResourceObject {
     put(data) {
         this.requestType = "PUT";
         this.requestData = data;
+    }
+
+    fromUrn(urn = "") {
+        const parts = urn.split(':');
+        if(parts.length !== 3) {
+            throw "Invalid URN"
+        }
+        this.resource = parts[1];
+        this.resourceId = parts[2];
     }
 }
 

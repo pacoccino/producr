@@ -180,7 +180,7 @@ const SoundCloud = {
                 }
             });
         });
-    },
+    }
 };
 
 SoundCloud.Sugar = Sugar(SoundCloud);
