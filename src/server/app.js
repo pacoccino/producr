@@ -2,8 +2,8 @@ const express = require('express');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 
+const Router = require('./router');
 const Connections = require('./modules/connections');
-const Router = require('./modules/router');
 const Authenticator = require('./modules/authenticator');
 const ErrorMiddleware = require('./modules/errorMiddleware');
 

@@ -1,5 +1,7 @@
 const _ = require('lodash');
 const Immutable = require('immutable');
+const moment = require('moment');
+const async = require('async');
 
 const ResourceObject = require('../connectors/soundcloudResource');
 const SoundCloud = require('../connectors/soundcloud');
@@ -49,7 +51,7 @@ const History = {
             .toJS();
     },
 
-    updateUserHistoryDatabase: (user) => {
+    updateUserHistory: (user) => {
         let updateData = {
             fetchTime: Date.now()
         };
@@ -78,6 +80,7 @@ const History = {
                 return updateData;
             })
             .then(updateData => {
+                // L'historique etait present, on update
                 if(updateData.userHistory) {
                     return DBWrapper.collections.UserHistory
                         .updateOne({userId: user.id}, {
@@ -91,6 +94,7 @@ const History = {
                                 }
                             }
                         });
+                // On a jamais rempli l'historique, on insere
                 } else {
                     return DBWrapper.collections.UserHistory
                         .insert({
@@ -103,17 +107,38 @@ const History = {
 
     },
 
-    upAndReturn: (user) => {
+    hydrateHistory: (userHistory) => {
+        const history = userHistory.history;
         return new Promise((resolve, reject) => {
-            History.updateUserHistoryDatabase(user)
-                .then(() => {
-                    DBWrapper.collections.UserHistory
-                        .find({userId: user.id})
-                        .toArray()
-                        .then(resolve, reject);
-                })
-                .catch(reject);
+            async.map(history, (play, cb) => {
+                play.date = moment(new Date(play.played_at)).format("DD-MM-YYYY HH:mm:ss");
+                var trackResource = ResourceObject.fromUrn(play.urn);
+                SoundCloud.cachedResource(trackResource)
+                    .then(track => {
+                        play.title = track.title;
+                        play.username = track.user.username;
+                        cb(null, play);
+                    })
+                    .catch(() => {
+                        play.deleted = true;
+                        cb(null, play);
+                    });
+            }, (err, results) => {
+                if(err) {
+                    reject(err);
+                } else {
+                    userHistory.history = results;
+                    resolve(userHistory);
+                }
+            });
         });
+    },
+
+    getUserHistory: (user, hydrate) => {
+        return DBWrapper.collections.UserHistory
+            .find({userId: user.id})
+            .next()
+            .then(userHistory => hydrate ? History.hydrateHistory(userHistory) : userHistory);
     }
 
 };
