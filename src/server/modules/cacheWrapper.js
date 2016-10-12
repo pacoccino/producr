@@ -1,13 +1,21 @@
-const Connections = require('./connections');
+const Redis = require('./connections').redis;
+
+const serializer = JSON.stringify;
+const deserializer = JSON.parse;
 
 const CacheWrapper = {
     get: (path) => {
         return new Promise((resolve, reject) => {
-            Connections.redis.get(path, (err, data) => {
+            Redis.get(path, (err, data) => {
                 if(err) {
                     reject(err);
                 } else {
-                    resolve(JSON.parse(data));
+                    try {
+                        const deserialized = deserializer(data);
+                        resolve(deserialized);
+                    } catch(e) {
+                        reject(e);
+                    }
                 }
             });
         });
@@ -15,19 +23,24 @@ const CacheWrapper = {
 
     set: (path, data) => {
         return new Promise((resolve, reject) => {
-            Connections.redis.set(path, JSON.stringify(data), (err) => {
-                if(err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
-            });
+            try {
+                const serialized = serializer(data);
+                Redis.set(path, serialized, (err) => {
+                    if(err) {
+                        reject(err);
+                    } else {
+                        resolve(data);
+                    }
+                });
+            } catch (e) {
+                reject(e);
+            }
         });
     },
 
     delete: (path) => {
         return new Promise((resolve, reject) => {
-            Connections.redis.del(path, (err) => {
+            Redis.del(path, (err) => {
                 if(err) {
                     reject(err);
                 } else {
