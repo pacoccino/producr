@@ -14,6 +14,10 @@ const ListenedTimes = {
     SKIP: 10
 };
 
+// TODO :
+// - get song duration and compare with play duration to better validate
+// - last listened, compare with now and duration
+
 const History = {
 
     computeDiff: (history) => {
@@ -64,31 +68,32 @@ const History = {
                         .then(userHistory => {
                             const lastFetched = userHistory && userHistory.lastFetched || 0;
 
-                            // TODO push au lieu de tout remplacer
-
                             newHistory = History.computeDiff(newHistory);
                             newHistory = History.setListenedState(newHistory);
-                            //newHistory = newHistory.filter(play => play.played_at > lastFetched);
+                            newHistory = newHistory.filter(play => play.played_at > lastFetched);
 
-                            if(true || userHistory) {
+                            if(userHistory) {
 
                                 DBWrapper.collections.UserHistory
-                                    .updateOne({userId: user.id},
-                                        {
-                                            userId: user.id,
+                                    .updateOne({userId: user.id}, {
+                                        '$set': {
                                             lastFetched: fetchTime,
-                                            history: newHistory
-                                            //$push: { history: { $each: newHistory }}
                                         },
-                                        {upsert: true})
+                                        '$push': {
+                                            'history': {
+                                                '$each': newHistory,
+                                                '$position': 0,
+                                            }
+                                        }
+                                    })
                                     .then(resolve, reject);
                             } else {
 
                                 DBWrapper.collections.UserHistory
                                     .insert({
-                                            userId: user.id,
-                                            lastFetched: fetchTime,
-                                            history: newHistory
+                                        userId: user.id,
+                                        lastFetched: fetchTime,
+                                        history: newHistory
                                     })
                                     .then(resolve, reject);
                             }
@@ -101,12 +106,13 @@ const History = {
     upAndReturn: (user) => {
         return new Promise((resolve, reject) => {
             History.updateUserHistoryDatabase(user)
-                .then((res) => {
+                .then(() => {
                     DBWrapper.collections.UserHistory
                         .find({userId: user.id})
                         .toArray()
                         .then(resolve, reject);
-                });
+                })
+                .catch(reject);
         });
     }
 
