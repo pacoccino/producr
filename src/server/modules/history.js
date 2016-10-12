@@ -3,7 +3,7 @@ const Immutable = require('immutable');
 const moment = require('moment');
 const async = require('async');
 
-const ResourceObject = require('../connectors/soundcloudResource');
+const SoundcloudResource = require('../connectors/soundcloudResource');
 const SoundCloud = require('../connectors/soundcloud');
 const DBWrapper = require('./wrappers').DB;
 
@@ -51,48 +51,86 @@ const History = {
             .toJS();
     },
 
-    updateUserHistory: (user) => {
+    updateUserHistory: (user, reset) => {
         let updateData = {
             fetchTime: Date.now()
         };
 
-        var resourceObject = new ResourceObject(user.token);
+        var resourceObject = new SoundcloudResource(user.token);
         resourceObject.recentlyPlayed();
         resourceObject.tracks();
         resourceObject.get();
 
-
         return SoundCloud.askResource(resourceObject)
             .then(resource => { updateData.newHistory = resource.collection; })
             .then(() => DBWrapper.collections.UserHistory
-                .find({userId: user.id}, {lastFetched: 1, history : { $slice : [0 , 1] } })
+                .find({userId: user.id})
                 .next()
             )
             .then(userHistory => {
-                updateData.userHistory = userHistory;
-                //if(userHistory)
                 const lastFetched = userHistory && userHistory.lastFetched || 0;
 
                 updateData.newHistory = History.computeDiff(updateData.newHistory);
                 updateData.newHistory = History.setListenedState(updateData.newHistory);
+
+                if(reset) {
+                    return updateData;
+                }
+
+                updateData.oldLastTrackFetched = updateData.newHistory.find(play => play.played_at <= lastFetched);
+
                 updateData.newHistory = updateData.newHistory.filter(play => play.played_at > lastFetched);
+
+                if(updateData.oldLastTrackFetched) {
+                    updateData.newHistory = updateData.newHistory.concat(updateData.oldLastTrackFetched);
+                }
 
                 return updateData;
             })
-            .then(updateData => DBWrapper.collections.UserHistory
-                .updateOne({userId: user.id}, {
-                    '$set': {
-                        lastFetched: updateData.fetchTime,
+            .then((updateData) => reset ?
+                DBWrapper.collections.UserHistory.updateOne({userId: user.id},
+                    {
+                        '$set': {
+                            lastFetched: updateData.fetchTime,
+                            history : updateData.newHistory
+                        },
                     },
-                    '$push': {
-                        'history': {
-                            '$each': updateData.newHistory,
-                            '$position': 0,
+                    { upsert: true }
+                )
+                :
+                DBWrapper.collections.UserHistory.updateOne(
+                    {userId: user.id},
+                    {
+                        '$set': { lastFetched: updateData.fetchTime },
+                    },
+                    { upsert: true })
+                    .then(() => {
+                        if(updateData.newHistory.length > 0 && updateData.oldLastTrackFetched) {
+                            return DBWrapper.collections.UserHistory.updateOne({userId: user.id},
+                                {
+                                    '$pop': {
+                                        'history': -1
+                                    }
+                                }
+                            );
                         }
-                    }
-                }, { upsert: true })
-            );
 
+                    })
+                    .then(() => {
+                        if(updateData.newHistory.length > 0) {
+                            return DBWrapper.collections.UserHistory.updateOne({userId: user.id},
+                                {
+                                    '$push': {
+                                        'history': {
+                                            '$each': updateData.newHistory,
+                                            '$position': 0
+                                        }
+                                    }
+                                }
+                            )
+                        }
+                    })
+            );
     },
 
     hydrateHistory: (userHistory) => {
@@ -104,7 +142,7 @@ const History = {
         return new Promise((resolve, reject) => {
             async.map(userHistory.history, (play, cb) => {
                 play.date = moment(new Date(play.played_at)).format("DD-MM-YYYY HH:mm:ss");
-                var trackResource = ResourceObject.fromUrn(play.urn);
+                var trackResource = SoundcloudResource.fromUrn(play.urn);
                 SoundCloud.cachedResource(trackResource)
                     .then(track => {
                         play.title = track.title;
