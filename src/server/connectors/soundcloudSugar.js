@@ -1,6 +1,6 @@
 const moment = require('moment');
 
-const ResourceObject = require('../modules/resourceObject');
+const ResourceObject = require('./soundcloudResource');
 
 const SoundCloudSugar = (SoundCloud) => {
 

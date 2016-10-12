@@ -12,20 +12,19 @@ class ResourceObject {
         this.requestOptions = null;
     }
 
-    requestFull() {
+    // Privates
+    _requestFull() {
         return (this.resource !== null && this.subResource !== null);
     }
-
-    isResource() {
+    _isResource() {
         return (this.resource !== null && this.subResource === null);
     }
-    isSubResource() {
+    _isSubResource() {
         return (this.resource !== null && this.subResource !== null);
     }
+    _appendResource(resource, id) {
 
-    appendResource(resource, id) {
-
-        if(this.requestFull()) {
+        if(this._requestFull()) {
             throw "Too much resources asked";
         }
 
@@ -36,39 +35,41 @@ class ResourceObject {
             this.resource = resource;
         }
 
-        if(this.isResource() && !_.isNil(id)) {
+        if(this._isResource() && !_.isNil(id)) {
             this.resourceId = id;
         }
-        if(this.isSubResource() && !_.isNil(id)) {
+        if(this._isSubResource() && !_.isNil(id)) {
             this.subResourceId = id;
         }
 
         return this;
     }
 
+    // Public resources
     users(userId) {
-        return this.appendResource("users", userId);
+        return this._appendResource("users", userId);
     }
     me() {
-        return this.appendResource("me");
+        return this._appendResource("me");
     }
     playlists(playlistId) {
-        return this.appendResource("playlists", playlistId);
+        return this._appendResource("playlists", playlistId);
     }
     tracks(trackId) {
-        return this.appendResource("tracks", trackId);
+        return this._appendResource("tracks", trackId);
     }
     followings(id) {
-        return this.appendResource("followings", id);
+        return this._appendResource("followings", id);
     }
     favorites(id) {
-        return this.appendResource("favorites", id);
+        return this._appendResource("favorites", id);
     }
     recentlyPlayed() {
         this.subApi = 'api-mobile';
-        return this.appendResource("recently-played");
+        return this._appendResource("recently-played");
     }
 
+    // Resource method
     get(options) {
         this.requestType = "GET";
         this.requestOptions = options;
