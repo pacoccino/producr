@@ -4,6 +4,7 @@ const request = require('request');
 const Config = require('../config');
 
 const Sugar = require('./soundcloudSugar');
+const CacheWrapper = require('../modules/wrappers').Cache;
 
 const SoundCloud = {
 
@@ -180,6 +181,27 @@ const SoundCloud = {
                     }
                 }
             });
+        });
+    },
+
+    cachedResource(resourceObject) {
+        return new Promise((resolve, reject) => {
+            const resourceUrn = resourceObject.getUrn();
+
+            CacheWrapper.get(resourceUrn)
+                .then(cachedResource => {
+                    if(cachedResource) {
+                        resolve(cachedResource);
+                    } else {
+                        SoundCloud.askResource(resourceObject)
+                            .then((resource) => {
+                                CacheWrapper.set(resourceUrn, resource)
+                                    .then(resolve, reject);
+                            }).catch(reject);
+
+                    }
+                })
+                .catch(reject);
         });
     }
 };

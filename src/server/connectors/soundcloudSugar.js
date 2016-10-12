@@ -1,4 +1,5 @@
 const moment = require('moment');
+const async = require('async');
 
 const ResourceObject = require('./soundcloudResource');
 
@@ -26,22 +27,26 @@ const SoundCloudSugar = (SoundCloud) => {
             SoundCloud.askResource(resourceObject)
                 .then(resource => {
                     var history = resource.collection;
-                    history = history.map(play => {
+                    async.map(history, (play, cb) => {
                         play.date = moment(new Date(play.played_at)).format();
                         play.name = play.urn;
                         var trackResource = ResourceObject.fromUrn(play.urn);
-                        SoundCloud.askResource(trackResource)
+                        SoundCloud.cachedResource(trackResource)
                             .then((track) => {
                                 play.name = trackResource.resourceId + ': ' + track.title + ' - ' + track.user.username;
+                                cb(null, play);
                             })
                             .catch((err) => {
-                                play.name = trackResource.resourceId + ' (Unkonwn)';
+                                play.name = trackResource.resourceId + ': (Unkonwn)';
+                                cb(null, play);
                             });
-                        return play;
+                    }, (err, results) => {
+                        if(err) {
+                            reject(err);
+                        } else {
+                            resolve(results);
+                        }
                     });
-                    setTimeout(() => {
-                        resolve(history);
-                    }, 1000)
                 })
                 .catch(err => {
                     reject(err);

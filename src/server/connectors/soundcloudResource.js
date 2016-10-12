@@ -1,7 +1,8 @@
 const _ = require('lodash');
 
-class ResourceObject {
+class SoundCloudResource {
     constructor(userToken) {
+        this.space = 'soundcloud';
         this.resource = null;
         this.resourceId = null;
         this.subResource = null;
@@ -89,12 +90,19 @@ class ResourceObject {
             throw "Invalid URN"
         }
 
-        const ro = new ResourceObject();
+        const ro = new SoundCloudResource();
+        ro.space = parts[0];
         ro.resource = parts[1];
         ro.resourceId = parts[2];
 
         return ro;
     }
+
+    getUrn() {
+        return this.space + ':' +
+               this.resource + ':' +
+               this.resourceId;
+    }
 }
 
-module.exports = ResourceObject;
+module.exports = SoundCloudResource;

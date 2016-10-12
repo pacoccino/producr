@@ -1,4 +1,4 @@
-const Connections = require('./connections');
+const CacheWrapper = require('./wrappers').Cache;
 const UserModel = require('../models/user');
 
 function Users() {
@@ -17,13 +17,8 @@ Users.prototype.create = function(userId) {
 
 Users.prototype.updateUser = function(userId, user) {
     return new Promise((resolve, reject) => {
-        Connections.redis.set(USR_PREFIX + user.id, JSON.stringify(user), (err) => {
-            if(err) {
-                reject(err);
-            } else {
-                resolve(user);
-            }
-        });
+        CacheWrapper.set(USR_PREFIX + userId, user)
+            .then(resolve, reject);
     });
 };
 
@@ -31,29 +26,15 @@ Users.prototype.delete = function(userId) {
     return new Promise((resolve, reject) => {
         if(!userId) reject("Delete user error: no userId provided");
 
-        Connections.redis.remove(USR_PREFIX + userId, err => {
-            if(err) {
-                reject(err);
-            } else {
-                resolve(null);
-            }
-        });
+        CacheWrapper.delete(USR_PREFIX + userId)
+            .then(resolve, reject);
     });
 };
 
 Users.prototype.getById = function(userId) {
     return new Promise((resolve, reject) => {
-        Connections.redis.get(USR_PREFIX + userId, function(err, user) {
-            if(err) {
-                reject(err);
-            } else {
-                if(user) {
-                    resolve(JSON.parse(user));
-                } else {
-                    resolve(null);
-                }
-            }
-        });
+        CacheWrapper.get(USR_PREFIX + userId)
+            .then(user => { resolve(user || null); }).catch(reject);
     });
 };
 
