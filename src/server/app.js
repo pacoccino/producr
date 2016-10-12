@@ -11,7 +11,10 @@ const Config = require('./config');
 
 const App = () => {
 
-    Connections.initialize().then((connections) => {
+    Connections.initialize().then(() => {
+        console.log("Connections initialized");
+
+
         var app = express();
 
         app.set('views', __dirname + '/views');

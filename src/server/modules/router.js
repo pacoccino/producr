@@ -1,4 +1,5 @@
-const SoundCloud = require('./../connectors/soundcloud');
+const SoundCloud = require('../connectors/soundcloud');
+const History = require('./history');
 
 const Router = (app) => {
 
@@ -24,6 +25,16 @@ const Router = (app) => {
             SoundCloud.Sugar.getHistory(req.user.token)
                 .then(history => {
                     res.render('history', { history: history });
+                })
+                .catch(next);
+        });
+
+    app.get('/update',
+        require('connect-ensure-login').ensureLoggedIn('/login'),
+        function(req, res, next){
+            History.upAndReturn(req.user)
+                .then(history => {
+                    res.json( history );
                 })
                 .catch(next);
         });

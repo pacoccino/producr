@@ -1,12 +1,10 @@
-const Redis = require('./connections').redis;
-
 const serializer = JSON.stringify;
 const deserializer = JSON.parse;
 
 const CacheWrapper = {
     get: (path) => {
         return new Promise((resolve, reject) => {
-            Redis.get(path, (err, data) => {
+            CacheWrapper._redis.get(path, (err, data) => {
                 if(err) {
                     reject(err);
                 } else {
@@ -25,7 +23,7 @@ const CacheWrapper = {
         return new Promise((resolve, reject) => {
             try {
                 const serialized = serializer(data);
-                Redis.set(path, serialized, (err) => {
+                CacheWrapper._redis.set(path, serialized, (err) => {
                     if(err) {
                         reject(err);
                     } else {
@@ -40,7 +38,7 @@ const CacheWrapper = {
 
     delete: (path) => {
         return new Promise((resolve, reject) => {
-            Redis.del(path, (err) => {
+            CacheWrapper._redis.del(path, (err) => {
                 if(err) {
                     reject(err);
                 } else {
@@ -49,6 +47,10 @@ const CacheWrapper = {
             });
         });
     }
-}
+};
+
+CacheWrapper.initialize = (client) => {
+    CacheWrapper._redis = client;
+};
 
 module.exports = CacheWrapper;
