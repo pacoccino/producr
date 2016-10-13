@@ -58,7 +58,6 @@ const Authenticator = (app) => {
                     req.logout();
                     res.redirect('/');
                 });
-
             } else {
                 req.logout();
                 res.redirect('/');

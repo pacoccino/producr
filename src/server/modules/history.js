@@ -146,7 +146,7 @@ const History = {
                 SoundCloud.cachedResource(trackResource)
                     .then(track => {
                         play.title = track.title;
-                        play.username = track.user.username;
+                        play.artist = track.user.username;
                         cb(null, play);
                     })
                     .catch(() => {

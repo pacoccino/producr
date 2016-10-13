@@ -6,7 +6,8 @@
   "scripts": {
     "test": "ava",
     "start": "node src/server",
-    "dev": "nodemon src/server"
+    "dev": "nodemon src/server",
+    "react": "react-scripts start"
   },
   "repository": {
     "type": "git",
@@ -33,21 +34,29 @@
     "connect-ensure-login": "^0.1.1",
     "connect-redis": "^3.1.0",
     "cookie-parser": "^1.4.3",
+    "cors": "^2.8.1",
     "ejs": "^2.5.2",
     "express": "^4.14.0",
     "express-session": "^1.14.1",
     "immutable": "^3.8.1",
+    "isomorphic-fetch": "^2.2.1",
     "moment": "^2.15.1",
     "mongodb": "^2.2.10",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "passport-soundcloud": "^0.2.0",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "react-redux": "^4.4.5",
     "redis": "^2.6.2",
+    "redux": "^3.6.0",
+    "redux-thunk": "^2.1.0",
     "request": "^2.75.0"
   },
   "devDependencies": {
     "ava": "^0.16.0",
     "babel-core": "^6.17.0",
-    "babel-preset-es2015": "^6.16.0"
+    "babel-preset-es2015": "^6.16.0",
+    "react-scripts": "0.6.1"
   }
 }
