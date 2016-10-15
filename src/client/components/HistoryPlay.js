@@ -1,13 +1,6 @@
 import React, { Component, PropTypes } from 'react';
+import {  ListItem} from 'material-ui/List';
 
-const styles = {
-    line: {
-        display: 'flex'
-    },
-    part: {
-
-    }
-};
 
 class HistoryPlay extends Component {
     static propTypes = {
@@ -18,12 +11,14 @@ class HistoryPlay extends Component {
         const play = this.props.play;
 
         return (
-            <div style={styles.line}>
-                <div style={styles.part}><b>Title:</b> {play.title}</div>
-                <div style={styles.part}><b>Artist:</b> {play.artist}</div>
-                <div style={styles.part}><b>Date:</b> {play.date}</div>
-                <div style={styles.part}><b>Duration:</b> {play.played_duration}</div>
-            </div>
+            <ListItem
+                primaryText={
+                    play.title + '(' + play.date + ', ' + play.played_duration + 's)'
+                }
+                secondaryText={
+                    play.artist
+                }>
+            </ListItem>
         );
     }
 }
