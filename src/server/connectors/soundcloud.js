@@ -28,9 +28,9 @@ const SoundCloud = {
 
                     var reqError = {
                         request: options,
-                        code: response.statusCode,
-                        message: response.statusMessage,
-                        body
+                        code: response && response.statusCode,
+                        message: response && response.statusMessage,
+                        body, error:error
                     };
                     reject(reqError);
                 } else {

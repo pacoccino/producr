@@ -1,9 +1,10 @@
 const express = require('express');
 const cors = require('cors');
-const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
+const passport = require('passport');
 
 const SoundCloud = require('../connectors/soundcloud');
 const History = require('../modules/history');
+const Authenticator = require('../modules/authenticator');
 
 const ApiRouter = () => {
     var router = express.Router();
@@ -13,7 +14,15 @@ const ApiRouter = () => {
         credentials: true
     }));
 
-    router.get('/history', ensureLoggedIn(),
+    router.get('/login',
+        Authenticator.apiLogin()
+    );
+    router.get('/logout',
+        Authenticator.apiLogout()
+    );
+
+    router.get('/history',
+        Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
             History.getUserHistory(req.user, req.query.hr !== undefined)
                 .then(history => {
@@ -22,7 +31,8 @@ const ApiRouter = () => {
                 .catch(next);
         }
     );
-    router.get('/update', ensureLoggedIn(),
+    router.get('/update',
+        Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
             History.updateUserHistory(req.user)
                 .then(history => {

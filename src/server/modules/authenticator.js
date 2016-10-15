@@ -3,6 +3,7 @@ const Strategy = require('passport-local').Strategy;
 
 const SoundCloud = require('./../connectors/soundcloud');
 const Users = require('./users');
+const ApiError = require('./apiError');
 
 const Authenticator = (app) => {
 
@@ -63,6 +64,35 @@ const Authenticator = (app) => {
                 res.redirect('/');
             }
         });
+};
+
+Authenticator.apiLogin = () => {
+    return (req, res, next) => {
+        passport.authenticate('local')(req, res, () => {
+            res.status(200);
+            res.send('ok');
+        });
+    };
+};
+
+Authenticator.apiLogout = () => {
+    return (req, res) => {
+        if(req.isAuthenticated && req.isAuthenticated()) {
+            req.logout();
+        }
+        res.status(200);
+        res.send('ok');
+    };
+};
+
+Authenticator.apiEnsureLoggedIn = () => {
+    return (req, res, next) => {
+
+        if (!req.isAuthenticated || !req.isAuthenticated()) {
+            return next(ApiError.Unauthorized);
+        }
+        next();
+    };
 };
 
 module.exports = Authenticator;

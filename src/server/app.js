@@ -3,9 +3,9 @@ const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 
 const Router = require('./router');
+const ApiError = require('./modules/apiError');
 const Connections = require('./modules/connections');
 const Authenticator = require('./modules/authenticator');
-const ErrorMiddleware = require('./modules/errorMiddleware');
 
 const Config = require('./modules/config');
 
@@ -35,10 +35,15 @@ const App = () => {
             saveUninitialized: false
         }));
 
+        app.use((req, res, next) => {
+            console.log(req.method + ': ' + req.path);
+            next();
+        });
+
         Authenticator(app);
         Router(app);
 
-        app.use(ErrorMiddleware);
+        app.use(ApiError.Middleware);
 
         app.listen(app.get('port'), () => {
             console.log("Server started at http://localhost:"+app.get('port'));
