@@ -22,6 +22,7 @@ const App = () => {
         app.set('port', Config.port || 3000);
 
         app.use(require('cookie-parser')());
+        app.use(require('body-parser').json({ }));
         app.use(require('body-parser').urlencoded({ extended: true }));
 
         const redisOpt = {

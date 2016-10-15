@@ -27,3 +27,37 @@ export function fetchHistory() {
             .then(json => dispatch(receiveHistory(json)));
     }
 }
+
+
+export function login(username, password) {
+    return dispatch => {
+        return fetch(`http://localhost:3001/api/login`,
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    username,
+                    password
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: 'include',
+                mode: 'cors'
+            })
+            .then(req => req.text())
+            .then(console.log);
+    }
+}
+
+
+export function logout() {
+    return dispatch => {
+        return fetch(`http://localhost:3001/api/logout`,
+            {
+                credentials: 'include',
+                mode: 'cors'
+            })
+            .then(req => req.text())
+            .then(console.log);
+    }
+}
