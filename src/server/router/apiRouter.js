@@ -21,8 +21,15 @@ const ApiRouter = () => {
         Authenticator.apiLogout()
     );
 
+    router.get('/me',
+        Authenticator.apiEnsureLoggedIn(),
+        (req, res, next) => {
+            res.json(req.user.sc);
+        }
+    );
+
     router.get('/history',
-        // Authenticator.apiEnsureLoggedIn(),
+        Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
             req.user = {
                 id: 10878168

@@ -1,5 +1,7 @@
 export const REQUEST_HISTORY = 'REQUEST_HISTORY';
 export const RECEIVE_HISTORY = 'RECEIVE_HISTORY';
+export const LOGOUT = 'LOGOUT';
+export const RECEIVE_ME = 'RECEIVE_ME';
 
 function requestHistory() {
     return {
@@ -12,6 +14,19 @@ function receiveHistory(history) {
         type: RECEIVE_HISTORY,
         history,
         receivedAt: Date.now()
+    };
+}
+
+function receiveMe(me) {
+    return {
+        type: RECEIVE_ME,
+        me
+    };
+}
+
+function logoutMe(me) {
+    return {
+        type: LOGOUT
     };
 }
 
@@ -44,8 +59,21 @@ export function login(username, password) {
                 credentials: 'include',
                 mode: 'cors'
             })
-            .then(req => req.text())
-            .then(console.log);
+            .then(req => req.json())
+            .then(json => dispatch(receiveMe(json)));
+    }
+}
+
+export function fetchMe() {
+    return dispatch => {
+        return fetch(`http://localhost:3001/api/me`,
+            {
+                method: "GET",
+                credentials: 'include',
+                mode: 'cors'
+            })
+            .then(req => req.json())
+            .then(json => dispatch(receiveMe(json)));
     }
 }
 
@@ -58,6 +86,7 @@ export function logout() {
                 mode: 'cors'
             })
             .then(req => req.text())
-            .then(console.log);
+            .then(json => dispatch(logoutMe()));
+
     }
 }

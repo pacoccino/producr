@@ -1,21 +1,29 @@
 import { combineReducers } from 'redux';
 
-import {
-    REQUEST_HISTORY, RECEIVE_HISTORY
-} from '../actions';
+import * as Actions from '../actions';
 
-
-const defaultState = {
+const userDefaultState = null;
+const historyDefaultState = {
     isFetching: true
 };
 
-function userHistory(state = defaultState, action) {
+function user(state = userDefaultState, action) {
     switch (action.type) {
-        case REQUEST_HISTORY:
+        case Actions.RECEIVE_ME:
+            return Object.assign({}, action.me);
+        case Actions.LOGOUT:
+            return null;
+        default:
+            return state;
+    }
+}
+function userHistory(state = historyDefaultState, action) {
+    switch (action.type) {
+        case Actions.REQUEST_HISTORY:
             return Object.assign({}, state, {
                 isFetching: true,
             });
-        case RECEIVE_HISTORY:
+        case Actions.RECEIVE_HISTORY:
             return Object.assign({}, state, {
                 isFetching: false,
                 ...action.history
@@ -26,6 +34,7 @@ function userHistory(state = defaultState, action) {
 }
 
 const rootReducer = combineReducers({
+    user,
     userHistory
 });
 

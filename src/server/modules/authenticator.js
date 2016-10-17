@@ -70,7 +70,7 @@ Authenticator.apiLogin = () => {
     return (req, res, next) => {
         passport.authenticate('local')(req, res, () => {
             res.status(200);
-            res.send('ok');
+            res.json(req.user);
         });
     };
 };

@@ -2,8 +2,7 @@ import React, { Component, PropTypes } from 'react';
 
 import HistoryPlay from './HistoryPlay';
 
-import { List } from 'material-ui/List';
-import Divider from 'material-ui/Divider';
+import { Table, TableHeader, TableRow, TableHeaderColumn, TableBody } from 'material-ui/Table';
 
 const styles = {
     line: {
@@ -20,16 +19,34 @@ class HistoryPage extends Component {
     render() {
         return (
             <div style={styles.line}>
-                <List>
-                {
-                    this.props.history.map((play, index) =>
-                        <div key={index}>
-                            <HistoryPlay play={play} />
-                            <Divider inset={true} />
-                        </div>
-                    )
-                }
-                </List>
+                <Table
+                    selectable={false}>
+                    <TableHeader
+                        displaySelectAll={false}
+                        adjustForCheckbox={false}>
+
+                        <TableRow>
+                            <TableHeaderColumn colSpan="3" tooltip="All songs you recently listened" style={{textAlign: 'center'}}>
+                                Listening history
+                            </TableHeaderColumn>
+                        </TableRow>
+                        <TableRow>
+                            <TableHeaderColumn tooltip="SoundCloud song's ID">ID</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Track's artist">Artist</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Track's title">Title</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Date of song play">Played at</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Estimation of played duration">Played duration</TableHeaderColumn>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody
+                        displayRowCheckbox={false}>
+                        {
+                            this.props.history.map((play, index) =>
+                                <HistoryPlay play={play} key={index} />
+                            )
+                        }
+                    </TableBody>
+                </Table>
             </div>
         );
     }

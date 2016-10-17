@@ -58,32 +58,46 @@ class LoginPage extends Component {
     render() {
         return (
             <div>
-                <Paper style={styles.paper}>
-                    <AppBar
-                        title="SoundCloud Login"
-                        showMenuIconButton={false}
-                    />
-                    <div style={styles.form}>
+                <AppBar
+                    title="SoundCloud producr"
+                    showMenuIconButton={false}
+                />
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'center'
+                }}>
+                    <Paper style={styles.paper}>
+                        <AppBar
+                            title="Login"
+                            showMenuIconButton={false}
+                            style={{backgroundColor: '#f50'}}
+                        />
+                        <div style={styles.form}>
 
-                        <TextField
-                            hintText="skrillex@owsla.us"
-                            floatingLabelText="Email address"
-                            floatingLabelFixed={true}
-                            onChange={this.changeMail.bind(this)}
-                        /><br />
-                        <TextField
-                            hintText="ilovebassmusic"
-                            floatingLabelText="Password"
-                            type="password"
-                            onChange={this.changePass.bind(this)}
-                        /><br />
-                        <div style={{marginTop: 10}}>
-                            <RaisedButton onClick={this.submit.bind(this)} label="Login" />
-                            <RaisedButton onClick={this.props.logout} label="Logout" />
+                            <TextField
+                                hintText="skrillex@owsla.us"
+                                floatingLabelText="Email address"
+                                floatingLabelFixed={true}
+                                onChange={this.changeMail.bind(this)}
+                            /><br />
+                            <TextField
+                                hintText="ilovebassmusic"
+                                floatingLabelText="Password"
+                                type="password"
+                                onChange={this.changePass.bind(this)}
+                            /><br />
+                            <div style={{marginTop: 10}}>
+                                <RaisedButton
+                                    fullWidth={true}
+                                    onClick={this.submit.bind(this)}
+                                    label="Login"
+                                    style={{backgroundColor:'#f50'}}
+                                />
+                                {/*<RaisedButton onClick={this.props.logout} label="Logout" />*/}
+                            </div>
                         </div>
-                    </div>
-                </Paper>
-
+                    </Paper>
+                </div>
             </div>
         );
     }

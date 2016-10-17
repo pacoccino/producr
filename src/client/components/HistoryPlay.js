@@ -1,6 +1,12 @@
 import React, { Component, PropTypes } from 'react';
-import {  ListItem} from 'material-ui/List';
 
+import { TableRow, TableRowColumn } from 'material-ui/Table';
+
+const styles = {
+    col: {
+        overflow: 'hidden'
+    }
+};
 
 class HistoryPlay extends Component {
     static propTypes = {
@@ -11,14 +17,23 @@ class HistoryPlay extends Component {
         const play = this.props.play;
 
         return (
-            <ListItem
-                primaryText={
-                    play.title + '(' + play.date + ', ' + play.played_duration + 's)'
-                }
-                secondaryText={
-                    play.artist
-                }>
-            </ListItem>
+            <TableRow>
+                <TableRowColumn style={styles.col}>
+                    {play.id || 0}
+                </TableRowColumn>
+                <TableRowColumn style={styles.col}>
+                    {play.artist}
+                </TableRowColumn>
+                <TableRowColumn style={styles.col}>
+                    {play.title}
+                </TableRowColumn>
+                <TableRowColumn style={styles.col}>
+                    {play.date}
+                </TableRowColumn>
+                <TableRowColumn style={styles.col}>
+                    {play.played_duration}
+                </TableRowColumn>
+            </TableRow>
         );
     }
 }
