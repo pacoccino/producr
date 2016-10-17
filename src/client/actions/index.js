@@ -1,5 +1,6 @@
 export const REQUEST_HISTORY = 'REQUEST_HISTORY';
 export const RECEIVE_HISTORY = 'RECEIVE_HISTORY';
+export const LOGIN_ERROR = 'LOGIN_ERROR';
 export const LOGOUT = 'LOGOUT';
 export const RECEIVE_ME = 'RECEIVE_ME';
 
@@ -18,9 +19,14 @@ function receiveHistory(history) {
 }
 
 function receiveMe(me) {
+    if(me) {
+        return {
+            type: RECEIVE_ME,
+            me
+        };
+    }
     return {
-        type: RECEIVE_ME,
-        me
+        type: LOGIN_ERROR
     };
 }
 
@@ -59,7 +65,13 @@ export function login(username, password) {
                 credentials: 'include',
                 mode: 'cors'
             })
-            .then(req => req.json())
+            .then(req => {
+                if(req.status === 200) {
+                    return req.json()
+                } else {
+                    return null;
+                }
+            })
             .then(json => dispatch(receiveMe(json)));
     }
 }
@@ -72,7 +84,13 @@ export function fetchMe() {
                 credentials: 'include',
                 mode: 'cors'
             })
-            .then(req => req.json())
+            .then(req => {
+                if(req.status === 200) {
+                    return req.json()
+                } else {
+                    return null;
+                }
+            })
             .then(json => dispatch(receiveMe(json)));
     }
 }

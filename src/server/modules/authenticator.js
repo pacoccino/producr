@@ -69,8 +69,13 @@ const Authenticator = (app) => {
 Authenticator.apiLogin = () => {
     return (req, res, next) => {
         passport.authenticate('local')(req, res, () => {
-            res.status(200);
-            res.json(req.user);
+            if(req.isAuthenticated()) {
+                res.status(200);
+                res.json(req.user);
+            } else {
+                res.status(401);
+                res.send("Bad credentials");
+            }
         });
     };
 };
