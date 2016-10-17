@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const passport = require('passport');
 
-const SoundCloud = require('../connectors/soundcloud');
+const SoundCloud = require('../soundcloud');
 const History = require('../modules/history');
 const Authenticator = require('../modules/authenticator');
 

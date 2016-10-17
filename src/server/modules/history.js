@@ -3,8 +3,8 @@ const Immutable = require('immutable');
 const moment = require('moment');
 const async = require('async');
 
-const SoundcloudResource = require('../connectors/soundcloudResource');
-const SoundCloud = require('../connectors/soundcloud');
+const SoundcloudResource = require('../soundcloud').Resource;
+const SoundCloud = require('../soundcloud');
 const DBWrapper = require('./wrappers').DB;
 
 const HistoryTrack = require('../models/HistoryTrack');

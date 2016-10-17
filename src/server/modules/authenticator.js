@@ -1,7 +1,7 @@
 const passport = require('passport');
 const Strategy = require('passport-local').Strategy;
 
-const SoundCloud = require('./../connectors/soundcloud');
+const SoundCloud = require('../soundcloud');
 const Users = require('./users');
 const ApiError = require('./apiError');
 

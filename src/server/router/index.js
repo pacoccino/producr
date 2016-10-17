@@ -1,10 +1,8 @@
-const PagesRouter = require('./pagesRouter');
 const ApiRouter = require('./apiRouter');
 
 const Router = (app) => {
 
-    app.use(PagesRouter());
-
+    app.get('/', (req, res) => res.send(null, 200));
     app.use('/api', ApiRouter());
 };
 

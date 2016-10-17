@@ -3,7 +3,8 @@ const request = require('request');
 
 const Config = require('../modules/config');
 
-const Sugar = require('./soundcloudSugar');
+const Sugar = require('./sugar');
+const Resource = require('./resource');
 const CacheWrapper = require('../modules/wrappers').Cache;
 
 const SoundCloud = {
@@ -207,5 +208,6 @@ const SoundCloud = {
 };
 
 SoundCloud.Sugar = Sugar(SoundCloud);
+SoundCloud.Resource = Resource;
 
 module.exports = SoundCloud;
