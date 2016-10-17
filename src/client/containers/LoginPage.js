@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import { connect } from 'react-redux';
 
 import { AppBar, Paper, TextField, RaisedButton } from 'material-ui';
+import validator from 'validator';
 
 import { login, logout }  from '../actions';
 import appTheme from '../theme';
@@ -38,7 +39,9 @@ class LoginPage extends Component {
 
         this.state = {
             email: '',
-            password: ''
+            password: '',
+            emailError: "",
+            passwordError: ""
         };
 
         // this.changeMail.bind(this);
@@ -48,22 +51,30 @@ class LoginPage extends Component {
 
     handleSubmit(e) {
         if(e) e.preventDefault();
+
         this.validateForm().then(() => {
             const username = this.state.email;
             const password = this.state.password;
             this.props.login(username, password);
-        })
-        .catch(() => null);
+        }).catch(() => null);
     }
 
     validateForm() {
-        const validateEmail = (email) => {
-            return email !== "";
-        };
-        const validatePassword = (password) => {
-            return password !== "";
-        };
-        if(validateEmail(this.state.email) && validatePassword(this.state.password)) {
+        const isEmailValid = validator.isEmail(this.state.email);
+        if(isEmailValid) {
+            this.setState({emailError: ""});
+        } else {
+            this.setState({emailError: "Invalid email address"});
+        }
+
+        const isPasswordValid = !validator.isEmpty(this.state.password);
+        if(isPasswordValid) {
+            this.setState({passwordError: ""});
+        } else {
+            this.setState({passwordError: "Please enter your password"});
+        }
+
+        if(isEmailValid && isPasswordValid) {
             return Promise.resolve()
         }
         return Promise.reject();
@@ -109,6 +120,7 @@ class LoginPage extends Component {
                                     floatingLabelText="Email address"
                                     floatingLabelFixed={true}
                                     onChange={this.changeMail.bind(this)}
+                                    errorText={this.state.emailError}
                                 /><br />
                                 <TextField
                                     style={styles.formElement}
@@ -118,6 +130,7 @@ class LoginPage extends Component {
                                     floatingLabelFixed={true}
                                     type="password"
                                     onChange={this.changePass.bind(this)}
+                                    errorText={this.state.passwordError}
                                 /><br />
                                 <div
                                     style={{marginTop: 10}}

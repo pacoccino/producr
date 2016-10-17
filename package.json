@@ -54,7 +54,8 @@
     "redis": "^2.6.2",
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
-    "request": "^2.75.0"
+    "request": "^2.75.0",
+    "validator": "^6.1.0"
   },
   "devDependencies": {
     "ava": "^0.16.0",
