@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import History from './containers/History';
 import Header from './containers/Header';
-import LoginPage from './containers/LoginPage';
+import Login from './containers/LoginPage';
+
+import History from './containers/History';
+// import Profile from './containers/Profile';
 
 import { fetchMe }  from './actions';
 
@@ -25,7 +27,7 @@ class App extends Component {
             this.props.user ?
                 <LoggedApp />
                 :
-                <LoginPage/>
+                <Login/>
         );
     }
 }

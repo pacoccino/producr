@@ -7,6 +7,8 @@ const SoundcloudResource = require('../connectors/soundcloudResource');
 const SoundCloud = require('../connectors/soundcloud');
 const DBWrapper = require('./wrappers').DB;
 
+const PlayTrack = require('../models/PlayTrack');
+
 const ListenedStates = {
     LISTENING: 'LISTENING',
     LISTENED: 'LISTENED',
@@ -18,10 +20,14 @@ const ListenedTimes = {
 
 // TODO :
 // - get song duration and compare with play duration to better validate
-// - last listened, compare with now and duration
 
 const History = {
 
+    preprocessHistory: (history) => history.map(play => {
+        var trackResource = SoundcloudResource.fromUrn(play.urn);
+        play.songId = trackResource.resourceId;
+        return play;
+    }),
     computeDiff: (history) => {
         const imHistory = Immutable.fromJS(history);
         return imHistory.map((play, index) => {
@@ -46,7 +52,7 @@ const History = {
     setListenedState: (history) => {
         return Immutable.fromJS(history)
             .map(play =>
-                play.set('listenedState',
+                play.set('played_state',
                     History.getListenedState(play.get('played_duration'))))
             .toJS();
     },
@@ -70,6 +76,7 @@ const History = {
             .then(userHistory => {
                 const lastFetched = userHistory && userHistory.lastFetched || 0;
 
+                updateData.newHistory = History.preprocessHistory(updateData.newHistory);
                 updateData.newHistory = History.computeDiff(updateData.newHistory);
                 updateData.newHistory = History.setListenedState(updateData.newHistory);
 
@@ -136,18 +143,30 @@ const History = {
     hydrateHistory: (userHistory) => {
         const hydratedUserHistory = {
             userId: userHistory.userId,
-            lastFetched: moment(new Date(userHistory.lastFetched)).format("DD-MM-YYYY HH:mm:ss"),
+            lastFetched: userHistory.lastFetched,
         };
+
+        const convertPlay = (track, play) => PlayTrack({
+                // ...play,
+
+                urn: play.urn,
+                songId: play.songId,
+                played_at: play.played_at,
+                played_duration: play.played_duration,
+                played_state: play.played_state  || play.listenedState,
+
+                url: track.permalink_url,
+                artist: track.user.username,
+                title: track.title
+        });
 
         return new Promise((resolve, reject) => {
             async.map(userHistory.history, (play, cb) => {
-                play.date = moment(new Date(play.played_at)).format("DD-MM-YYYY HH:mm:ss");
                 var trackResource = SoundcloudResource.fromUrn(play.urn);
                 SoundCloud.cachedResource(trackResource)
                     .then(track => {
-                        play.title = track.title;
-                        play.artist = track.user.username;
-                        cb(null, play);
+                        const playTrack = convertPlay(track, play);
+                        cb(null, playTrack.toJSON());
                     })
                     .catch(() => {
                         play.deleted = true;
