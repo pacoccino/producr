@@ -7,7 +7,7 @@ const SoundcloudResource = require('../connectors/soundcloudResource');
 const SoundCloud = require('../connectors/soundcloud');
 const DBWrapper = require('./wrappers').DB;
 
-const PlayTrack = require('../models/PlayTrack');
+const HistoryTrack = require('../models/HistoryTrack');
 
 const ListenedStates = {
     LISTENING: 'LISTENING',
@@ -146,7 +146,7 @@ const History = {
             lastFetched: userHistory.lastFetched,
         };
 
-        const convertPlay = (track, play) => PlayTrack({
+        const convertPlay = (track, play) => HistoryTrack({
                 // ...play,
 
                 urn: play.urn,

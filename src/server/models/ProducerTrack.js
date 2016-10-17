@@ -6,6 +6,6 @@ const ProducerTrack = new Record({
     created_date: null,
     play_count: null,
     title: null
-});
+}, 'ProducerTrack');
 
 module.exports = ProducerTrack;

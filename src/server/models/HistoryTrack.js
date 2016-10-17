@@ -1,6 +1,6 @@
 const Record = require('immutable').Record;
 
-const PlayTrack = new Record({
+const HistoryTrack = new Record({
     urn: null,
     songId: null,
     url: null,
@@ -9,7 +9,7 @@ const PlayTrack = new Record({
     played_state: null,
     artist: null,
     title: null
-});
+}, 'HistoryTrack');
 
 
-module.exports = PlayTrack;
+module.exports = HistoryTrack;
