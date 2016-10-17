@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { AppBar, Paper, TextField, RaisedButton } from 'material-ui';
 
 import { login, logout }  from '../actions';
-
+import appTheme from '../theme';
 
 const styles = {
     paper: {
@@ -15,6 +15,15 @@ const styles = {
     },
     form: {
         padding: '40px'
+    },
+    formElement: {
+        width: '100%'
+    },
+    floatingLabelStyle: {
+        color: appTheme.palette.pickerHeaderColor
+    },
+    loginDesc: {
+        color: appTheme.palette.accent3Color
     }
 };
 
@@ -37,10 +46,27 @@ class LoginPage extends Component {
         // this.submit.bind(this);
     }
 
-    submit() {
-        const username = this.state.email;
-        const password = this.state.password;
-        this.props.login(username, password);
+    handleSubmit(e) {
+        if(e) e.preventDefault();
+        this.validateForm().then(() => {
+            const username = this.state.email;
+            const password = this.state.password;
+            this.props.login(username, password);
+        })
+        .catch(() => null);
+    }
+
+    validateForm() {
+        const validateEmail = (email) => {
+            return email !== "";
+        };
+        const validatePassword = (password) => {
+            return password !== "";
+        };
+        if(validateEmail(this.state.email) && validatePassword(this.state.password)) {
+            return Promise.resolve()
+        }
+        return Promise.reject();
     }
 
     changeMail(e) {
@@ -70,31 +96,41 @@ class LoginPage extends Component {
                         <AppBar
                             title="Login"
                             showMenuIconButton={false}
-                            style={{backgroundColor: '#f50'}}
                         />
                         <div style={styles.form}>
+                            <i style={styles.loginDesc}>
+                                Please connect with your soundcloud email and password.
+                            </i>
+                            <form onSubmit={this.handleSubmit.bind(this)}>
+                                <TextField
+                                    style={styles.formElement}
+                                    floatingLabelStyle={styles.floatingLabelStyle}
+                                    hintText="skrillex@owsla.us"
+                                    floatingLabelText="Email address"
+                                    floatingLabelFixed={true}
+                                    onChange={this.changeMail.bind(this)}
+                                /><br />
+                                <TextField
+                                    style={styles.formElement}
+                                    floatingLabelStyle={styles.floatingLabelStyle}
+                                    hintText="ilovebassmusic"
+                                    floatingLabelText="Password"
+                                    floatingLabelFixed={true}
+                                    type="password"
+                                    onChange={this.changePass.bind(this)}
+                                /><br />
+                                <div
+                                    style={{marginTop: 10}}
+                                >
+                                    <RaisedButton
+                                        fullWidth={true}
+                                        label="Login"
+                                        style={{backgroundColor:'#f50'}}
+                                        type="submit"
+                                    />
+                                </div>
+                            </form>
 
-                            <TextField
-                                hintText="skrillex@owsla.us"
-                                floatingLabelText="Email address"
-                                floatingLabelFixed={true}
-                                onChange={this.changeMail.bind(this)}
-                            /><br />
-                            <TextField
-                                hintText="ilovebassmusic"
-                                floatingLabelText="Password"
-                                type="password"
-                                onChange={this.changePass.bind(this)}
-                            /><br />
-                            <div style={{marginTop: 10}}>
-                                <RaisedButton
-                                    fullWidth={true}
-                                    onClick={this.submit.bind(this)}
-                                    label="Login"
-                                    style={{backgroundColor:'#f50'}}
-                                />
-                                {/*<RaisedButton onClick={this.props.logout} label="Logout" />*/}
-                            </div>
                         </div>
                     </Paper>
                 </div>

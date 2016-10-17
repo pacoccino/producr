@@ -1,46 +1,34 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware} from 'redux';
+import thunkMiddleware from 'redux-thunk'
 
-import Header from './containers/Header';
-import Login from './containers/LoginPage';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-import History from './containers/History';
-// import Profile from './containers/Profile';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+injectTapEventPlugin();
 
-import { fetchMe }  from './actions';
+import 'isomorphic-fetch';
 
-const LoggedApp = () => (
-    <div className="App">
-        <Header />
-        <History />
-    </div>
+import Page from './Page';
+import reducer from './reducers';
+import appTheme from './theme';
+
+import './index.css';
+
+const store = createStore(reducer,
+    applyMiddleware(
+        thunkMiddleware
+    )
 );
 
-class App extends Component {
+const App = () => (
+    <Provider store={store}>
+        <MuiThemeProvider muiTheme={getMuiTheme(appTheme)}>
+            <Page />
+        </MuiThemeProvider>
+    </Provider>
+);
 
-    componentWillMount() {
-        this.props.fetchMe();
-    }
-
-    render() {
-        return (
-            this.props.user ?
-                <LoggedApp />
-                :
-                <Login/>
-        );
-    }
-}
-
-const mapStateToProps = (state) => {
-    const { user } = state;
-
-    return {
-        user
-    };
-};
-const mapDispatchToProps = {
-    fetchMe
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+module.exports = App;

@@ -22,9 +22,14 @@ const ApiRouter = () => {
     );
 
     router.get('/me',
-        Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
-            res.json(req.user.sc);
+            if(req.isAuthenticated && req.isAuthenticated()) {
+                res.json(req.user.sc);
+            } else {
+                res.status(401);
+                res.send("Unauthenticated");
+            }
+
         }
     );
 
