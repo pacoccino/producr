@@ -1,20 +1,10 @@
 import React, {Component, PropTypes} from 'react';
 import { connect } from 'react-redux';
 
-import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
-import AppBar from 'material-ui/AppBar';
-import Drawer from 'material-ui/Drawer';
+import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
+import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
-import FlatButton from 'material-ui/FlatButton';
 import Avatar from 'material-ui/Avatar';
-import { ListItem } from 'material-ui/List';
-import IconButton from 'material-ui/IconButton';
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
-
-import PersonAdd from 'material-ui/svg-icons/social/person-add';
-import RemoveRedEye from 'material-ui/svg-icons/image/remove-red-eye';
-import ContentInbox from 'material-ui/svg-icons/content/inbox';
-import MenuIcon from 'material-ui/svg-icons/navigation/menu';
 
 import appTheme from '../theme';
 
@@ -30,9 +20,16 @@ const styles = {
         width: '764px',
         margin: 'auto'
     },
-    menuGroup: {
+    menuButton: {
+        height: '100%',
+        padding: '5px 0px',
+        color: appTheme.palette.accent2Color,
+        hoverColor: appTheme.palette.accent1Color
+
+    },
+    profileGroup: {
         backgroundColor: appTheme.palette.primary1Color,
-        width: '63px'
+        width: '184px'
     },
     titleGroup: {
         backgroundColor: appTheme.palette.headerBlack
@@ -42,7 +39,7 @@ const styles = {
         fontSize: 24,
         padding: '15px 20px'
     },
-    profileGroup: {
+    buttosnsGroup: {
         backgroundColor: appTheme.palette.headerBlack
     },
     primaryButton: {
@@ -82,57 +79,40 @@ class Header extends Component {
                              noGutter={true}
                              style={styles.toolbar}
                     >
-                        <ToolbarGroup
-                            style={styles.menuGroup}
-                        >
-
-                            <IconButton tooltip="Open menu"
-                                        onClick={this.handleToggle}
-                                        style={styles.button}
-                                        tooltipPosition="bottom-right">
-                                <MenuIcon color={appTheme.palette.alternateTextColor}/>
-                            </IconButton>
+                        <ToolbarGroup>
+                            <MenuItem
+                                leftIcon={<Avatar src={this.props.user.avatar_url} />}
+                                primaryText={this.props.user.username}
+                                style={styles.menuButton}
+                                linkButton={true} href="/profile"
+                            />
+                            <MenuItem
+                                primaryText="History"
+                                style={styles.menuButton}
+                                linkButton={true} href="/history"
+                            />
                         </ToolbarGroup>
-                        <ToolbarGroup
-                            style={styles.titleGroup}
-                        >
+
+                        <ToolbarGroup style={styles.titleGroup}>
                             <span style={styles.title}>SoundCloud producr</span>
                         </ToolbarGroup>
 
-                        <ToolbarGroup
-                            style={styles.profileGroup}
-                        >
+                        <ToolbarGroup style={styles.buttosnsGroup}>
                             {this.props.user ?
-                                <FlatButton label="Logout"
-                                            onClick={this.props.logout}
-                                            style={styles.button}
+                                <MenuItem
+                                    onClick={this.props.logout}
+                                    primaryText="Logout"
+                                    style={styles.menuButton}
                                 />
                                 :
-                                <FlatButton label="Login"
-                                            style={styles.button}
+                                <MenuItem
+                                    primaryText="Login"
+                                    style={styles.menuButton}
                                 />
                             }
                         </ToolbarGroup>
                     </Toolbar>
                 </div>
-
-                <Drawer
-                    open={this.state.openDrawer}
-                    docked={false}>
-                    <AppBar
-                        iconElementLeft={<IconButton><NavigationClose /></IconButton>}
-                        onLeftIconButtonTouchTap={this.handleToggle}
-                        title="Menu" />
-                    <ListItem
-                        primaryText={this.props.user.username}
-                        leftAvatar={<Avatar src={this.props.user.avatar_url} />}
-                        disabled={true}
-                    />
-                    <MenuItem leftIcon={<RemoveRedEye />} >History</MenuItem>
-                    <MenuItem leftIcon={<PersonAdd />}>Tracks</MenuItem>
-                    <MenuItem leftIcon={<ContentInbox />}>Options</MenuItem>
-                </Drawer>
-
             </div>
         );
     }

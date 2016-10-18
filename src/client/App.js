@@ -11,7 +11,7 @@ injectTapEventPlugin();
 
 import 'isomorphic-fetch';
 
-import Page from './Page';
+import Router from './Router';
 import reducer from './reducers';
 import appTheme from './theme';
 
@@ -26,7 +26,7 @@ const store = createStore(reducer,
 const App = () => (
     <Provider store={store}>
         <MuiThemeProvider muiTheme={getMuiTheme(appTheme)}>
-            <Page />
+            <Router />
         </MuiThemeProvider>
     </Provider>
 );
