@@ -9,7 +9,7 @@ import RefreshIndicator from 'material-ui/RefreshIndicator';
 import CircularProgress from 'material-ui/CircularProgress';
 import appTheme from '../theme';
 
-import { fetchHistory } from '../actions';
+import { fetchHistory, updateHistory } from '../actions';
 
 const styles = {
     paper: {
@@ -62,11 +62,11 @@ class History extends Component {
     }
 
     componentDidMount() {
-        this.refreshHistory();
+        this.props.dispatch(fetchHistory());
     }
 
     refreshHistory() {
-        this.props.dispatch(fetchHistory());
+        this.props.dispatch(updateHistory());
     }
 
     render() {

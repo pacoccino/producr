@@ -50,6 +50,19 @@ export function fetchHistory() {
 }
 
 
+export function updateHistory() {
+    return dispatch => {
+        dispatch(requestHistory());
+        return fetch(`http://localhost:3001/api/update`,
+            {
+                credentials: 'include',
+                mode: 'cors'
+            })
+            .then(json => dispatch(fetchHistory()));
+    }
+}
+
+
 export function login(username, password) {
     return dispatch => {
         return fetch(`http://localhost:3001/api/login`,

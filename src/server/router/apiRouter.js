@@ -36,10 +36,6 @@ const ApiRouter = () => {
     router.get('/history',
         Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
-            req.user = {
-                id: 10878168
-            };
-
             History.getUserHistory(req.user, req.query.hr !== undefined)
                 .then(history => {
                     res.json( history );
@@ -51,8 +47,9 @@ const ApiRouter = () => {
         Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
             History.updateUserHistory(req.user)
-                .then(history => {
-                    res.redirect( '/api/history' );
+                .then(() => {
+                    res.status(200);
+                    res.send('ok');
                 })
                 .catch(next);
         }
