@@ -5,44 +5,48 @@ import HistoryTable from '../components/HistoryTable';
 
 import { AppBar, Paper } from 'material-ui';
 
-import IconButton from 'material-ui/IconButton';
 import RefreshIndicator from 'material-ui/RefreshIndicator';
+import CircularProgress from 'material-ui/CircularProgress';
+import appTheme from '../theme';
 
 import { fetchHistory } from '../actions';
 
 const styles = {
     paper: {
-        width: 'calc(100% - 40px)',
-        margin: 20,
+        width: '100%',
         textAlign: 'center',
         display: 'inline-block',
     },
     refresh: {
         display: 'inline-block',
         position: 'relative',
-        marginTop: '8px'
+        marginTop: '8px',
+        cursor: 'pointer'
     },
+    progress: {
+        margin: '40px'
+    }
 };
 
 const Refresher = (isFetching, fn) => {
     const refresher = <RefreshIndicator
         size={30}
         left={0}
-        top={0}
+        top={10}
         style={styles.refresh}
         status={"ready"}
         percentage={100}
+        onClick={fn}
     />;
     const refreshing = <RefreshIndicator
         size={30}
         left={0}
-        top={0}
+        top={10}
         style={styles.refresh}
         status={"loading"}
+        onClick={fn}
     />;
-    return <IconButton onTouchTap={fn}>
-        {isFetching ? refreshing : refresher}
-    </IconButton>
+    return isFetching ? refreshing : refresher
 };
 
 
@@ -67,17 +71,23 @@ class History extends Component {
 
     render() {
         return (
-            <div style={styles.line}>
+            <div>
                 <Paper style={styles.paper}>
                     <AppBar
                         title="Listening History"
                         showMenuIconButton={false}
-                        iconElementRight={ Refresher(this.props.userHistory.isFetching, this.refreshHistory)}
-                    />
+                        >
+                        {Refresher(this.props.userHistory.isFetching, this.refreshHistory)}
+                    </AppBar>
 
                     {
                         this.props.userHistory.isFetching ?
-                            <span></span>
+                            <CircularProgress
+                                size={80}
+                                thickness={5}
+                                color={appTheme.palette.accent1Color}
+                                style={styles.progress}
+                            />
                             :
                             <HistoryTable history={this.props.userHistory.history}/>
                     }

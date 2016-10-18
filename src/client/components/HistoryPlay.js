@@ -4,8 +4,13 @@ import moment from 'moment';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 
 import IconButton from 'material-ui/IconButton';
-import ActionFlightTakeoff from 'material-ui/svg-icons/action/flight-takeoff';
+import PlaylistAddCheck from 'material-ui/svg-icons/av/playlist-add-check';
+import PlaylistPlay from 'material-ui/svg-icons/av/playlist-play';
+import SkipNext from 'material-ui/svg-icons/av/skip-next';
+import OpenInNew from 'material-ui/svg-icons/action/open-in-new';
+import Info from 'material-ui/svg-icons/action/info';
 import FileCloudDownload from 'material-ui/svg-icons/file/cloud-download';
+import appTheme from '../theme';
 
 const styles = {
     col: {
@@ -21,13 +26,13 @@ class HistoryPlay extends Component {
     listenedState(state) {
         switch(state) {
             case 'LISTENED':
-                return <ActionFlightTakeoff color="green"/>;
+                return <PlaylistAddCheck color="green"/>;
             case 'LISTENING':
-                return <ActionFlightTakeoff color="blue" />;
+                return <PlaylistPlay color="blue" />;
             case 'SKIPPED':
-                return <ActionFlightTakeoff color="orange" />;
+                return <SkipNext color="orange" />;
             default:
-                return 'Unknown';
+                return <Info />;
         }
     }
 
@@ -64,11 +69,18 @@ class HistoryPlay extends Component {
                         href={play.url}
                         target="about_blank"
                         style={{verticalAlign: 'initial'}}
+                        hoverColor={appTheme.palette.primary2Color}
                     >
-                        <FileCloudDownload color="#f50"/>
+                        <OpenInNew
+                            hoverColor={appTheme.palette.primary2Color}
+                        />
                     </IconButton>
-                    <IconButton tooltip="Download">
-                        <FileCloudDownload />
+                    <IconButton
+                        tooltip="Download"
+                    >
+                        <FileCloudDownload
+                            hoverColor={appTheme.palette.primary2Color}
+                        />
                     </IconButton>
                 </TableRowColumn>
             </TableRow>

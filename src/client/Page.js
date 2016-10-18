@@ -9,10 +9,22 @@ import History from './containers/History';
 
 import { fetchMe }  from './actions';
 
+const styles = {
+    app: {
+    },
+    content: {
+        width: '764px',
+        margin: 'auto',
+        padding: '30px 30px',
+    }
+};
+
 const LoggedApp = () => (
-    <div className="App">
+    <div className="App" style={styles.app}>
         <Header />
-        <History />
+        <div style={styles.content}>
+            <History />
+        </div>
     </div>
 );
 
