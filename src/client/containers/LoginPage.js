@@ -2,6 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import { connect } from 'react-redux';
 
 import { AppBar, Paper, TextField, RaisedButton } from 'material-ui';
+import FlatButton from 'material-ui/FlatButton';
+import Dialog from 'material-ui/Dialog';
 import validator from 'validator';
 
 import { login, logout }  from '../actions';
@@ -25,6 +27,11 @@ const styles = {
     },
     loginDesc: {
         color: appTheme.palette.accent3Color
+    },
+    whyLink: {
+        color: appTheme.palette.accent1Color,
+        marginLeft: 5,
+        cursor: 'pointer'
     }
 };
 
@@ -41,13 +48,19 @@ class LoginPage extends Component {
             email: '',
             password: '',
             emailError: "",
-            passwordError: ""
+            passwordError: "",
+            whyOpen: false
         };
 
         // this.changeMail.bind(this);
         // this.changePass.bind(this);
         // this.submit.bind(this);
     }
+
+
+    switchWhy = () => {
+        this.setState({whyOpen: !this.state.whyOpen});
+    };
 
     handleSubmit(e) {
         if(e) e.preventDefault();
@@ -112,6 +125,9 @@ class LoginPage extends Component {
                             <i style={styles.loginDesc}>
                                 Please connect with your soundcloud email and password.
                             </i>
+                            <a style={styles.whyLink} onClick={this.switchWhy.bind(this)}>
+                                Why ?
+                            </a>
                             <form onSubmit={this.handleSubmit.bind(this)}>
                                 <TextField
                                     style={styles.formElement}
@@ -143,8 +159,23 @@ class LoginPage extends Component {
                                     />
                                 </div>
                             </form>
-
                         </div>
+                        <Dialog
+                            actions={[
+                                <FlatButton
+                                    label="I understand"
+                                    primary={true}
+                                    onTouchTap={this.switchWhy}
+                                />
+                            ]}
+                            modal={false}
+                            open={this.state.whyOpen}
+                            onRequestClose={this.switchWhy}
+                        >
+                            SoundCloud API has some limitations with classic OAuth connections.<br/>
+                            For the needs of this applications we need to authenticate you with your email/password.<br/>
+                            Don't worry, we don't keep your credentials and they are transfered securely.
+                        </Dialog>
                     </Paper>
                 </div>
             </div>
