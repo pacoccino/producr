@@ -16,6 +16,7 @@ const styles = {
         width: '100%',
         textAlign: 'center',
         display: 'inline-block',
+        marginTop: 30
     },
     refresh: {
         display: 'inline-block',

@@ -7,6 +7,7 @@ import appTheme from '../theme';
 
 const styles = {
     paper: {
+        marginTop: 30,
         width: '100%',
         textAlign: 'center'
     },
@@ -28,6 +29,11 @@ const styles = {
     },
     headerTextLine: {
         textAlign: 'left'
+    },
+    detailsSection: {
+        display: 'flex',
+        justifyContent: 'space-around',
+        padding: '30px 0'
     }
 };
 
@@ -47,16 +53,24 @@ class Profile extends Component {
                         <p style={styles.headerTextLine}>{this.props.user.city}</p>
                     </div>
                 </div>
-                First Name: {this.props.user.first_name} <br/>
-                Last Name: {this.props.user.last_name} <br/>
-                Description: {this.props.user.description} <br/>
-                City: {this.props.user.city} <br/>
-                Track_count: {this.props.user.track_count} <br/>
-                Playlists: {this.props.user.playlist_count} <br/>
-                Likes: {this.props.user.likes_count} <br/>
-                Followers: {this.props.user.followers_count} <br/>
-                Followings: {this.props.user.followings_count} <br/>
-                Profile: <a href={this.props.user.permalink_url}>{this.props.user.permalink_url}</a> <br/>
+                <div style={styles.detailsSection}>
+                    <div>
+                        <div>Followers</div>
+                        <div>{this.props.user.followers_count}</div>
+                    </div>
+                    <div>
+                        <div>Followings</div>
+                        <div>{this.props.user.followings_count}</div>
+                    </div>
+                    <div>
+                        <div>Tracks</div>
+                        <div>{this.props.user.track_count}</div>
+                    </div>
+                </div>
+                {/*Description: {this.props.user.description} <br/>*/}
+                {/*Playlists: {this.props.user.playlist_count} <br/>*/}
+                {/*Likes: {this.props.user.likes_count} <br/>*/}
+                {/*Profile: <a href={this.props.user.permalink_url}>{this.props.user.permalink_url}</a> <br/>*/}
             </Paper>
         );
     }
