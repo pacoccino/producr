@@ -3,7 +3,10 @@ import { connect } from 'react-redux';
 
 import { Paper, Avatar } from 'material-ui';
 
+import RaisedButton from 'material-ui/RaisedButton';
+
 import appTheme from '../theme';
+import { logout }  from '../actions';
 
 const styles = {
     paper: {
@@ -14,9 +17,18 @@ const styles = {
     profileHeader: {
         height: 140,
         width: '100%',
-        display: 'inline-flex',
         backgroundColor: '#c3a292',
-
+        padding: '10px',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        boxSizing: 'border-box'
+    },
+    logoutBtn: {
+        width: 50,
+        height: 50,
+        marginRight: 20
     },
     avatar: {
         margin: 20
@@ -28,7 +40,7 @@ const styles = {
         justifyContent: 'center',
     },
     headerTextLine: {
-        textAlign: 'left'
+        // textAlign: 'left'
     },
     detailsSection: {
         display: 'flex',
@@ -40,7 +52,8 @@ const styles = {
 
 class Profile extends Component {
     static propTypes = {
-        user: PropTypes.object.isRequired
+        user: PropTypes.object.isRequired,
+        logout: PropTypes.func.isRequired
     };
 
     render() {
@@ -52,7 +65,9 @@ class Profile extends Component {
                         <p style={styles.headerTextLine}>{this.props.user.username}</p>
                         <p style={styles.headerTextLine}>{this.props.user.city}</p>
                     </div>
+                    <RaisedButton label="Logout" secondary={true} onClick={this.props.logout} style={styles.logoutBtn}/>
                 </div>
+
                 <div style={styles.detailsSection}>
                     <div>
                         <div>Followers</div>
@@ -77,11 +92,15 @@ class Profile extends Component {
 }
 
 
-function mapStateToProps(state) {
+const mapStateToProps = (state) => {
     const { user } = state;
     return {
         user
     };
-}
+};
 
-export default connect(mapStateToProps)(Profile);
+const mapDispatchToProps = {
+    logout
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

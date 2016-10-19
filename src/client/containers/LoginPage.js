@@ -130,6 +130,7 @@ class LoginPage extends Component {
                             </a>
                             <form onSubmit={this.handleSubmit.bind(this)}>
                                 <TextField
+                                    name="email"
                                     style={styles.formElement}
                                     floatingLabelStyle={styles.floatingLabelStyle}
                                     hintText="skrillex@owsla.us"
@@ -139,6 +140,7 @@ class LoginPage extends Component {
                                     errorText={this.state.emailError}
                                 /><br />
                                 <TextField
+                                    name="password"
                                     style={styles.formElement}
                                     floatingLabelStyle={styles.floatingLabelStyle}
                                     hintText="ilovebassmusic"
