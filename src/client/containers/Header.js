@@ -27,7 +27,8 @@ const styles = {
 
     },
     titleGroup: {
-        backgroundColor: appTheme.palette.primary1Color
+        backgroundColor: appTheme.palette.primary1Color,
+        cursor: 'default'
     },
     title: {
         color: appTheme.palette.alternateTextColor,

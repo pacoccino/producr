@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 
 import { Paper, Avatar } from 'material-ui';
 
+import { lightGreenA700 } from 'material-ui/styles/colors';
+
 import RaisedButton from 'material-ui/RaisedButton';
 
 import appTheme from '../theme';
@@ -39,9 +41,6 @@ const styles = {
         flexDirection: 'column',
         justifyContent: 'center',
     },
-    headerTextLine: {
-        // textAlign: 'left'
-    },
     detailsSection: {
         display: 'flex',
         justifyContent: 'space-around',
@@ -59,6 +58,12 @@ const styles = {
         height: '45px',
         width: '1px',
         backgroundColor: appTheme.palette.primary3Color
+    },
+    separator: {
+        height: '1px',
+        width: '96%',
+        margin: 'auto',
+        backgroundColor: appTheme.palette.clockCircleColor
     }
 };
 
@@ -73,10 +78,12 @@ class Profile extends Component {
         return (
             <Paper style={styles.paper}>
                 <div style={styles.profileHeader}>
-                    <Avatar src={this.props.user.avatar_url} size={100} style={styles.avatar}/>
+                    <a href={this.props.user.permalink_url}>
+                        <Avatar src={this.props.user.avatar_url} size={100} style={styles.avatar}/>
+                    </a>
                     <div style={styles.headerText}>
-                        <p style={styles.headerTextLine}>{this.props.user.username}</p>
-                        <p style={styles.headerTextLine}>{this.props.user.city}</p>
+                        <p style={{fontSize: 22}}>{this.props.user.username}</p>
+                        <p style={{fontSize: 18}}>{this.props.user.city}</p>
                     </div>
                     <RaisedButton label="Logout" secondary={true} onClick={this.props.logout} style={styles.logoutBtn}/>
                 </div>
@@ -97,10 +104,41 @@ class Profile extends Component {
                         <div style={styles.detailValue} >{this.props.user.track_count}</div>
                     </div>
                 </div>
-                {/*Description: {this.props.user.description} <br/>*/}
-                {/*Playlists: {this.props.user.playlist_count} <br/>*/}
-                {/*Likes: {this.props.user.likes_count} <br/>*/}
-                {/*Profile: <a href={this.props.user.permalink_url}>{this.props.user.permalink_url}</a> <br/>*/}
+                <div style={styles.separator} />
+                <div style={{
+                    marginBottom: 30
+                }}>
+                    <h2 style={{
+                        marginLeft: 40,
+                        color: appTheme.palette.softTextColor,
+                        textAlign: 'left'
+                    }}
+                    >Wallet</h2>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}>
+                        <div style={{}}>
+                            Your balance:
+                        </div>
+                        <Paper
+                        circle={true}
+                        style={{
+                            backgroundColor: lightGreenA700,
+                            width: '80px',
+                            height: '80px',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            margin: 15
+                        }}
+                        >
+                            7.65€
+                        </Paper>
+                    </div>
+                    <RaisedButton label="Charge" primary={true} style={{margin: 20}}/>
+                </div>
             </Paper>
         );
     }
