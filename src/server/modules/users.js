@@ -35,9 +35,11 @@ Users.prototype.delete = function(userId) {
 
 Users.prototype.getById = function(userId) {
     return new Promise((resolve, reject) => {
+        console.log("getById");
         DBWrapper.collections.Users.findOne({sc_id: userId})
             .then(user => {
                 user = user ? new UserModel(user) : null;
+                console.log("user", user);
                 resolve(user);
             }).catch(reject);
     });

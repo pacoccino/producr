@@ -25,7 +25,7 @@ const App = () => {
         // Sessions in redis
         const redisOpt = {
             client: Connections.redis,
-            prefix: 'sess:'
+            prefix: 'sess::'
         };
         app.use(session({
             store: new RedisStore(redisOpt),

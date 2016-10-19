@@ -11,11 +11,8 @@ const SoundCloudUser = new Record({
 
 SoundCloudUser.prototype.toClient = function() {
     let user = this.toJS();
-
-    delete user.sc_auth;
-    delete user.wallet_id;
-
-    return user;
+    let scProfile = user.sc_profile;
+    return scProfile;
 };
 
 module.exports = SoundCloudUser;
