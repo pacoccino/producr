@@ -1,9 +1,9 @@
-const Record = require('immutable/record');
+const Record = require('immutable').Record;
 
 const ServiceAuthentication = new Record({
     access_token: null,
     refresh_token: null,
     expiration: null
-}), 'ServiceAuthentication';
+}, 'ServiceAuthentication');
 
 module.exports = ServiceAuthentication;

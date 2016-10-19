@@ -5,70 +5,73 @@ const SoundCloud = require('../soundcloud');
 const Users = require('./users');
 const ApiError = require('./apiError');
 
+
+const updateUser = (user, profile, auth) => {
+    user = user.set('sc_profile', profile);
+    user = user.set('sc_auth', auth);
+
+    return Users.update(user);
+};
+
+const createUser = (profile, auth) => {
+    const uts = {
+        sc_id: profile.id,
+        sc_profile: profile,
+        sc_auth: auth,
+    };
+    return Users.create(uts);
+};
+
 const Authenticator = (app) => {
+    app.use(passport.initialize());
+    app.use(passport.session());
 
     passport.use(new Strategy(
         function (username, password, cb) {
 
-            let token = null;
+            let scAuth = null;
+            let scProfile = null;
             SoundCloud.authWithCredentials(username, password)
                 .then(auth => {
-                    token = auth.access_token;
-                    return SoundCloud.Sugar.getProfile(token)
+                    scAuth = auth;
+                    return SoundCloud.Sugar.getProfile(scAuth.access_token)
                 })
                 .then(profile => {
-                    Users.findOrCreate(profile.id)
-                        .then(user => {
-                            if (!user.sc) {
-                                    user.sc = profile;
-                                    user.token = token;
-                                }
-                            Users.updateUser(user.id, user);
-                            cb(null, user);
-                        })
-                        .catch(cb);
-                }).catch(cb);
+                    scProfile = profile;
+                    return Users.getById(profile.id);
+                })
+                .then(user => {
+                    if(user) {
+                        updateUser(user, scProfile, scAuth)
+                            .then(user => cb(null, user))
+                            .catch(cb);
+                    } else {
+                        createUser(scProfile, scAuth)
+                            .then(user => cb(null, user))
+                            .catch(cb);
+                    }
+                })
+                .catch(cb);
         }));
 
 
     passport.serializeUser(function (user, cb) {
-        cb(null, user.id);
+        cb(null, user._id);
     });
 
-    passport.deserializeUser(function (id, cb) {
-        Users.getById(id).then(user => {
-            cb(null, user);
-        }).catch(cb);
+    passport.deserializeUser(function (_id, cb) {
+        Users.getById(_id)
+            .then(user => cb(null, user))
+            .catch(cb);
     });
-
-
-    app.use(passport.initialize());
-    app.use(passport.session());
-
-    app.post('/login',
-        passport.authenticate('local', {failureRedirect: '/login'}),
-        function (req, res) {
-            res.redirect('/history');
-        }
-    );
-
-    app.get('/logout',
-        function(req, res){
-            if(req.user) {
-                Users.delete(req.user.id).then(() => {
-                    req.logout();
-                    res.redirect('/');
-                });
-            } else {
-                req.logout();
-                res.redirect('/');
-            }
-        });
 };
 
 Authenticator.apiLogin = () => {
     return (req, res, next) => {
-        passport.authenticate('local')(req, res, () => {
+        passport.authenticate('local')(req, res, (e) => {
+            if(e) {
+                return next(e);
+            }
             if(req.isAuthenticated()) {
                 res.status(200);
                 res.json(req.user);

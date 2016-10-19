@@ -7,7 +7,7 @@ const SoundcloudResource = require('../soundcloud').Resource;
 const SoundCloud = require('../soundcloud');
 const DBWrapper = require('./wrappers').DB;
 
-const HistoryTrack = require('../models/HistoryTrack');
+const HistoryTrack = require('../../common/models/HistoryTrack');
 
 const ListenedStates = {
     LISTENING: 'LISTENING',
@@ -62,7 +62,7 @@ const History = {
             fetchTime: Date.now()
         };
 
-        var resourceObject = new SoundcloudResource(user.token);
+        var resourceObject = new SoundcloudResource(user.sc_auth.acces_token);
         resourceObject.recentlyPlayed();
         resourceObject.tracks();
         resourceObject.get();
@@ -70,7 +70,7 @@ const History = {
         return SoundCloud.askResource(resourceObject)
             .then(resource => { updateData.newHistory = resource.collection; })
             .then(() => DBWrapper.collections.UserHistory
-                .find({userId: user.id})
+                .find({sc_id: user.sc_id})
                 .next()
             )
             .then(userHistory => {
@@ -95,7 +95,7 @@ const History = {
                 return updateData;
             })
             .then((updateData) => reset ?
-                DBWrapper.collections.UserHistory.updateOne({userId: user.id},
+                DBWrapper.collections.UserHistory.updateOne({sc_id: user.sc_id},
                     {
                         '$set': {
                             lastFetched: updateData.fetchTime,
@@ -106,7 +106,7 @@ const History = {
                 )
                 :
                 DBWrapper.collections.UserHistory.updateOne(
-                    {userId: user.id},
+                    {sc_id: user.sc_id},
                     {
                         '$set': { lastFetched: updateData.fetchTime },
                     },
@@ -142,7 +142,7 @@ const History = {
 
     hydrateHistory: (userHistory) => {
         const hydratedUserHistory = {
-            userId: userHistory.userId,
+            sc_id: userHistory.sc_id,
             lastFetched: userHistory.lastFetched,
         };
 
@@ -169,7 +169,6 @@ const History = {
                         cb(null, playTrack.toJSON());
                     })
                     .catch(() => {
-                        play.deleted = true;
                         cb(null, play);
                     });
             }, (err, results) => {
@@ -185,7 +184,7 @@ const History = {
 
     getUserHistory: (user, hydrate) => {
         return DBWrapper.collections.UserHistory
-            .find({userId: user.id})
+            .find({sc_id: user.sc_id})
             .next()
             .then(userHistory => hydrate ? History.hydrateHistory(userHistory) : userHistory);
     }
