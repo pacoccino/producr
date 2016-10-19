@@ -22,15 +22,7 @@ const ApiRouter = () => {
     );
 
     router.get('/me',
-        (req, res, next) => {
-            if(req.isAuthenticated && req.isAuthenticated()) {
-                res.json(req.user.sc);
-            } else {
-                res.status(401);
-                res.send("Unauthenticated");
-            }
-
-        }
+        Authenticator.sendProfile()
     );
 
     router.get('/history',

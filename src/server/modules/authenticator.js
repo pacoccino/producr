@@ -6,13 +6,6 @@ const Users = require('./users');
 const ApiError = require('./apiError');
 
 
-const updateUser = (user, profile, auth) => {
-    user = user.set('sc_profile', profile);
-    user = user.set('sc_auth', auth);
-
-    return Users.update(user);
-};
-
 const createUser = (profile, auth) => {
     const uts = {
         sc_id: profile.id,
@@ -22,7 +15,16 @@ const createUser = (profile, auth) => {
     return Users.create(uts);
 };
 
-const Authenticator = (app) => {
+const updateUser = (user, profile, auth) => {
+    user = user.set('sc_profile', profile);
+    user = user.set('sc_auth', auth);
+
+    return Users.update(user);
+};
+
+const Authenticator = {};
+
+Authenticator.applyMiddleware = (app) => {
     app.use(passport.initialize());
     app.use(passport.session());
 
@@ -68,18 +70,30 @@ const Authenticator = (app) => {
 
 Authenticator.apiLogin = () => {
     return (req, res, next) => {
-        passport.authenticate('local')(req, res, (e) => {
-            if(e) {
-                return next(e);
+        passport.authenticate('local')(req, res, (reqError) => {
+            if(reqError) {
+                // TODO comparer erreur sc et password
+                if(reqError.code === 401 && reqError.message === 'Unauthorized') {
+                    return next(ApiError.Unavailable)
+                }
+                if(reqError.code === 401 && reqError.message === 'Unauthorized') {
+                    return next(ApiError.BadCredentials)
+                }
+                return next(ApiError.Unknown);
             }
-            if(req.isAuthenticated()) {
-                res.status(200);
-                res.json(req.user);
-            } else {
-                res.status(401);
-                res.send("Bad credentials");
-            }
+            Authenticator.sendProfile()(req, res);
         });
+    };
+};
+
+Authenticator.sendProfile = () => {
+    return (req, res) => {
+        if(req.isAuthenticated()) {
+            res.status(200);
+            res.json(req.user.toClient());
+        } else {
+            next(ApiError.Unauthorized);
+        }
     };
 };
 

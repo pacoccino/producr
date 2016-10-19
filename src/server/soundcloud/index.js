@@ -26,14 +26,13 @@ const SoundCloud = {
 
             request(options, (error, response, body) => {
                 if (error || response.statusCode !== 200) {
-
-                    var reqError = {
+                    reject({
                         request: options,
                         code: response && response.statusCode,
                         message: response && response.statusMessage,
-                        body, error:error
-                    };
-                    reject(reqError);
+                        body,
+                        error:error
+                    });
                 } else {
                     const scUser = JSON.parse(body);
                     resolve(scUser);

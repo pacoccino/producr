@@ -18,8 +18,8 @@ Users.prototype.update = function(user) {
     const jsUser = user.toJS();
 
     return DBWrapper.collections.Users
-        .update({_id: jsUser._id}, jsUser)
-        .then(() => {
+        .updateOne({sc_id: user.sc_id}, jsUser)
+        .then((updated) => {
             return new UserModel(user);
         });
 };
