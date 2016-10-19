@@ -45,7 +45,20 @@ const styles = {
     detailsSection: {
         display: 'flex',
         justifyContent: 'space-around',
-        padding: '30px 0'
+        padding: '30px 0',
+        color: appTheme.palette.softTextColor,
+        textAlign: 'left'
+    },
+    detailTitle: {
+        fontSize: 14
+    },
+    detailValue: {
+        fontSize: 24
+    },
+    detailSeparator: {
+        height: '45px',
+        width: '1px',
+        backgroundColor: appTheme.palette.primary3Color
     }
 };
 
@@ -70,16 +83,18 @@ class Profile extends Component {
 
                 <div style={styles.detailsSection}>
                     <div>
-                        <div>Followers</div>
-                        <div>{this.props.user.followers_count}</div>
+                        <div style={styles.detailTitle}>Followers</div>
+                        <div style={styles.detailValue} >{this.props.user.followers_count}</div>
                     </div>
+                    <div style={styles.detailSeparator} />
                     <div>
-                        <div>Followings</div>
-                        <div>{this.props.user.followings_count}</div>
+                        <div style={styles.detailTitle}>Followings</div>
+                        <div style={styles.detailValue} >{this.props.user.followings_count}</div>
                     </div>
+                    <div style={styles.detailSeparator} />
                     <div>
-                        <div>Tracks</div>
-                        <div>{this.props.user.track_count}</div>
+                        <div style={styles.detailTitle}>Tracks</div>
+                        <div style={styles.detailValue} >{this.props.user.track_count}</div>
                     </div>
                 </div>
                 {/*Description: {this.props.user.description} <br/>*/}
