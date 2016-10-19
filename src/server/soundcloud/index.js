@@ -126,7 +126,7 @@ const SoundCloud = {
         return url;
     },
 
-    askResource: (resourceObject)=> {
+    askResource: (resourceObject) => {
         return new Promise((resolve, reject) => {
 
             /*if (!SoundCloud.isValidRequest(resourceObject)) {

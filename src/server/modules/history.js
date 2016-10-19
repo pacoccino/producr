@@ -62,7 +62,7 @@ const History = {
             fetchTime: Date.now()
         };
 
-        var resourceObject = new SoundcloudResource(user.sc_auth.acces_token);
+        var resourceObject = new SoundcloudResource(user);
         resourceObject.recentlyPlayed();
         resourceObject.tracks();
         resourceObject.get();
@@ -186,7 +186,17 @@ const History = {
         return DBWrapper.collections.UserHistory
             .find({sc_id: user.sc_id})
             .next()
-            .then(userHistory => hydrate ? History.hydrateHistory(userHistory) : userHistory);
+            .then(userHistory => {
+                if(!userHistory) {
+                    return Promise.resolve({
+                        sc_id: user.sc_id,
+                        lastFetched: null,
+                        history: []
+                    });
+                }
+                return hydrate ? History.hydrateHistory(userHistory) : userHistory;
+
+            });
     }
 
 };

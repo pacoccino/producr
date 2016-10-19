@@ -2,8 +2,9 @@ const DBWrapper = require('./wrappers').DB;
 const UserModel = require('../../common/models/SoundCloudUser');
 
 function Users() {
-    this.users = {};
 }
+
+Users.prototype.Model = UserModel;
 
 Users.prototype.create = function(user) {
     user = new UserModel(user);
@@ -11,7 +12,7 @@ Users.prototype.create = function(user) {
 
     return DBWrapper.collections.Users.insert(user)
         .then(results => {
-            return new UserModel(results.ops[0]);
+            return new Users.Model(results.ops[0]);
         });
 };
 Users.prototype.update = function(user) {
@@ -19,10 +20,12 @@ Users.prototype.update = function(user) {
 
     return DBWrapper.collections.Users
         .updateOne({sc_id: user.sc_id}, jsUser)
-        .then((updated) => {
-            return new UserModel(user);
+        .then(() => {
+            return new Users.Model(user);
         });
 };
+
+// TODO
 /*
 Users.prototype.delete = function(userId) {
     return new Promise((resolve, reject) => {
@@ -35,11 +38,9 @@ Users.prototype.delete = function(userId) {
 
 Users.prototype.getById = function(userId) {
     return new Promise((resolve, reject) => {
-        console.log("getById");
         DBWrapper.collections.Users.findOne({sc_id: userId})
             .then(user => {
-                user = user ? new UserModel(user) : null;
-                console.log("user", user);
+                user = user ? new Users.Model(user) : null;
                 resolve(user);
             }).catch(reject);
     });

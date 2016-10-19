@@ -1,9 +1,9 @@
-const passport = require('passport');
-const Strategy = require('passport-local').Strategy;
+const jwt = require('jsonwebtoken');
 
 const SoundCloud = require('../soundcloud');
 const Users = require('./users');
 const ApiError = require('./apiError');
+const Config = require('./config');
 
 
 const createUser = (profile, auth) => {
@@ -49,34 +49,33 @@ const SoundCloudStrategy = function (username, password, cb) {
         .catch(cb);
 };
 
-const SoundcloudSerializer = (user, cb) => cb(null, user._id);
-
-const SoundcloudDeserializer = (_id, cb) => {
-
-    console.log("deserialize");
-    Users.getById(_id)
-        .then(user => {
-            cb(null, user)
-        })
-        .catch(cb)
-};
-
 const Authenticator = {};
 
-Authenticator.applyMiddleware = (app) => {
+Authenticator.Middleware = () => {
+    return (req, res, next) => {
 
-    passport.use(new Strategy(SoundCloudStrategy));
-    passport.serializeUser(SoundcloudSerializer);
-    passport.deserializeUser(SoundcloudDeserializer);
+        req.isAuthenticated = () => (req.user ? true : false);
 
-
-    app.use(passport.initialize());
-    app.use(passport.session());
+        var token = req.body.token || req.query.token || req.headers['x-access-token'];
+        if (token) {
+            jwt.verify(token, Config.jwtSecret, function(err, decoded) {
+                if (err) {
+                        return res.json(ApiError.JwtError);
+                } else {
+                    req.user = new Users.Model(decoded);
+                    next();
+                }
+            });
+        } else {
+            next();
+        }
+    }
 };
 
 Authenticator.apiLogin = () => {
     return (req, res, next) => {
-        passport.authenticate('local')(req, res, (reqError) => {
+
+        SoundCloudStrategy(req.body.username, req.body.password, (reqError, user) => {
             if(reqError) {
                 // TODO comparer erreur sc et password
                 if(reqError.code === 401 && reqError.message === 'Unauthorized') {
@@ -87,7 +86,14 @@ Authenticator.apiLogin = () => {
                 }
                 return next(reqError);
             }
-            Authenticator.sendProfile()(req, res);
+            var token = jwt.sign(user.toJS(), Config.jwtSecret, {
+                expiresIn: 24*60*60 // expires in 24 hours
+            });
+            res.json({
+                success: true,
+                message: 'Enjoy your token!',
+                token: token
+            });
         });
     };
 };
@@ -115,6 +121,7 @@ Authenticator.apiEnsureLoggedIn = () => {
 Authenticator.sendProfile = () => {
     return (req, res, next) => {
         if(req.isAuthenticated()) {
+            console.log(req.user)
             res.status(200);
             res.json(req.user.toClient());
         } else {

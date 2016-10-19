@@ -18,21 +18,8 @@ const App = () => {
         app.set('port', Config.port || 3000);
 
         // Request parsers
-        app.use(require('cookie-parser')());
         app.use(require('body-parser').json({ }));
         app.use(require('body-parser').urlencoded({ extended: true }));
-
-        // Sessions in redis
-        const redisOpt = {
-            client: Connections.redis,
-            prefix: 'sess::'
-        };
-        app.use(session({
-            store: new RedisStore(redisOpt),
-            secret: 'soundcloud cat',
-            resave: false,
-            saveUninitialized: false
-        }));
 
         // Basic logger
         app.use((req, res, next) => {
@@ -41,9 +28,9 @@ const App = () => {
         });
 
         // App middlewares
-        Authenticator.applyMiddleware(app);
+        app.use(Authenticator.Middleware(app));
         Router.applyMiddleware(app);
-        app.use(ApiError.Middleware);
+        app.use(ApiError.Middleware());
 
         // Starting server
         app.listen(app.get('port'), () => {

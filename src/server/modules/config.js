@@ -18,4 +18,6 @@ Config.ssl = {
     key: null
 };
 
+Config.jwtSecret = "jwtftw";
+
 module.exports = Config;

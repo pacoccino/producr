@@ -1,8 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const passport = require('passport');
 
-const SoundCloud = require('../soundcloud');
 const History = require('../modules/history');
 const Authenticator = require('../modules/authenticator');
 
@@ -15,7 +13,7 @@ const ApiRouter = () => {
     }));
 
     router.post('/login',
-        Authenticator.apiLogin()
+        Authenticator.apiLogin(router)
     );
     router.get('/logout',
         Authenticator.apiLogout()
@@ -40,8 +38,10 @@ const ApiRouter = () => {
         (req, res, next) => {
             History.updateUserHistory(req.user)
                 .then(() => {
-                    res.status(200);
-                    res.send('ok');
+                    res.json({
+                        success: true,
+                        message: 'History updated'
+                    });
                 })
                 .catch(next);
         }
