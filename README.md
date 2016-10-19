@@ -11,3 +11,17 @@ $ npm start
 
 Run Web server
 $ npm run react
+
+## Technologies used
+
+- React
+- Redux
+- immutable
+- node
+- express
+- JWT
+- Redis
+- MongoDB
+- ES6
+- AVA
+- react-scripts
