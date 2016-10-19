@@ -2,10 +2,9 @@ import React, {Component, PropTypes} from 'react';
 import { connect } from 'react-redux';
 
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
 import Avatar from 'material-ui/Avatar';
 
+import HeaderButton from '../components/HeaderButton';
 import appTheme from '../theme';
 
 import { logout }  from '../actions';
@@ -80,36 +79,31 @@ class Header extends Component {
                              style={styles.toolbar}
                     >
                         <ToolbarGroup>
-                            <MenuItem
-                                leftIcon={<Avatar src={this.props.user.avatar_url} />}
-                                primaryText={this.props.user.username}
-                                style={styles.menuButton}
-                                linkButton={true} href="/profile"
-                            />
-                            <MenuItem
-                                primaryText="History"
-                                style={styles.menuButton}
-                                linkButton={true} href="/history"
-                            />
+                            <HeaderButton href="/profile">
+                                <div>
+                                    <Avatar
+                                        style={{marginRight: 10}}
+                                        src={this.props.user.avatar_url}
+                                        size={25}
+                                    />
+                                </div>
+                                <div>
+                                    {this.props.user.username}
+                                </div>
+                            </HeaderButton>
+                            <HeaderButton href="/history">
+                                History
+                            </HeaderButton>
                         </ToolbarGroup>
 
                         <ToolbarGroup style={styles.titleGroup}>
                             <span style={styles.title}>SoundCloud producr</span>
                         </ToolbarGroup>
 
-                        <ToolbarGroup style={styles.buttosnsGroup}>
-                            {this.props.user ?
-                                <MenuItem
-                                    onClick={this.props.logout}
-                                    primaryText="Logout"
-                                    style={styles.menuButton}
-                                />
-                                :
-                                <MenuItem
-                                    primaryText="Login"
-                                    style={styles.menuButton}
-                                />
-                            }
+                        <ToolbarGroup>
+                            <HeaderButton click={this.props.logout}>
+                                Logout
+                            </HeaderButton>
                         </ToolbarGroup>
                     </Toolbar>
                 </div>
