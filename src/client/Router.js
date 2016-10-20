@@ -1,14 +1,16 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Router, Route, IndexRoute, browserHistory, Link } from 'react-router';
 
-import Login from './containers/LoginPage';
+import RefreshIndicator from 'material-ui/RefreshIndicator';
+
+import LoginPage from './containers/LoginPage';
 
 import History from './containers/History';
 import AppPage from './components/AppPage';
 import Profile from './containers/Profile';
 
-import { fetchMe }  from './actions';
+import { authenticate }  from './actions';
 
 const NoMatch = () => (
     <div>
@@ -27,32 +29,57 @@ const LoggedApp = () => (
         </Route>
     </Router>
 );
+/*style={{
+ display: 'flex',
+ justifyContent: 'center',
+ alignItems: 'center',
+ height: '100%',
+ position: 'absolute',
+ width: '100%',
+ }}*/
+const Loader = () => (
+    <div>
+        <RefreshIndicator
+            size={100}
+            left={100}
+            top={100}
+            status={"loading"}
+        />
+    </div>);
 
 class AppRouter extends Component {
 
+    static propTypes = {
+        auth: PropTypes.object.isRequired,
+        authenticate: PropTypes.func.isRequired
+    };
+
     componentWillMount() {
-        this.props.fetchMe();
+        this.props.authenticate();
     }
 
     render() {
-        return (
-            this.props.user ?
-                <LoggedApp />
-                :
-                <Login/>
-        );
+        if(this.props.auth.isFetching) {
+            return <Loader />;
+        } else {
+            if(this.props.auth.isAuthenticated) {
+                return <LoggedApp />;
+            } else {
+                return <LoginPage />;
+            }
+        }
     }
 }
 
 const mapStateToProps = (state) => {
-    const { user } = state;
+    const { auth } = state;
 
     return {
-        user
+        auth
     };
 };
 const mapDispatchToProps = {
-    fetchMe
+    authenticate
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AppRouter);

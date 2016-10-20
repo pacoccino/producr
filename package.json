@@ -1,7 +1,7 @@
 {
   "name": "producr",
-  "version": "0.0.2",
-  "description": "Help producers to get micropayment for their creations",
+  "version": "0.1.0",
+  "description": "Help producers to get feedback from their listeners",
   "main": "index.js",
   "scripts": {
     "test": "ava",

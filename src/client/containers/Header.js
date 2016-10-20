@@ -39,7 +39,7 @@ const styles = {
 
 class Header extends Component {
     static propTypes = {
-        user: PropTypes.object,
+        profile: PropTypes.object,
         logout: PropTypes.func.isRequired
     };
 
@@ -71,12 +71,12 @@ class Header extends Component {
                                 <div>
                                     <Avatar
                                         style={{marginRight: 10}}
-                                        src={this.props.user.avatar_url}
+                                        src={this.props.profile.avatar_url}
                                         size={25}
                                     />
                                 </div>
                                 <div>
-                                    {this.props.user.username}
+                                    {this.props.profile.username}
                                 </div>
                             </HeaderButton>
                         </ToolbarGroup>
@@ -87,13 +87,12 @@ class Header extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    const { user } = state;
-
+const mapStateToProps = ({ auth }) => {
     return {
-        user
+        profile: auth.profile
     };
 };
+
 
 const mapDispatchToProps = {
     logout

@@ -70,7 +70,7 @@ const styles = {
 
 class Profile extends Component {
     static propTypes = {
-        user: PropTypes.object.isRequired,
+        profile: PropTypes.object.isRequired,
         logout: PropTypes.func.isRequired
     };
 
@@ -78,12 +78,12 @@ class Profile extends Component {
         return (
             <Paper style={styles.paper}>
                 <div style={styles.profileHeader}>
-                    <a href={this.props.user.permalink_url}>
-                        <Avatar src={this.props.user.avatar_url} size={100} style={styles.avatar}/>
+                    <a href={this.props.profile.permalink_url}>
+                        <Avatar src={this.props.profile.avatar_url} size={100} style={styles.avatar}/>
                     </a>
                     <div style={styles.headerText}>
-                        <p style={{fontSize: 22}}>{this.props.user.username}</p>
-                        <p style={{fontSize: 18}}>{this.props.user.city}</p>
+                        <p style={{fontSize: 22}}>{this.props.profile.username}</p>
+                        <p style={{fontSize: 18}}>{this.props.profile.city}</p>
                     </div>
                     <RaisedButton label="Logout" secondary={true} onClick={this.props.logout} style={styles.logoutBtn}/>
                 </div>
@@ -91,17 +91,17 @@ class Profile extends Component {
                 <div style={styles.detailsSection}>
                     <div>
                         <div style={styles.detailTitle}>Followers</div>
-                        <div style={styles.detailValue} >{this.props.user.followers_count}</div>
+                        <div style={styles.detailValue} >{this.props.profile.followers_count}</div>
                     </div>
                     <div style={styles.detailSeparator} />
                     <div>
                         <div style={styles.detailTitle}>Followings</div>
-                        <div style={styles.detailValue} >{this.props.user.followings_count}</div>
+                        <div style={styles.detailValue} >{this.props.profile.followings_count}</div>
                     </div>
                     <div style={styles.detailSeparator} />
                     <div>
                         <div style={styles.detailTitle}>Tracks</div>
-                        <div style={styles.detailValue} >{this.props.user.track_count}</div>
+                        <div style={styles.detailValue} >{this.props.profile.track_count}</div>
                     </div>
                 </div>
                 <div style={styles.separator} />
@@ -145,10 +145,9 @@ class Profile extends Component {
 }
 
 
-const mapStateToProps = (state) => {
-    const { user } = state;
+const mapStateToProps = ({ auth }) => {
     return {
-        user
+        profile: auth.profile
     };
 };
 

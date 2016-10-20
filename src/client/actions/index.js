@@ -1,8 +1,13 @@
+import AuthService from '../services/AuthService';
+import ApiService from '../services/ApiService';
+
 export const REQUEST_HISTORY = 'REQUEST_HISTORY';
 export const RECEIVE_HISTORY = 'RECEIVE_HISTORY';
-export const LOGIN_ERROR = 'LOGIN_ERROR';
-export const LOGOUT = 'LOGOUT';
-export const RECEIVE_ME = 'RECEIVE_ME';
+export const AUTH_NULL = 'AUTH_NULL';
+export const AUTH_REQUEST = 'AUTH_REQUEST';
+export const AUTH_SUCCESS = 'AUTH_SUCCESS';
+export const AUTH_ERROR = 'AUTH_ERROR';
+
 
 function requestHistory() {
     return {
@@ -18,106 +23,78 @@ function receiveHistory(history) {
     };
 }
 
-function receiveMe(me) {
-    if(me) {
-        return {
-            type: RECEIVE_ME,
-            me
-        };
-    }
-    return {
-        type: LOGIN_ERROR
-    };
-}
-
-function logoutMe(me) {
-    return {
-        type: LOGOUT
-    };
-}
-
 export function fetchHistory() {
-    return dispatch => {
+    return (dispatch, getState) => {
         dispatch(requestHistory());
-        return fetch(`http://localhost:3001/api/history?hr=true`,
-            {
-                credentials: 'include',
-                mode: 'cors'
-            })
-            .then(req => req.json())
+        return ApiService.getHistory(getState().auth.jwt)
             .then(json => dispatch(receiveHistory(json)));
     }
 }
 
 
 export function updateHistory() {
-    return dispatch => {
+    return (dispatch, getState) => {
         dispatch(requestHistory());
-        return fetch(`http://localhost:3001/api/update`,
-            {
-                credentials: 'include',
-                mode: 'cors'
-            })
+        return ApiService.updateHistory(getState().auth.jwt)
             .then(json => dispatch(fetchHistory()));
     }
 }
 
-
 export function login(username, password) {
     return dispatch => {
-        return fetch(`http://localhost:3001/api/login`,
-            {
-                method: "POST",
-                body: JSON.stringify({
-                    username,
-                    password
-                }),
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                credentials: 'include',
-                mode: 'cors'
+        let jwt, profile;
+
+        return AuthService.askLogin(username, password)
+            .then(json => {
+                jwt = json.token;
+                return jwt;
             })
-            .then(req => {
-                if(req.status === 200) {
-                    return req.json()
-                } else {
-                    return null;
-                }
+            .then(jwt => ApiService.getMe(jwt))
+            .then(me => {
+                profile = me;
             })
-            .then(json => dispatch(receiveMe(json)));
+            .then(() => dispatch(authenticateSuccess(jwt, profile)))
     }
 }
-
-export function fetchMe() {
-    return dispatch => {
-        return fetch(`http://localhost:3001/api/me`,
-            {
-                method: "GET",
-                credentials: 'include',
-                mode: 'cors'
-            })
-            .then(req => {
-                if(req.status === 200) {
-                    return req.json()
-                } else {
-                    return null;
-                }
-            })
-            .then(json => dispatch(receiveMe(json)));
-    }
-}
-
 
 export function logout() {
     return dispatch => {
-        return fetch(`http://localhost:3001/api/logout`,
-            {
-                credentials: 'include',
-                mode: 'cors'
-            })
-            .then(req => req.text())
-            .then(json => dispatch(logoutMe()));
+        return AuthService.logout()
+            .then(json => dispatch(authenticateNull()));
+    }
+}
 
+
+function authenticateRequest() {
+    return {
+        type: AUTH_REQUEST
+    }
+}
+function authenticateSuccess(jwt, profile) {
+    localStorage.setItem(AuthService.JWT_LS_KEY, jwt);
+
+    return {
+        type: AUTH_SUCCESS,
+        jwt: jwt,
+        profile: profile
+    };
+}
+function authenticateNull() {
+    return {
+        type: AUTH_NULL
+    };
+}
+export function authenticate() {
+    return dispatch => {
+        dispatch(authenticateRequest());
+
+        let jwt = localStorage.getItem(AuthService.JWT_LS_KEY);
+        if(jwt) {
+            ApiService.getMe(jwt)
+                .then(profile =>
+                    dispatch(authenticateSuccess(jwt, profile)));
+        } else {
+            dispatch(authenticateNull());
+        }
     }
 }

@@ -1,13 +1,13 @@
 const _ = require('lodash');
 
 class SoundCloudResource {
-    constructor(user) {
+    constructor(userToken) {
         this.space = 'soundcloud';
         this.resource = null;
         this.resourceId = null;
         this.subResource = null;
         this.subResourceId = null;
-        this.userToken = user && user.sc_auth && user.sc_auth.access_token || null;
+        this.userToken = userToken || null;
         this.requestType = "GET";
         this.requestData = null;
         this.requestOptions = null;

@@ -8,8 +8,7 @@ const ApiRouter = () => {
     var router = express.Router();
 
     router.use(cors({
-        origin: true,
-        credentials: true
+        origin: true
     }));
 
     router.post('/login',

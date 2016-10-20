@@ -12,7 +12,7 @@ Users.prototype.create = function(user) {
 
     return DBWrapper.collections.Users.insert(user)
         .then(results => {
-            return new Users.Model(results.ops[0]);
+            return new UserModel(results.ops[0]);
         });
 };
 Users.prototype.update = function(user) {
@@ -21,7 +21,7 @@ Users.prototype.update = function(user) {
     return DBWrapper.collections.Users
         .updateOne({sc_id: user.sc_id}, jsUser)
         .then(() => {
-            return new Users.Model(user);
+            return new UserModel(user);
         });
 };
 
@@ -40,7 +40,7 @@ Users.prototype.getById = function(userId) {
     return new Promise((resolve, reject) => {
         DBWrapper.collections.Users.findOne({sc_id: userId})
             .then(user => {
-                user = user ? new Users.Model(user) : null;
+                user = user ? new UserModel(user) : null;
                 resolve(user);
             }).catch(reject);
     });
