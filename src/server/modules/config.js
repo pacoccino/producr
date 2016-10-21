@@ -2,6 +2,7 @@ var defaultConfig = require('../config.json');
 
 var Config = {
     port: process.env.PORT || defaultConfig.port,
+    environment: process.env.ENV || "dev",
     staticFolder: defaultConfig.staticFolder
 };
 

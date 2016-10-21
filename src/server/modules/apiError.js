@@ -8,11 +8,11 @@ class ApiError extends Error {
 
     static Middleware () {
         return (error, req, res, next) => {
-            console.error("Request error", error);
+            req.logger.error(error);
 
             const result = {
                 success: false,
-                message: "Request error"
+                message: "Unkown error"
             };
             if (error instanceof ApiError) {
                 result.message = error.message;
@@ -26,12 +26,11 @@ class ApiError extends Error {
     };
 }
 
-ApiError.Unknown = new ApiError(500, "Unknown error");
-ApiError.Unavailable = new ApiError(503, "Unavailable");
-ApiError.Unauthorized = new ApiError(401, "Unauthorized");
-ApiError.BadCredentials = new ApiError(401, "Bad credentials");
-ApiError.TokenExpired = new ApiError(401, "Token expired");
-ApiError.JwtError = new ApiError(500, "Token error");
-
+ApiError.Unknown = () => new ApiError(500, "Unknown error");
+ApiError.Unavailable = () => new ApiError(503, "Unavailable");
+ApiError.Unauthorized = () => new ApiError(401, "Unauthorized");
+ApiError.BadCredentials = () => new ApiError(401, "Bad credentials");
+ApiError.TokenExpired = () => new ApiError(401, "Token expired");
+ApiError.InvalidToken = () => new ApiError(500, "Invalid token");
 
 module.exports = ApiError;

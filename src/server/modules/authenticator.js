@@ -61,7 +61,10 @@ Authenticator.Middleware = () => {
             jwt.verify(token, Config.jwtSecret, function(err, decoded) {
                 if (err) {
                     if(err.name === "TokenExpiredError") {
-                        return next(ApiError.TokenExpired);
+                        return next(ApiError.TokenExpired());
+                    }
+                    if(err.name === "JsonWebTokenError") {
+                        return next(ApiError.InvalidToken());
                     }
                     return next(err);
                 } else {
@@ -82,10 +85,10 @@ Authenticator.apiLogin = () => {
             if(reqError) {
                 // TODO comparer erreur sc et password
                 if(reqError.code === 401 && reqError.message === 'Unauthorized') {
-                    return next(ApiError.Unavailable)
+                    return next(ApiError.Unavailable())
                 }
                 if(reqError.code === 401 && reqError.message === 'Unauthorized') {
-                    return next(ApiError.BadCredentials)
+                    return next(ApiError.BadCredentials())
                 }
                 return next(reqError);
             }
@@ -115,7 +118,7 @@ Authenticator.apiEnsureLoggedIn = () => {
     return (req, res, next) => {
 
         if (!req.isAuthenticated || !req.isAuthenticated()) {
-            return next(ApiError.Unauthorized);
+            return next(ApiError.Unauthorized());
         }
         next();
     };
@@ -126,7 +129,7 @@ Authenticator.sendProfile = () => {
         if(req.isAuthenticated()) {
             res.json(req.user.toClient());
         } else {
-            next(ApiError.Unauthorized);
+            next(ApiError.Unauthorized());
         }
     };
 };

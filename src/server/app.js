@@ -8,6 +8,7 @@ const Connections = require('./modules/connections');
 const Authenticator = require('./modules/authenticator');
 
 const Config = require('./modules/config');
+const RequestLogger = require('./modules/requestLogger');
 
 const App = () => {
 
@@ -21,15 +22,12 @@ const App = () => {
         app.use(require('body-parser').json({ }));
         app.use(require('body-parser').urlencoded({ extended: true }));
 
-        // Basic logger
-        app.use((req, res, next) => {
-            console.log(req.method + ': ' + req.path);
-            next();
-        });
-
         // App middlewares
-        app.use(Authenticator.Middleware(app));
-        Router.applyMiddleware(app);
+        app.use(RequestLogger.Middleware());
+        app.use(Authenticator.Middleware());
+        app.use(Router());
+
+        // Error middleware
         app.use(ApiError.Middleware());
 
         // Starting server
