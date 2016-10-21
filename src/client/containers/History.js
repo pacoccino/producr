@@ -62,8 +62,10 @@ class History extends Component {
         this.refreshHistory = this.refreshHistory.bind(this);
     }
 
-    componentDidMount() {
-        this.props.dispatch(fetchHistory());
+    componentWillMount() {
+        if(!this.props.userHistory.history) {
+            this.props.dispatch(fetchHistory());
+        }
     }
 
     refreshHistory() {
@@ -101,7 +103,6 @@ class History extends Component {
 
 function mapStateToProps(state) {
     const { userHistory } = state;
-    userHistory.history = userHistory.history || [];
     return {
         userHistory
     };
