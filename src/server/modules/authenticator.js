@@ -60,14 +60,17 @@ Authenticator.Middleware = () => {
         if (token) {
             jwt.verify(token, Config.jwtSecret, function(err, decoded) {
                 if (err) {
-                        return res.json(ApiError.JwtError);
+                    if(err.name === "TokenExpiredError") {
+                        return next(ApiError.TokenExpired);
+                    }
+                    return next(err);
                 } else {
                     req.user = new Users.Model(decoded);
-                    next();
+                    return next();
                 }
             });
         } else {
-            next();
+            return next();
         }
     }
 };
@@ -87,7 +90,7 @@ Authenticator.apiLogin = () => {
                 return next(reqError);
             }
             var token = jwt.sign(user.toJS(), Config.jwtSecret, {
-                expiresIn: 24*60*60 // expires in 24 hours
+                expiresIn: 10*24*60*60 // expires in 10 days
             });
             res.json({
                 success: true,

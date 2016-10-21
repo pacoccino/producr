@@ -30,6 +30,7 @@ ApiError.Unknown = new ApiError(500, "Unknown error");
 ApiError.Unavailable = new ApiError(503, "Unavailable");
 ApiError.Unauthorized = new ApiError(401, "Unauthorized");
 ApiError.BadCredentials = new ApiError(401, "Bad credentials");
+ApiError.TokenExpired = new ApiError(401, "Token expired");
 ApiError.JwtError = new ApiError(500, "Token error");
 
 

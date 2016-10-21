@@ -62,7 +62,7 @@ const History = {
             fetchTime: Date.now()
         };
 
-        var resourceObject = new SoundcloudResource(user);
+        var resourceObject = new SoundcloudResource(user.sc_auth.access_token);
         resourceObject.recentlyPlayed();
         resourceObject.tracks();
         resourceObject.get();
@@ -140,11 +140,7 @@ const History = {
             );
     },
 
-    hydrateHistory: (userHistory) => {
-        const hydratedUserHistory = {
-            sc_id: userHistory.sc_id,
-            lastFetched: userHistory.lastFetched,
-        };
+    hydrateHistory: (history) => {
 
         const convertPlay = (track, play) => HistoryTrack({
                 // ...play,
@@ -161,7 +157,7 @@ const History = {
         });
 
         return new Promise((resolve, reject) => {
-            async.map(userHistory.history, (play, cb) => {
+            async.map(history, (play, cb) => {
                 var trackResource = SoundcloudResource.fromUrn(play.urn);
                 SoundCloud.cachedResource(trackResource)
                     .then(track => {
@@ -175,30 +171,47 @@ const History = {
                 if(err) {
                     reject(err);
                 } else {
-                    hydratedUserHistory.history = results;
-                    resolve(hydratedUserHistory);
+                    resolve(results);
                 }
             });
         });
     },
 
-    getUserHistory: (user, hydrate) => {
+    getUserHistory: ({ user, params }) => {
+        params = params || {};
+        const limit = params.limit || 10;
+        const skip = params.skip || 0;
+
+        const query = {
+            sc_id: user.sc_id
+        };
+
+        const hydrate = params.hr;
+
+        let userHistory = null;
         return DBWrapper.collections.UserHistory
-            .find({sc_id: user.sc_id})
+            .find(query)
             .next()
-            .then(userHistory => {
-                if(!userHistory) {
-                    return Promise.resolve({
+            .then(userHistoryFromDB => {
+
+                if(!userHistoryFromDB) {
+                    return {
                         sc_id: user.sc_id,
                         lastFetched: null,
                         history: []
-                    });
+                    };
                 }
-                return hydrate ? History.hydrateHistory(userHistory) : userHistory;
+                userHistory = userHistoryFromDB;
 
-            });
+                return hydrate ? History.hydrateHistory(userHistory.history) : userHistory.history;
+            })
+            .then(hydratedHistory => {
+                userHistory.history = hydratedHistory;
+                userHistory.history = userHistory.history.slice(skip, skip+limit);
+                return userHistory
+            })
+            .then(userHistory => userHistory);
     }
-
 };
 
 History.ListenedStates = ListenedStates;

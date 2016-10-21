@@ -25,8 +25,10 @@ const ApiRouter = () => {
     router.get('/history',
         Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
-            History.getUserHistory(req.user, req.query.hr !== undefined)
-                .then(history => {
+            History.getUserHistory({
+                user: req.user,
+                params: req.query
+            }).then(history => {
                     res.json( history );
                 })
                 .catch(next);
