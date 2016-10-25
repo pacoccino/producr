@@ -1,6 +1,4 @@
 const express = require('express');
-const session = require('express-session');
-const RedisStore = require('connect-redis')(session);
 
 const Router = require('./router');
 const ApiError = require('./modules/apiError');
@@ -18,13 +16,13 @@ const App = () => {
         var app = express();
         app.set('port', Config.port || 3000);
 
-        // Request parsers
-        app.use(require('body-parser').json({ }));
-        app.use(require('body-parser').urlencoded({ extended: true }));
-
         if(Config.staticFolder) {
             app.use(express.static(Config.staticFolder));
         }
+
+        // Request parsers
+        app.use(require('body-parser').json({ }));
+        app.use(require('body-parser').urlencoded({ extended: true }));
 
         // App middlewares
         app.use(RequestLogger.Middleware());
