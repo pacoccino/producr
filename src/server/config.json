@@ -1,6 +1,7 @@
 {
-  "port": 3001,
-  "staticFolder": "../public",
+  "environment": "dev",
+  "port": 4000,
+  "staticFolder": "build",
 
   "services": {
     "soundcloud": {

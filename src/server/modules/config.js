@@ -2,15 +2,18 @@ var defaultConfig = require('../config.json');
 
 var Config = {
     port: process.env.PORT || defaultConfig.port,
-    environment: process.env.ENV || "dev",
-    staticFolder: defaultConfig.staticFolder
+    environment: process.env.ENV || defaultConfig.environment || "dev",
+    staticFolder: defaultConfig.staticFolder || "build"
 };
 
 Config.services = defaultConfig.services;
 
 Config.connections = {
-    mongoUrl: defaultConfig.connections.mongoUrl,
-    redis: defaultConfig.connections.redis
+    mongoUrl: process.env.MONGO_URL || defaultConfig.connections.mongoUrl,
+    redis: {
+        host: process.env.REDIS_HOST || defaultConfig.connections.redis.host,
+        port: process.env.REDIS_PORT || defaultConfig.connections.redis.port
+    }
 };
 
 Config.ssl = {

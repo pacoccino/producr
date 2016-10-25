@@ -4,7 +4,7 @@ const apiUrl = ApiService.ApiURL;
 
 const AuthService = {
     askLogin: (username, password) => {
-        return fetch(apiUrl + "/api/login",
+        return fetch(apiUrl + "/login",
             {
                 method: "POST",
                 body: JSON.stringify({
@@ -25,7 +25,7 @@ const AuthService = {
             });
     },
     logout: () => {
-        return fetch(apiUrl + '/api/logout',
+        return fetch(apiUrl + '/logout',
             {
                 mode: 'cors'
             })

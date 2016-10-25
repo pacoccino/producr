@@ -69,7 +69,9 @@ class History extends Component {
     }
 
     refreshHistory() {
-        this.props.dispatch(updateHistory());
+        if(!this.props.userHistory.isFetching) {
+            this.props.dispatch(updateHistory());
+        }
     }
 
     render() {

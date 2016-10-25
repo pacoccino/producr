@@ -7,6 +7,8 @@ const Authenticator = require('../modules/authenticator');
 const ApiRouter = () => {
     var router = express.Router();
 
+    router.get('/', (req, res) => res.status(200).send(null));
+
     router.use(cors({
         origin: true
     }));

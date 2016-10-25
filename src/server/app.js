@@ -22,6 +22,10 @@ const App = () => {
         app.use(require('body-parser').json({ }));
         app.use(require('body-parser').urlencoded({ extended: true }));
 
+        if(Config.staticFolder) {
+            app.use(express.static(Config.staticFolder));
+        }
+
         // App middlewares
         app.use(RequestLogger.Middleware());
         app.use(Authenticator.Middleware());

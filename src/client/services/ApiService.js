@@ -1,27 +1,24 @@
-const apiUrl = 'http://localhost:3001';
+const apiUrl = location.origin + '/api';
 
 const ApiService = {
     getMe: (jwt) => {
-        return fetch(`http://localhost:3001/api/me`,
+        return fetch(apiUrl + '/me',
             {
-                method: "GET",
-                mode: 'cors',
                 headers: {
                     'x-access-token': jwt
                 }
             })
             .then(req => {
                 if(req.status === 200) {
-                    return req.json()
+                    return req.json();
                 } else {
-                    return null;
+                    throw new Error("getMeError");
                 }
             });
     },
     getHistory: (jwt) => {
-        return fetch(apiUrl + '/api/history?hr=true',
+        return fetch(apiUrl + '/history?hr=true',
             {
-                mode: 'cors',
                 headers: {
                     'x-access-token': jwt
                 }
@@ -29,14 +26,20 @@ const ApiService = {
             .then(req => req.json());
     },
     updateHistory: (jwt) => {
-        return fetch(apiUrl + '/api/history?hr=true',
+        return fetch(apiUrl + '/update',
             {
-                mode: 'no-cors',
                 headers: {
                     'x-access-token': jwt
                 }
             })
-            .then(req => req.json());
+            .then(req => req.json())
+            .then(result => {
+                if(result.success) {
+                    return true;
+                } else {
+                    throw new Error(result.message);
+                }
+            });
     }
 };
 
