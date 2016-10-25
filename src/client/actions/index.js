@@ -80,6 +80,8 @@ function authenticateSuccess(jwt, profile) {
     };
 }
 function authenticateNull() {
+    localStorage.removeItem(AuthService.JWT_LS_KEY);
+
     return {
         type: AUTH_NULL
     };

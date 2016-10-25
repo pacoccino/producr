@@ -5,6 +5,7 @@ DBWrapper.initialize = (client) => {
     DBWrapper.collections = {
         UserHistory: client.collection('UserHistory'),
         Users: client.collection('Users'),
+        Wallets: client.collection('Wallets'),
     };
 };
 

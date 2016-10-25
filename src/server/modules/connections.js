@@ -2,6 +2,7 @@ const Redis = require("redis");
 const MongoClient = require('mongodb').MongoClient;
 
 const Wrappers = require('./wrappers');
+const DBModels = require('./dbModels');
 const Config = require('./config');
 
 const Connections = {};
@@ -43,6 +44,7 @@ Connections.initialize = () => new Promise((resolve, reject) => {
 
                 Connections.mongo = db;
                 Wrappers.DB.initialize(db);
+                DBModels.initialize();
 
                 res();
             }

@@ -190,8 +190,7 @@ const History = {
 
         let userHistory = null;
         return DBWrapper.collections.UserHistory
-            .find(query)
-            .next()
+            .findOne(query)
             .then(userHistoryFromDB => {
 
                 if(!userHistoryFromDB) {

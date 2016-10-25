@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const SoundCloud = require('../soundcloud');
-const Users = require('./users');
+const DBModels = require('./dbModels');
 const ApiError = require('./apiError');
 const Config = require('./config');
 
@@ -12,14 +12,14 @@ const createUser = (profile, auth) => {
         sc_profile: profile,
         sc_auth: auth,
     };
-    return Users.create(uts);
+    return DBModels.Users.create(uts);
 };
 
 const updateUser = (user, profile, auth) => {
     user = user.set('sc_profile', profile);
     user = user.set('sc_auth', auth);
 
-    return Users.update(user);
+    return DBModels.Users.update(user);
 };
 
 const SoundCloudStrategy = function (username, password, cb) {
@@ -33,7 +33,7 @@ const SoundCloudStrategy = function (username, password, cb) {
         })
         .then(profile => {
             scProfile = profile;
-            return Users.getById(profile.id);
+            return DBModels.Users.getById(profile.id, "sc_id");
         })
         .then(user => {
             if(user) {
@@ -68,7 +68,7 @@ Authenticator.Middleware = () => {
                     }
                     return next(err);
                 } else {
-                    req.user = new Users.Model(decoded);
+                    req.user = new DBModels.Users._model(decoded);
                     return next();
                 }
             });
