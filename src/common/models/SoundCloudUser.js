@@ -11,8 +11,7 @@ const SoundCloudUser = new Record({
 
 SoundCloudUser.prototype.toClient = function() {
     let user = this.toJS();
-    let scProfile = user.sc_profile;
-    return scProfile;
+    return user.sc_profile;
 };
 
 module.exports = SoundCloudUser;

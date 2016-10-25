@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const ObjectId = require('bson').ObjectId;
 
 const SoundCloud = require('../soundcloud');
 const DBModels = require('./dbModels');

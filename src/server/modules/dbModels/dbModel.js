@@ -1,3 +1,5 @@
+const ObjectId = require('bson').ObjectId;
+
 class DBModel {
     constructor(model, collection) {
         this._model = model;
@@ -16,9 +18,10 @@ class DBModel {
 
     update(obj) {
         const jsUser = obj.toJS();
+        jsUser._id = ObjectId(jsUser._id);
 
         return this._collection
-            .updateOne({_id: obj._id}, jsUser)
+            .updateOne({_id: jsUser._id}, jsUser)
             .then(() => {
                 return new this._model(obj);
             });
@@ -40,7 +43,7 @@ class DBModel {
                     if(obj) {
                         resolve(new this._model(obj));
                     } else {
-                        reject(new Error("Object not found"))
+                        resolve(null);
                     }
                 }).catch(reject);
         });

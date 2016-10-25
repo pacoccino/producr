@@ -3,6 +3,7 @@ const cors = require('cors');
 
 const History = require('../modules/history');
 const Authenticator = require('../modules/authenticator');
+const DBModels = require('../modules/dbModels');
 
 const ApiRouter = () => {
     var router = express.Router();
@@ -14,7 +15,7 @@ const ApiRouter = () => {
     }));
 
     router.post('/login',
-        Authenticator.apiLogin(router)
+        Authenticator.apiLogin()
     );
     router.get('/logout',
         Authenticator.apiLogout()
@@ -31,8 +32,8 @@ const ApiRouter = () => {
                 user: req.user,
                 params: req.query
             }).then(history => {
-                    res.json( history );
-                })
+                res.json( history );
+            })
                 .catch(next);
         }
     );
@@ -45,6 +46,28 @@ const ApiRouter = () => {
                         success: true,
                         message: 'History updated'
                     });
+                })
+                .catch(next);
+        }
+    );
+
+    router.get('/wallet',
+        Authenticator.apiEnsureLoggedIn(),
+        (req, res, next) => {
+            DBModels.Wallets.getById(req.user.wallet_id)
+                .then(wallet => {
+                    if(wallet) {
+                        res.json(wallet.toJS());
+                    } else {
+                        DBModels.Wallets.create()
+                            .then(wallet => {
+                                req.user = req.user.set('wallet_id', wallet._id);
+                                DBModels.Users.update(req.user)
+                                    .then(() => {
+                                        res.json(wallet.toJS());
+                                    });
+                            });
+                    }
                 })
                 .catch(next);
         }
