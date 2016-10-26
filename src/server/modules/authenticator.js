@@ -76,7 +76,7 @@ Authenticator.Middleware = () => {
     }, Authenticator.SoundCloudStrategy));
 
     const authRouter = express.Router();
-    authRouter.get('/auth/login', passport.authenticate('soundcloud'));
+    authRouter.get('/api/auth/login', passport.authenticate('soundcloud'));
     authRouter.get('/auth/callback',
         passport.authenticate('soundcloud'),
         function(req, res) {
@@ -87,7 +87,7 @@ Authenticator.Middleware = () => {
      failureRedirect: '/',
      successRedirect: '/' ,
      });*/
-    authRouter.get('/auth/logout', Authenticator.apiLogout());
+    authRouter.get('/api/auth/logout', Authenticator.apiLogout());
 
     return [
         passport.initialize(),

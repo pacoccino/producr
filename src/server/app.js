@@ -2,11 +2,13 @@ const express = require('express');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const cors = require('cors');
+const path = require('path');
 
 const Router = require('./router');
 const ApiError = require('./modules/apiError');
 const Connections = require('./modules/connections');
 const Authenticator = require('./modules/authenticator');
+const WebServer = require('./modules/webServer');
 
 const Config = require('./modules/config');
 const RequestLogger = require('./modules/requestLogger');
@@ -21,9 +23,9 @@ const App = () => {
         app.set('port', Config.port || 3000);
 
         // Static file serve
-        if(Config.staticFolder) {
-            app.use(express.static(Config.staticFolder));
-        }
+        // if(Config.staticFolder) {
+        //     app.use(express.static(Config.staticFolder));
+        // }
 
         app.use(cors({
             origin: true,
@@ -52,8 +54,14 @@ const App = () => {
         app.use(Authenticator.Middleware());
         app.use(Router());
 
+        // app.get('*', function response(req, res) {
+        //     res.sendFile(path.join(__dirname, '../../build/index.html'));
+        // });
+
         // Error middleware
         app.use(ApiError.Middleware());
+
+        WebServer(app);
 
         // Starting server
         app.listen(app.get('port'), () => {
