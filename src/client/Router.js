@@ -29,14 +29,7 @@ const LoggedApp = () => (
         </Route>
     </Router>
 );
-/*style={{
- display: 'flex',
- justifyContent: 'center',
- alignItems: 'center',
- height: '100%',
- position: 'absolute',
- width: '100%',
- }}*/
+
 const Loader = () => (
     <div>
         <RefreshIndicator

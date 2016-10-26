@@ -5,7 +5,7 @@ const ApiRouter = require('./apiRouter');
 const Router = () => {
     var router = express.Router();
 
-    router.use('/api', ApiRouter());
+    router.use('/', ApiRouter());
 
     return router;
 };

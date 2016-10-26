@@ -1,4 +1,7 @@
 const express = require('express');
+const session = require('express-session');
+const RedisStore = require('connect-redis')(session);
+const cors = require('cors');
 
 const Router = require('./router');
 const ApiError = require('./modules/apiError');
@@ -13,12 +16,32 @@ const App = () => {
     Connections.initialize().then(() => {
         console.log("Connections initialized");
 
+        // App definition
         var app = express();
         app.set('port', Config.port || 3000);
 
+        // Static file serve
         if(Config.staticFolder) {
             app.use(express.static(Config.staticFolder));
         }
+
+        app.use(cors({
+            origin: true,
+            credentials: true
+        }));
+
+        // Sessions in redis
+        const redisOpt = {
+            client: Connections.redis,
+            prefix: 'sess::'
+        };
+        app.use(session({
+            store: new RedisStore(redisOpt),
+            secret: 'soundcloud cat',
+            saveUninitialized: false,
+            resave: false,
+            cookie: { path: '/', httpOnly: false, secure: false, maxAge: null }
+        }));
 
         // Request parsers
         app.use(require('body-parser').json({ }));

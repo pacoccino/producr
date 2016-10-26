@@ -30,6 +30,7 @@ class DBModel {
     getById(_id, customField) {
 
         const query = {};
+        _id = ObjectId(_id);
         if(customField) {
             query[customField] = _id;
         } else {

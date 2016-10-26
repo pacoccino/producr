@@ -1,6 +1,7 @@
 import AuthService from '../services/AuthService';
 import ApiService from '../services/ApiService';
 
+export const ACTION_NULL = 'ACTION_NULL';
 export const REQUEST_HISTORY = 'REQUEST_HISTORY';
 export const RECEIVE_HISTORY = 'RECEIVE_HISTORY';
 export const AUTH_NULL = 'AUTH_NULL';
@@ -24,43 +25,40 @@ function receiveHistory(history) {
 }
 
 export function fetchHistory() {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         dispatch(requestHistory());
-        return ApiService.getHistory(getState().auth.jwt)
+        return ApiService.getHistory()
             .then(json => dispatch(receiveHistory(json)));
     }
 }
 
 
 export function updateHistory() {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         dispatch(requestHistory());
-        return ApiService.updateHistory(getState().auth.jwt)
+        return ApiService.updateHistory()
             .then(json => dispatch(fetchHistory()));
     }
 }
 
-export function login(username, password) {
-    return dispatch => {
-        let jwt, profile;
+export function oAuthLogin() {
+    AuthService.oAuthLogin();
 
-        return AuthService.askLogin(username, password)
-            .then(json => {
-                jwt = json.token;
-                return jwt;
-            })
-            .then(jwt => ApiService.getMe(jwt))
-            .then(me => {
-                profile = me;
-            })
-            .then(() => dispatch(authenticateSuccess(jwt, profile)))
+    return {
+        type: ACTION_NULL
+    };
+}
+export function loginPW(username, password) {
+    return dispatch => {
+        return AuthService.askLoginPW(username, password)
+            .then(profile => dispatch(authenticateSuccess(profile)))
     }
 }
 
 export function logout() {
     return dispatch => {
         return AuthService.logout()
-            .then(json => dispatch(authenticateNull()));
+            .then(() => dispatch(authenticateNull()));
     }
 }
 
@@ -70,18 +68,13 @@ function authenticateRequest() {
         type: AUTH_REQUEST
     }
 }
-function authenticateSuccess(jwt, profile) {
-    localStorage.setItem(AuthService.JWT_LS_KEY, jwt);
-
+function authenticateSuccess(profile) {
     return {
         type: AUTH_SUCCESS,
-        jwt: jwt,
         profile: profile
     };
 }
 function authenticateNull() {
-    localStorage.removeItem(AuthService.JWT_LS_KEY);
-
     return {
         type: AUTH_NULL
     };
@@ -90,13 +83,12 @@ export function authenticate() {
     return dispatch => {
         dispatch(authenticateRequest());
 
-        let jwt = localStorage.getItem(AuthService.JWT_LS_KEY);
-        if(jwt) {
-            ApiService.getMe(jwt)
-                .then(profile =>
-                    dispatch(authenticateSuccess(jwt, profile)));
-        } else {
-            dispatch(authenticateNull());
-        }
+        ApiService.getMe()
+            .then(profile => {
+                dispatch(authenticateSuccess(profile));
+            })
+            .catch(() => {
+                dispatch(authenticateNull());
+            });
     }
 }

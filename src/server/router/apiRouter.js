@@ -1,5 +1,4 @@
 const express = require('express');
-const cors = require('cors');
 
 const History = require('../modules/history');
 const Authenticator = require('../modules/authenticator');
@@ -8,21 +7,13 @@ const DBModels = require('../modules/dbModels');
 const ApiRouter = () => {
     var router = express.Router();
 
-    router.get('/', (req, res) => res.status(200).send(null));
-
-    router.use(cors({
-        origin: true
-    }));
-
-    router.post('/login',
-        Authenticator.apiLogin()
-    );
-    router.get('/logout',
-        Authenticator.apiLogout()
-    );
+    // router.get('/', (req, res) => res.status(200).send(null));
 
     router.get('/me',
-        Authenticator.sendProfile()
+        Authenticator.apiEnsureLoggedIn(),
+        (req, res) => {
+            res.json(req.user.toClient());
+        }
     );
 
     router.get('/history',

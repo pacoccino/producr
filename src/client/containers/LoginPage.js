@@ -6,7 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import validator from 'validator';
 
-import { login, logout }  from '../actions';
+import { login, logout, oAuthLogin }  from '../actions';
 import appTheme from '../theme';
 
 const styles = {
@@ -38,7 +38,8 @@ const styles = {
 class LoginPage extends Component {
     static propTypes = {
         login: PropTypes.func.isRequired,
-        logout: PropTypes.func.isRequired
+        logout: PropTypes.func.isRequired,
+        oAuthLogin: PropTypes.func.isRequired
     };
 
     constructor(props, context) {
@@ -58,9 +59,9 @@ class LoginPage extends Component {
     }
 
 
-    switchWhy = () => {
+    switchWhy() {
         this.setState({whyOpen: !this.state.whyOpen});
-    };
+    }
 
     handleSubmit(e) {
         if(e) e.preventDefault();
@@ -159,6 +160,12 @@ class LoginPage extends Component {
                                         style={{backgroundColor:'#f50'}}
                                         type="submit"
                                     />
+                                    <RaisedButton
+                                        fullWidth={true}
+                                        label="OauthLogin"
+                                        style={{backgroundColor:'#f50'}}
+                                        onClick={this.props.oAuthLogin}
+                                    />
                                 </div>
                             </form>
                         </div>
@@ -187,7 +194,8 @@ class LoginPage extends Component {
 
 const mapDispatchToProps = {
     login,
-    logout
+    logout,
+    oAuthLogin
 };
 
 export default connect(null, mapDispatchToProps)(LoginPage);

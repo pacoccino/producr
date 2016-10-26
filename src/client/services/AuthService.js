@@ -1,10 +1,13 @@
 import ApiService from './ApiService';
 
-const apiUrl = ApiService.ApiURL;
+const apiUrl = ApiService.apiBaseUrl;
 
 const AuthService = {
-    askLogin: (username, password) => {
-        return fetch(apiUrl + "/login",
+    oAuthLogin: () => {
+        window.location = apiUrl + '/auth/login';
+    },
+    askLoginPW: (username, password) => {
+        return ApiService.fetchApi("/auth/login",
             {
                 method: "POST",
                 body: JSON.stringify({
@@ -13,8 +16,7 @@ const AuthService = {
                 }),
                 headers: {
                     "Content-Type": "application/json"
-                },
-                mode: 'cors'
+                }
             })
             .then(req => {
                 if(req.status === 200) {
@@ -25,10 +27,7 @@ const AuthService = {
             });
     },
     logout: () => {
-        return fetch(apiUrl + '/logout',
-            {
-                mode: 'cors'
-            })
+        return ApiService.fetchApi('/auth/logout')
             .then(req => req.text());
     }
 };

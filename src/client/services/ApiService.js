@@ -1,13 +1,23 @@
-const apiUrl = location.origin + '/api';
-
 const ApiService = {
-    getMe: (jwt) => {
-        return fetch(apiUrl + '/me',
-            {
-                headers: {
-                    'x-access-token': jwt
-                }
-            })
+    apiBaseUrl: process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '',
+    fetchApi: (endpoint, options) => {
+        options = options || {};
+        let url  = ApiService.apiBaseUrl;
+        if(!endpoint.startsWith('/')) {
+            url += "/";
+        }
+        url += endpoint;
+
+        const apiOpts = {
+            credentials: 'include'
+        };
+
+        const reqOpts = Object.assign({}, apiOpts, options);
+
+        return fetch(url, reqOpts);
+    },
+    getMe: () => {
+        return ApiService.fetchApi('me')
             .then(req => {
                 if(req.status === 200) {
                     return req.json();
@@ -16,22 +26,12 @@ const ApiService = {
                 }
             });
     },
-    getHistory: (jwt) => {
-        return fetch(apiUrl + '/history?hr=true',
-            {
-                headers: {
-                    'x-access-token': jwt
-                }
-            })
+    getHistory: () => {
+        return ApiService.fetchApi('history?hr=true')
             .then(req => req.json());
     },
-    updateHistory: (jwt) => {
-        return fetch(apiUrl + '/update',
-            {
-                headers: {
-                    'x-access-token': jwt
-                }
-            })
+    updateHistory: () => {
+        return ApiService.fetchApi('update')
             .then(req => req.json())
             .then(result => {
                 if(result.success) {
@@ -42,7 +42,5 @@ const ApiService = {
             });
     }
 };
-
-ApiService.ApiURL = apiUrl;
 
 module.exports = ApiService;

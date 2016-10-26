@@ -1,11 +1,11 @@
-const jwt = require('jsonwebtoken');
-const ObjectId = require('bson').ObjectId;
+const express = require('express');
+const passport = require('passport');
+const SoundCloudStrategy = require('passport-soundcloud').Strategy;
 
 const SoundCloud = require('../soundcloud');
 const DBModels = require('./dbModels');
 const ApiError = require('./apiError');
 const Config = require('./config');
-
 
 const createUser = (profile, auth) => {
     const uts = {
@@ -23,86 +23,77 @@ const updateUser = (user, profile, auth) => {
     return DBModels.Users.update(user);
 };
 
-const SoundCloudStrategy = function (username, password, cb) {
+const Authenticator = {};
 
-    let scAuth = null;
-    let scProfile = null;
-    SoundCloud.authWithCredentials(username, password)
-        .then(auth => {
-            scAuth = auth;
-            return SoundCloud.Sugar.getProfile(scAuth.access_token)
-        })
-        .then(profile => {
-            scProfile = profile;
-            return DBModels.Users.getById(profile.id, "sc_id");
-        })
+Authenticator.serializer = (user, cb) => {
+    cb(null, user._id);
+};
+
+Authenticator.deserializer = (_id, cb) => {
+    DBModels.Users.getById(_id)
         .then(user => {
             if(user) {
-                updateUser(user, scProfile, scAuth)
-                    .then(user => cb(null, user))
-                    .catch(cb);
+                cb(null, user);
             } else {
-                createUser(scProfile, scAuth)
-                    .then(user => cb(null, user))
-                    .catch(cb);
+                cb(new Error("User not found"));
             }
         })
         .catch(cb);
 };
 
-const Authenticator = {};
+Authenticator.SoundCloudStrategy = (accessToken, refreshToken, profile, cb) => {
 
-Authenticator.Middleware = () => {
-    return (req, res, next) => {
-
-        req.isAuthenticated = () => (req.user ? true : false);
-
-        var token = req.body.token || req.query.token || req.headers['x-access-token'];
-        if (token) {
-            jwt.verify(token, Config.jwtSecret, function(err, decoded) {
-                if (err) {
-                    if(err.name === "TokenExpiredError") {
-                        return next(ApiError.TokenExpired());
-                    }
-                    if(err.name === "JsonWebTokenError") {
-                        return next(ApiError.InvalidToken());
-                    }
-                    return next(err);
+    process.nextTick(function () {
+        let scProfile = profile._json;
+        let scAuth = {
+            access_token: accessToken,
+            refresh_token: refreshToken
+        };
+        DBModels.Users.getById(scProfile.id, "sc_id")
+            .then(user => {
+                if (user) {
+                    updateUser(user, scProfile, scAuth)
+                        .then(user => cb(null, user))
+                        .catch(cb);
                 } else {
-                    req.user = new DBModels.Users._model(decoded);
-                    return next();
+                    createUser(scProfile, scAuth)
+                        .then(user => cb(null, user))
+                        .catch(cb);
                 }
-            });
-        } else {
-            return next();
-        }
-    }
+            })
+            .catch(cb);
+    });
 };
 
-Authenticator.apiLogin = () => {
-    return (req, res, next) => {
+Authenticator.Middleware = () => {
+    passport.serializeUser(Authenticator.serializer);
+    passport.deserializeUser(Authenticator.deserializer);
 
-        SoundCloudStrategy(req.body.username, req.body.password, (reqError, user) => {
-            if(reqError) {
-                // TODO comparer erreur sc et password
-                if(reqError.code === 401 && reqError.message === 'Unauthorized') {
-                    return next(ApiError.Unavailable())
-                }
-                if(reqError.code === 401 && reqError.message === 'Unauthorized') {
-                    return next(ApiError.BadCredentials())
-                }
-                return next(reqError);
-            }
-            var token = jwt.sign(user.toJS(), Config.jwtSecret, {
-                expiresIn: 10*24*60*60 // expires in 10 days
-            });
-            res.json({
-                success: true,
-                message: 'Enjoy your token!',
-                token: token
-            });
+    passport.use(new SoundCloudStrategy({
+        clientID: Config.services.soundcloud.client_id,
+        clientSecret: Config.services.soundcloud.client_secret,
+        callbackURL: "http://localhost:3000/auth/callback?serviceId=soundcloud"
+    }, Authenticator.SoundCloudStrategy));
+
+    const authRouter = express.Router();
+    authRouter.get('/auth/login', passport.authenticate('soundcloud'));
+    authRouter.get('/auth/callback',
+        passport.authenticate('soundcloud'),
+        function(req, res) {
+            res.redirect('/');
         });
-    };
+    /*
+     {
+     failureRedirect: '/',
+     successRedirect: '/' ,
+     });*/
+    authRouter.get('/auth/logout', Authenticator.apiLogout());
+
+    return [
+        passport.initialize(),
+        passport.session(),
+        authRouter
+    ];
 };
 
 Authenticator.apiLogout = () => {
@@ -110,8 +101,7 @@ Authenticator.apiLogout = () => {
         if(req.isAuthenticated && req.isAuthenticated()) {
             req.logout();
         }
-        res.status(200);
-        res.send('ok');
+        res.status(200).send(null);
     };
 };
 
@@ -122,16 +112,6 @@ Authenticator.apiEnsureLoggedIn = () => {
             return next(ApiError.Unauthorized());
         }
         next();
-    };
-};
-
-Authenticator.sendProfile = () => {
-    return (req, res, next) => {
-        if(req.isAuthenticated()) {
-            res.json(req.user.toClient());
-        } else {
-            next(ApiError.Unauthorized());
-        }
     };
 };
 
