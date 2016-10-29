@@ -27,7 +27,15 @@ const ApiService = {
             });
     },
     getHistory: () => {
-        return ApiService.fetchApi('history?hr=true')
+        return ApiService.fetchApi('history')
+            .then(req => req.json());
+    },
+    getWallet: () => {
+        return ApiService.fetchApi('wallet')
+            .then(req => req.json());
+    },
+    updateWallet: () => {
+        return ApiService.fetchApi('wallet?balance=10', {method: 'PUT'})
             .then(req => req.json());
     },
     updateHistory: () => {

@@ -1,14 +1,15 @@
 const express = require('express');
 
-const History = require('../modules/features/history');
 const Authenticator = require('../modules/authenticator');
-const DBModels = require('../modules/dbModels');
+const History = require('../modules/features/history');
+const Wallet = require('../modules/features/wallet');
 
 const ApiRouter = () => {
     var router = express.Router();
 
-    // router.get('/', (req, res) => res.status(200).send(null));
+    router.get('/', (req, res) => res.status(200).send(null));
 
+    // Get user profile
     router.get('/me',
         Authenticator.apiEnsureLoggedIn(),
         (req, res) => {
@@ -16,6 +17,7 @@ const ApiRouter = () => {
         }
     );
 
+    // Get user listening history
     router.get('/history',
         Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
@@ -28,6 +30,8 @@ const ApiRouter = () => {
                 .catch(next);
         }
     );
+
+    // Update user listening history
     router.get('/update',
         Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
@@ -42,23 +46,27 @@ const ApiRouter = () => {
         }
     );
 
+    // Get user wallet
     router.get('/wallet',
         Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
-            DBModels.Wallets.getById(req.user.wallet_id)
+            Wallet.getUserWallet(req.user)
                 .then(wallet => {
-                    if(wallet) {
-                        res.json(wallet.toJS());
-                    } else {
-                        DBModels.Wallets.create()
-                            .then(wallet => {
-                                req.user = req.user.set('wallet_id', wallet._id);
-                                DBModels.Users.update(req.user)
-                                    .then(() => {
-                                        res.json(wallet.toJS());
-                                    });
-                            });
-                    }
+                    res.json(wallet.toJS());
+                })
+                .catch(next);
+        }
+    );
+    // Adds some balance to user wallet
+    router.put('/wallet',
+        Authenticator.apiEnsureLoggedIn(),
+        (req, res, next) => {
+            Wallet.updateUserWallet({
+                user: req.user,
+                balance: req.query.balance
+            })
+                .then(wallet => {
+                    res.json(wallet.toJS());
                 })
                 .catch(next);
         }

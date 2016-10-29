@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 
 import * as Actions from '../actions';
 
-const historyDefaultState = {
+const fetchDefaultState = {
     isFetching: true
 };
 const authDefaultState = {
@@ -41,7 +41,7 @@ function auth(state = authDefaultState, action) {
     }
 }
 
-function userHistory(state = historyDefaultState, action) {
+function userHistory(state = fetchDefaultState, action) {
     switch (action.type) {
         case Actions.REQUEST_HISTORY:
             return Object.assign({}, state, {
@@ -56,10 +56,26 @@ function userHistory(state = historyDefaultState, action) {
             return state;
     }
 }
+function wallet(state = fetchDefaultState, action) {
+    switch (action.type) {
+        case Actions.REQUEST_WALLET:
+            return Object.assign({}, state, {
+                isFetching: true,
+            });
+        case Actions.RECEIVE_WALLET:
+            return Object.assign({}, state, {
+                isFetching: false,
+                ...action.wallet
+            });
+        default:
+            return state;
+    }
+}
 
 const rootReducer = combineReducers({
     auth,
-    userHistory
+    userHistory,
+    wallet
 });
 
 export default rootReducer;

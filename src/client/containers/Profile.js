@@ -8,7 +8,7 @@ import { lightGreenA700 } from 'material-ui/styles/colors';
 import RaisedButton from 'material-ui/RaisedButton';
 
 import appTheme from '../theme';
-import { logout }  from '../actions';
+import { fetchWallet, updateWallet, logout }  from '../actions';
 
 const styles = {
     paper: {
@@ -71,8 +71,15 @@ const styles = {
 class Profile extends Component {
     static propTypes = {
         profile: PropTypes.object.isRequired,
+        wallet: PropTypes.object.isRequired,
+        fetchWallet: PropTypes.func.isRequired,
+        updateWallet: PropTypes.func.isRequired,
         logout: PropTypes.func.isRequired
     };
+
+    componentWillMount() {
+        this.props.fetchWallet();
+    }
 
     render() {
         return (
@@ -119,25 +126,35 @@ class Profile extends Component {
                         alignItems: 'center',
                         justifyContent: 'center',
                     }}>
-                        <div style={{}}>
-                            Your balance:
-                        </div>
-                        <Paper
-                        circle={true}
-                        style={{
-                            backgroundColor: lightGreenA700,
-                            width: '80px',
-                            height: '80px',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            margin: 15
-                        }}
-                        >
-                            7.65€
-                        </Paper>
+                        {this.props.wallet.isFetching ?
+                            <div>Wallet loading...</div>
+                            :
+                            <div><div style={{}}>
+                                Your balance:
+                            </div>
+                                <Paper
+                                    circle={true}
+                                    style={{
+                                        backgroundColor: lightGreenA700,
+                                        width: '80px',
+                                        height: '80px',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        margin: 15
+                                    }}
+                                >
+                                    {this.props.wallet.balance}€
+                                </Paper>
+                            </div>
+                        }
                     </div>
-                    <RaisedButton label="Charge" primary={true} style={{margin: 20}}/>
+                    <RaisedButton
+                        label="Charge"
+                        primary={true}
+                        style={{margin: 20}}
+                        onClick={this.props.updateWallet}
+                    />
                 </div>
             </Paper>
         );
@@ -145,13 +162,16 @@ class Profile extends Component {
 }
 
 
-const mapStateToProps = ({ auth }) => {
+const mapStateToProps = ({ auth, wallet }) => {
     return {
-        profile: auth.profile
+        profile: auth.profile,
+        wallet
     };
 };
 
 const mapDispatchToProps = {
+    fetchWallet,
+    updateWallet,
     logout
 };
 

@@ -4,6 +4,8 @@ import ApiService from '../services/ApiService';
 export const ACTION_NULL = 'ACTION_NULL';
 export const REQUEST_HISTORY = 'REQUEST_HISTORY';
 export const RECEIVE_HISTORY = 'RECEIVE_HISTORY';
+export const REQUEST_WALLET = 'REQUEST_WALLET';
+export const RECEIVE_WALLET = 'RECEIVE_WALLET';
 export const AUTH_NULL = 'AUTH_NULL';
 export const AUTH_REQUEST = 'AUTH_REQUEST';
 export const AUTH_SUCCESS = 'AUTH_SUCCESS';
@@ -90,5 +92,35 @@ export function authenticate() {
             .catch(() => {
                 dispatch(authenticateNull());
             });
+    }
+}
+
+function requestWallet() {
+    return {
+        type: REQUEST_WALLET,
+    };
+}
+
+function receiveWallet(wallet) {
+    return {
+        type: RECEIVE_WALLET,
+        wallet,
+        receivedAt: Date.now()
+    };
+}
+
+export function fetchWallet() {
+    return (dispatch) => {
+        dispatch(requestWallet());
+        return ApiService.getWallet()
+            .then(json => dispatch(receiveWallet(json)));
+    }
+}
+
+export function updateWallet() {
+    return (dispatch) => {
+        dispatch(requestWallet());
+        return ApiService.updateWallet()
+            .then(json => dispatch(fetchWallet()));
     }
 }
