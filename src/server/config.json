@@ -6,7 +6,7 @@
   "services": {
     "soundcloud": {
       "client_id": "",
-      "client_secret": "",
+      "client_secret": ""
     }
   },
 

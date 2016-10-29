@@ -1,1 +1,1 @@
-web: npm start
+web: PORT=3000 NODE_ENV=production npm start

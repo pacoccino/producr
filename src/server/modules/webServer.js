@@ -35,7 +35,7 @@ const WebServer = (app) => {
     } else {
         app.use(express.static(staticDirectory));
         app.get('*', function response(req, res) {
-            res.sendFile(path.join(staticDirectory, "/index.html"));
+            res.sendFile(path.join(staticDirectory, "index.html"));
         });
 
     }

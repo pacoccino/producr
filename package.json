@@ -8,9 +8,7 @@
     "start": "npm run server",
     "server": "node src/server",
     "dev": "nf start --procfile Procfile.dev",
-    "react": "PORT=4000 react-scripts start",
-    "build": "react-scripts build",
-    "wbuild": "webpack --config ./src/webpack.production.config.js --progress --profile --colors"
+    "build": "webpack --config ./src/webpack.production.config.js --progress --profile --colors"
   },
   "repository": {
     "type": "git",

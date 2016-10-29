@@ -45,6 +45,7 @@ const App = () => {
             cookie: { path: '/', httpOnly: false, secure: false, maxAge: null }
         }));
 
+
         // Request parsers
         app.use(require('body-parser').json({ }));
         app.use(require('body-parser').urlencoded({ extended: true }));
