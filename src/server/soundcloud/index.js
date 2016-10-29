@@ -136,6 +136,7 @@ const SoundCloud = {
 
             var params = {};
             params.client_id = Config.services.soundcloud.client_id;
+            // params.limit = 10;
             // TODO request options
 
             var headers = {

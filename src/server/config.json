@@ -1,23 +1,20 @@
 {
   "environment": "dev",
-  "port": 4000,
+  "port": 3000,
   "staticFolder": "build",
 
   "services": {
     "soundcloud": {
       "client_id": "",
       "client_secret": "",
-
-      "MAGIC_CLIENT_ID": "",
-      "MAGIC_CLIENT_SECRET": ""
     }
   },
 
   "connections": {
-    "mongoUrl": "mongodb://127.0.0.1:32775/producr",
+    "mongoUrl": "mongodb://127.0.0.1:32768/producr",
     "redis": {
       "host": "127.0.0.1",
-      "port": 32774
+      "port": 32769
     }
   }
 }

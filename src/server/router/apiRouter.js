@@ -31,7 +31,7 @@ const ApiRouter = () => {
     router.get('/update',
         Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
-            History.updateUserHistory(req.user)
+            History.updateUserHistory(req.user, true)
                 .then(() => {
                     res.json({
                         success: true,

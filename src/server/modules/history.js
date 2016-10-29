@@ -1,7 +1,4 @@
 const _ = require('lodash');
-const Immutable = require('immutable');
-const moment = require('moment');
-const async = require('async');
 
 const SoundcloudResource = require('../soundcloud').Resource;
 const SoundCloud = require('../soundcloud');
@@ -23,22 +20,17 @@ const ListenedTimes = {
 
 const History = {
 
-    preprocessHistory: (history) => history.map(play => {
-        var trackResource = SoundcloudResource.fromUrn(play.urn);
-        play.songId = trackResource.resourceId;
-        return play;
-    }),
     computeDiff: (history) => {
-        const imHistory = Immutable.fromJS(history);
-        return imHistory.map((play, index) => {
+        return history.map((play, index) => {
             let diff = null;
             if(index !== 0) {
-                let lastPlayed = imHistory.get(index-1).get('played_at');
-                diff = lastPlayed - play.get('played_at');
+                let lastPlayed = history[index-1].played_at;
+                diff = lastPlayed - play.played_at;
                 diff = Math.floor(diff/1000);
             }
-            return play.set('played_duration', diff);
-        }).toJS();
+            play.played_duration = diff;
+            return play;
+        });
     },
     getListenedState: (diff) => {
         if(_.isNil(diff)) {
@@ -50,11 +42,11 @@ const History = {
         }
     },
     setListenedState: (history) => {
-        return Immutable.fromJS(history)
-            .map(play =>
-                play.set('played_state',
-                    History.getListenedState(play.get('played_duration'))))
-            .toJS();
+        return history
+            .map(play => {
+                play.played_state = History.getListenedState(play.played_duration);
+                return play;
+            });
     },
 
     updateUserHistory: (user, reset) => {
@@ -63,8 +55,8 @@ const History = {
         };
 
         var resourceObject = new SoundcloudResource(user.sc_auth.access_token);
-        resourceObject.recentlyPlayed();
-        resourceObject.tracks();
+        resourceObject.me();
+        resourceObject.playHistory();
         resourceObject.get();
 
         return SoundCloud.askResource(resourceObject)
@@ -76,7 +68,6 @@ const History = {
             .then(userHistory => {
                 const lastFetched = userHistory && userHistory.lastFetched || 0;
 
-                updateData.newHistory = History.preprocessHistory(updateData.newHistory);
                 updateData.newHistory = History.computeDiff(updateData.newHistory);
                 updateData.newHistory = History.setListenedState(updateData.newHistory);
 
@@ -140,43 +131,6 @@ const History = {
             );
     },
 
-    hydrateHistory: (history) => {
-
-        const convertPlay = (track, play) => HistoryTrack({
-                // ...play,
-
-                urn: play.urn,
-                songId: play.songId,
-                played_at: play.played_at,
-                played_duration: play.played_duration,
-                played_state: play.played_state  || play.listenedState,
-
-                url: track.permalink_url,
-                artist: track.user.username,
-                title: track.title
-        });
-
-        return new Promise((resolve, reject) => {
-            async.map(history, (play, cb) => {
-                var trackResource = SoundcloudResource.fromUrn(play.urn);
-                SoundCloud.cachedResource(trackResource)
-                    .then(track => {
-                        const playTrack = convertPlay(track, play);
-                        cb(null, playTrack.toJSON());
-                    })
-                    .catch(() => {
-                        cb(null, play);
-                    });
-            }, (err, results) => {
-                if(err) {
-                    reject(err);
-                } else {
-                    resolve(results);
-                }
-            });
-        });
-    },
-
     getUserHistory: ({ user, params }) => {
         params = params || {};
         const limit = params.limit || 10;
@@ -186,9 +140,6 @@ const History = {
             sc_id: user.sc_id
         };
 
-        const hydrate = params.hr;
-
-        let userHistory = null;
         return DBWrapper.collections.UserHistory
             .findOne(query)
             .then(userHistoryFromDB => {
@@ -200,16 +151,12 @@ const History = {
                         history: []
                     };
                 }
-                userHistory = userHistoryFromDB;
-
-                return hydrate ? History.hydrateHistory(userHistory.history) : userHistory.history;
+                return userHistoryFromDB;
             })
-            .then(hydratedHistory => {
-                userHistory.history = hydratedHistory;
+            .then(userHistory => {
                 userHistory.history = userHistory.history.slice(skip, skip+limit);
                 return userHistory
-            })
-            .then(userHistory => userHistory);
+            });
     }
 };
 

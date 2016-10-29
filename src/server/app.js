@@ -67,7 +67,11 @@ const App = () => {
         app.listen(app.get('port'), () => {
             console.log("Server started at http://localhost:"+app.get('port'));
         });
-    });
+    })
+        .catch(err => {
+            console.error("Unable to connect to databases", err);
+            process.exit(-1);
+        });
 };
 
 module.exports = App;

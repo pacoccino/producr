@@ -65,9 +65,9 @@ class SoundCloudResource {
     favorites(id) {
         return this._appendResource("favorites", id);
     }
-    recentlyPlayed() {
-        this.subApi = 'api-mobile';
-        return this._appendResource("recently-played");
+    playHistory() {
+        this.subApi = 'api-v2';
+        return this._appendResource("play-history/tracks");
     }
 
     // Resource method
