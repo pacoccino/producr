@@ -63,7 +63,7 @@ const ApiRouter = () => {
         (req, res, next) => {
             Wallet.updateUserWallet({
                 user: req.user,
-                balance: req.query.balance
+                balance: req.query.balance || req.body.balance
             })
                 .then(wallet => {
                     res.json(wallet.toJS());

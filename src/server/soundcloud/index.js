@@ -25,6 +25,9 @@ const SoundCloud = {
             };
 
             request(options, (error, response, body) => {
+                if(body) {
+                    body = JSON.parse(body);
+                }
                 if (error || response.statusCode !== 200) {
                     reject({
                         request: options,

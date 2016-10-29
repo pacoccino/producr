@@ -95,13 +95,11 @@ const pwAuthMiddleware = (req, res, next) => {
 
     SoundCloudLogin(username, password, (reqError, user) => {
         if(reqError) {
-            // TODO comparer erreur sc et password
-            console.log(reqError);
-            if(reqError.code === 401 && reqError.message === 'Unauthorized') {
-                return next(ApiError.Unavailable(reqError))
+            if(reqError.code === 401 && reqError.body && reqError.body.error === 'invalid_grant') {
+                return next(ApiError.BadCredentials())
             }
             if(reqError.code === 401 && reqError.message === 'Unauthorized') {
-                return next(ApiError.BadCredentials())
+                return next(ApiError.Unavailable(reqError))
             }
             return next(reqError);
         }
