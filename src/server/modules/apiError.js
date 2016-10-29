@@ -1,9 +1,10 @@
 class ApiError extends Error {
 
-    constructor(code, message) {
+    constructor(code, message, details) {
         super(message);
         this.code = code || 500;
         this.message = message || "UnknownError";
+        this.details = details || null;
     }
 
     static Middleware () {
@@ -26,11 +27,11 @@ class ApiError extends Error {
     };
 }
 
-ApiError.Unknown = () => new ApiError(500, "Unknown error");
-ApiError.Unavailable = () => new ApiError(503, "Unavailable");
+ApiError.Unknown = (err) => new ApiError(500, "Unknown error", err);
+ApiError.Unavailable = (err) => new ApiError(503, "Unavailable", err);
 ApiError.Unauthorized = () => new ApiError(401, "Unauthorized");
 ApiError.BadCredentials = () => new ApiError(401, "Bad credentials");
 ApiError.TokenExpired = () => new ApiError(401, "Token expired");
-ApiError.InvalidToken = () => new ApiError(500, "Invalid token");
+ApiError.InvalidToken = (err) => new ApiError(500, "Invalid token", err);
 
 module.exports = ApiError;

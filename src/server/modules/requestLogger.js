@@ -60,9 +60,12 @@ class RequestLogger {
         this.logData.duration = Date.now() - this.logData.duration;
 
         if(this.logData.error) {
-            console.error("Request error", this.logData.error);
+            console.error(this.logData.method + ': ' + this.logData.path, "Error",
+                this.logData.error.code,
+                this.logData.error
+            );
         } else {
-            console.log("Request success", this.logData.method + ': ' + this.logData.path);
+            console.log(this.logData.method + ': ' + this.logData.path, "Success");
         }
 
         // TODO send log somewhere

@@ -82,11 +82,7 @@ Authenticator.Middleware = () => {
         function(req, res) {
             res.redirect('/');
         });
-    /*
-     {
-     failureRedirect: '/',
-     successRedirect: '/' ,
-     });*/
+
     authRouter.get('/api/auth/logout', Authenticator.apiLogout());
 
     return [

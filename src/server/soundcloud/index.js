@@ -15,8 +15,8 @@ const SoundCloud = {
                 url: "https://api.soundcloud.com/oauth2/token",
                 method: "POST",
                 form: {
-                    client_id: Config.services.soundcloud.MAGIC_CLIENT_ID,
-                    client_secret: Config.services.soundcloud.MAGIC_CLIENT_SECRET,
+                    client_id: Config.services.soundcloud.client_id,
+                    client_secret: Config.services.soundcloud.client_secret,
                     scope: 'non-expiring',
                     grant_type: 'password',
                     username,

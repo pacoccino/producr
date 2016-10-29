@@ -1,6 +1,6 @@
 const express = require('express');
 
-const History = require('../modules/history');
+const History = require('../modules/features/history');
 const Authenticator = require('../modules/authenticator');
 const DBModels = require('../modules/dbModels');
 

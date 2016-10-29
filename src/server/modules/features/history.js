@@ -1,10 +1,10 @@
 const _ = require('lodash');
 
-const SoundcloudResource = require('../soundcloud').Resource;
-const SoundCloud = require('../soundcloud');
-const DBWrapper = require('./wrappers').DB;
+const SoundcloudResource = require('../../soundcloud/index').Resource;
+const SoundCloud = require('../../soundcloud/index');
+const DBWrapper = require('./../wrappers/index').DB;
 
-const HistoryTrack = require('../../common/models/HistoryTrack');
+const HistoryTrack = require('../../../common/models/HistoryTrack');
 
 const ListenedStates = {
     LISTENING: 'LISTENING',

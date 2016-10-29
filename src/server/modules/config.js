@@ -22,6 +22,9 @@ Config.ssl = {
     key: null
 };
 
-Config.jwtSecret = "jwtftw";
+Config.jwt = {
+    secret: "jwtftw",
+    expiration: 10*24*60*60 // expires in 10 days
+};
 
 module.exports = Config;

@@ -1,6 +1,6 @@
 import test from 'ava';
 
-import History from '../src/server/modules/history';
+import History from '../src/server/modules/features/history';
 
 const histMock = [
     {

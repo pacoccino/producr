@@ -8,6 +8,7 @@ const Router = require('./router');
 const ApiError = require('./modules/apiError');
 const Connections = require('./modules/connections');
 const Authenticator = require('./modules/authenticator');
+const JWTAuthenticator = require('./modules/JWTAuth');
 const WebServer = require('./modules/webServer');
 
 const Config = require('./modules/config');
@@ -53,6 +54,7 @@ const App = () => {
         // App middlewares
         app.use(RequestLogger.Middleware());
         app.use(Authenticator.Middleware());
+        app.use(JWTAuthenticator.Middleware());
         app.use(Router());
 
         // app.get('*', function response(req, res) {
