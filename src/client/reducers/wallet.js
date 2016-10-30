@@ -1,7 +1,7 @@
 import * as WalletActions from '../actions/wallet';
 
 const fetchDefaultState = {
-    isFetching: true
+    isFetching: false
 };
 
 function wallet(state = fetchDefaultState, action) {

@@ -1,23 +1,23 @@
-import * as HistoryActions from '../actions/history';
+import * as TransactionsActions from '../actions/transactions';
 
 const fetchDefaultState = {
     isFetching: false
 };
 
-function userHistory(state = fetchDefaultState, action) {
+function transactions(state = fetchDefaultState, action) {
     switch (action.type) {
-        case HistoryActions.REQUEST_HISTORY:
+        case TransactionsActions.REQUEST_TRANSACTIONS:
             return Object.assign({}, state, {
                 isFetching: true,
             });
-        case HistoryActions.RECEIVE_HISTORY:
+        case TransactionsActions.RECEIVE_TRANSACTIONS:
             return Object.assign({}, state, {
                 isFetching: false,
-                ...action.history
+                transactions: action.transactions
             });
         default:
             return state;
     }
 }
 
-export default userHistory;
+export default transactions;

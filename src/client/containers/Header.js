@@ -64,6 +64,9 @@ class Header extends Component {
                             <HeaderButton href="/history">
                                 History
                             </HeaderButton>
+                            <HeaderButton href="/transactions">
+                                Transactions
+                            </HeaderButton>
                         </ToolbarGroup>
 
                         <ToolbarGroup>

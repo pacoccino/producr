@@ -6,7 +6,8 @@ import RefreshIndicator from 'material-ui/RefreshIndicator';
 
 import LoginPage from './containers/LoginPage';
 
-import History from './containers/History';
+import History from './containers/HistoryPage';
+import Transactions from './containers/TransactionsPage';
 import AppPage from './components/AppPage';
 import Profile from './containers/Profile';
 
@@ -24,6 +25,7 @@ const LoggedApp = () => (
         <Route path="/" component={AppPage}>
             <IndexRoute component={History} />
             <Route path="/history" component={History} />
+            <Route path="/transactions" component={Transactions} />
             <Route path="/profile" component={Profile} />
             <Route path="/*" component={NoMatch} />
         </Route>

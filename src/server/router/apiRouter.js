@@ -90,10 +90,10 @@ const ApiRouter = () => {
             let type = req.query.type;
             let getFn = null;
             switch(type) {
-                case "fromme":
+                case "fromMe":
                     getFn = Transactions.getTransactionsFromUser;
                     break;
-                case "tome":
+                case "toMe":
                     getFn = Transactions.getTransactionsToUser;
                     break;
                 default:

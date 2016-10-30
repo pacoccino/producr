@@ -20,8 +20,10 @@ const ApiService = {
 
         const reqOpts = Object.assign({}, apiOpts, options);
 
+        console.log(reqOpts)
         return fetch(url, reqOpts);
     },
+
     getMe: () => {
         return ApiService.fetchApi('me')
             .then(req => {
@@ -32,16 +34,9 @@ const ApiService = {
                 }
             });
     },
+
     getHistory: () => {
         return ApiService.fetchApi('history')
-            .then(req => req.json());
-    },
-    getWallet: () => {
-        return ApiService.fetchApi('wallet')
-            .then(req => req.json());
-    },
-    updateWallet: () => {
-        return ApiService.fetchApi('wallet?balance=10', {method: 'PUT'})
             .then(req => req.json());
     },
     updateHistory: () => {
@@ -54,7 +49,27 @@ const ApiService = {
                     throw new Error(result.message);
                 }
             });
-    }
+    },
+
+    getWallet: () => {
+        return ApiService.fetchApi('wallet')
+            .then(req => req.json());
+    },
+    updateWallet: () => {
+        return ApiService.fetchApi('wallet?balance=10', {method: 'PUT'})
+            .then(req => req.json());
+    },
+
+    getTransactions: (type) => {
+        let url = 'transactions';
+        if(type === "fromme") {
+            url += "?type=fromMe";
+        } else if(type === "tome") {
+            url += "?type=toMe";
+        }
+        return ApiService.fetchApi(url)
+            .then(req => req.json());
+    },
 };
 
 function initializeApi() {
