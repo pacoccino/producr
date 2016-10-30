@@ -13,7 +13,7 @@ class ApiError extends Error {
 
             const result = {
                 success: false,
-                message: "Unkown error"
+                message: "Unknown error"
             };
             if (error instanceof ApiError) {
                 result.message = error.message;
@@ -32,6 +32,7 @@ ApiError.Unavailable = (err) => new ApiError(503, "Unavailable", err);
 ApiError.Unauthorized = () => new ApiError(401, "Unauthorized");
 ApiError.BadCredentials = () => new ApiError(401, "Bad credentials");
 ApiError.TokenExpired = () => new ApiError(401, "Token expired");
-ApiError.InvalidToken = (err) => new ApiError(500, "Invalid token", err);
+ApiError.InvalidToken = (err) => new ApiError(400, "Invalid token", err);
+ApiError.InvalidParams = (params) => new ApiError(400, "Invalid parameters", params);
 
 module.exports = ApiError;

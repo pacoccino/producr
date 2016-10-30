@@ -1,8 +1,10 @@
 const express = require('express');
+const validator = require('validator');
 
 const Authenticator = require('../modules/authenticator');
 const History = require('../modules/features/history');
 const Wallet = require('../modules/features/wallet');
+const ApiError = require('../modules/apiError');
 
 const ApiRouter = () => {
     var router = express.Router();
@@ -61,9 +63,17 @@ const ApiRouter = () => {
     router.put('/wallet',
         Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
+            let balance = req.query.balance || req.body.balance;
+
+            if(!validator.isInt(balance)) {
+                return next(ApiError.InvalidParams({
+                    balance: "integer"
+                }));
+            }
+            balance = validator.toInt(balance);
             Wallet.updateUserWallet({
                 user: req.user,
-                balance: req.query.balance || req.body.balance
+                balance
             })
                 .then(wallet => {
                     res.json(wallet.toJS());

@@ -2,7 +2,6 @@ const express = require('express');
 const passport = require('passport');
 const SoundCloudStrategy = require('passport-soundcloud').Strategy;
 
-const SoundCloud = require('../soundcloud');
 const DBModels = require('./dbModels');
 const ApiError = require('./apiError');
 const Config = require('./config');

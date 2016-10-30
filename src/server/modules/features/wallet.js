@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const validator = require('validator');
 
 const DBModels = require('../dbModels');
 
@@ -37,8 +36,6 @@ const Wallet = {
         return Wallet.getUserWallet(user)
             .then(wallet => {
                 if(!balance) return wallet;
-
-                balance = validator.toInt(balance);
 
                 wallet = wallet.set('balance', wallet.balance + balance);
                 DBModels.Wallets.update(wallet);
