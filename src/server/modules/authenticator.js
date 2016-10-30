@@ -35,7 +35,7 @@ Authenticator.deserializer = (_id, cb) => {
             if(user) {
                 cb(null, user);
             } else {
-                cb(new Error("User not found"));
+                cb(null, false);
             }
         })
         .catch(cb);
