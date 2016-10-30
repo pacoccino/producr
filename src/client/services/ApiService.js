@@ -8,9 +8,15 @@ const ApiService = {
         }
         url += endpoint;
 
-        const apiOpts = {
-            credentials: 'include'
-        };
+        const apiOpts = {};
+
+        if(ApiService._jwt) {
+            apiOpts.headers = {
+                "x-access-token": ApiService._jwt
+            };
+        } else {
+            apiOpts.credentials = "include";
+        }
 
         const reqOpts = Object.assign({}, apiOpts, options);
 
@@ -50,5 +56,14 @@ const ApiService = {
             });
     }
 };
+
+function initializeApi() {
+    const jwt = localStorage.getItem('jwt');
+    if(jwt) {
+        ApiService._jwt = jwt;
+    }
+}
+
+initializeApi();
 
 export default ApiService;

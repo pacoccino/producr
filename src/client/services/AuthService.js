@@ -26,13 +26,13 @@ const AuthService = {
                 }
             })
             .then(json => {
-                AuthService._jwt = json.token;
+                ApiService._jwt = json.token;
                 localStorage.setItem('jwt', json.token);
                 // TODO put jwt in fetch headers
             });
     },
     logout: () => {
-        delete AuthService._jwt;
+        delete ApiService._jwt;
         localStorage.removeItem('jwt');
 
         return ApiService.fetchApi('/auth/logout')

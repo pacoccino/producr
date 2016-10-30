@@ -66,7 +66,7 @@ const jwtMiddleware = (req, res, next) => {
                     return next(ApiError.TokenExpired());
                 }
                 if(err.name === "JsonWebTokenError") {
-                    return next(ApiError.InvalidToken());
+                    return next(ApiError.InvalidToken(err));
                 }
                 return next(err);
             } else {
