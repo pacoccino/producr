@@ -8,7 +8,9 @@ import { lightGreenA700 } from 'material-ui/styles/colors';
 import RaisedButton from 'material-ui/RaisedButton';
 
 import appTheme from '../theme';
-import { fetchWallet, updateWallet, logout }  from '../actions';
+
+import { logout }  from '../actions/auth';
+import { fetchWallet, updateWallet }  from '../actions/wallet';
 
 const styles = {
     paper: {

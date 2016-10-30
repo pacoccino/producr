@@ -6,7 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import validator from 'validator';
 
-import { login, logout, oAuthLogin }  from '../actions';
+import { loginPW, oAuthLogin }  from '../actions/auth';
 import appTheme from '../theme';
 
 const styles = {
@@ -37,8 +37,7 @@ const styles = {
 
 class LoginPage extends Component {
     static propTypes = {
-        login: PropTypes.func.isRequired,
-        logout: PropTypes.func.isRequired,
+        loginPW: PropTypes.func.isRequired,
         oAuthLogin: PropTypes.func.isRequired
     };
 
@@ -52,12 +51,7 @@ class LoginPage extends Component {
             passwordError: "",
             whyOpen: false
         };
-
-        // this.changeMail.bind(this);
-        // this.changePass.bind(this);
-        // this.submit.bind(this);
     }
-
 
     switchWhy() {
         this.setState({whyOpen: !this.state.whyOpen});
@@ -69,7 +63,7 @@ class LoginPage extends Component {
         this.validateForm().then(() => {
             const username = this.state.email;
             const password = this.state.password;
-            this.props.login(username, password);
+            this.props.loginPW(username, password);
         }).catch(() => null);
     }
 
@@ -158,6 +152,7 @@ class LoginPage extends Component {
                                         fullWidth={true}
                                         label="Login"
                                         style={{backgroundColor:'#f50'}}
+                                        onClick={this.handleSubmit.bind(this)}
                                         type="submit"
                                     />
                                     <RaisedButton
@@ -193,8 +188,7 @@ class LoginPage extends Component {
 }
 
 const mapDispatchToProps = {
-    login,
-    logout,
+    loginPW,
     oAuthLogin
 };
 

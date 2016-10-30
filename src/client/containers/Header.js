@@ -7,7 +7,7 @@ import Avatar from 'material-ui/Avatar';
 import HeaderButton from '../components/HeaderButton';
 import appTheme from '../theme';
 
-import { logout }  from '../actions';
+import { logout }  from '../actions/auth';
 
 const styles = {
     header: {

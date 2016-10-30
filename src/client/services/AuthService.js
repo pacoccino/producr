@@ -24,9 +24,17 @@ const AuthService = {
                 } else {
                     return null;
                 }
+            })
+            .then(json => {
+                AuthService._jwt = json.token;
+                localStorage.setItem('jwt', json.token);
+                // TODO put jwt in fetch headers
             });
     },
     logout: () => {
+        delete AuthService._jwt;
+        localStorage.removeItem('jwt');
+
         return ApiService.fetchApi('/auth/logout')
             .then(req => req.text());
     }
@@ -34,4 +42,4 @@ const AuthService = {
 
 AuthService.JWT_LS_KEY = 'auth_jwt';
 
-module.exports = AuthService;
+export default AuthService;

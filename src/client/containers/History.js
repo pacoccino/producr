@@ -9,7 +9,7 @@ import RefreshIndicator from 'material-ui/RefreshIndicator';
 import CircularProgress from 'material-ui/CircularProgress';
 import appTheme from '../theme';
 
-import { fetchHistory, updateHistory } from '../actions';
+import { fetchHistory, updateHistory } from '../actions/history';
 
 const styles = {
     paper: {

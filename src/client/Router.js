@@ -10,7 +10,7 @@ import History from './containers/History';
 import AppPage from './components/AppPage';
 import Profile from './containers/Profile';
 
-import { authenticate }  from './actions';
+import { checkAuthentication }  from './actions/auth';
 
 const NoMatch = () => (
     <div>
@@ -44,11 +44,11 @@ class AppRouter extends Component {
 
     static propTypes = {
         auth: PropTypes.object.isRequired,
-        authenticate: PropTypes.func.isRequired
+        checkAuthentication: PropTypes.func.isRequired
     };
 
     componentWillMount() {
-        this.props.authenticate();
+        this.props.checkAuthentication();
     }
 
     render() {
@@ -72,7 +72,7 @@ const mapStateToProps = (state) => {
     };
 };
 const mapDispatchToProps = {
-    authenticate
+    checkAuthentication
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AppRouter);

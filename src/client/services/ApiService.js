@@ -51,4 +51,4 @@ const ApiService = {
     }
 };
 
-module.exports = ApiService;
+export default ApiService;
