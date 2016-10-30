@@ -4,8 +4,6 @@ const SoundcloudResource = require('../../soundcloud/index').Resource;
 const SoundCloud = require('../../soundcloud/index');
 const DBWrapper = require('./../wrappers/index').DB;
 
-const HistoryTrack = require('../../../common/models/HistoryTrack');
-
 const ListenedStates = {
     LISTENING: 'LISTENING',
     LISTENED: 'LISTENED',

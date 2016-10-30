@@ -7,12 +7,12 @@ class DBModel {
     }
 
     create(obj) {
-        obj = new this._model(obj);
+        obj = this._model(obj);
         obj = obj.toJS();
 
         return this._collection.insert(obj)
             .then(results => {
-                return new this._model(results.ops[0]);
+                return this._model(results.ops[0]);
             });
     }
 
@@ -23,7 +23,7 @@ class DBModel {
         return this._collection
             .updateOne({_id: jsUser._id}, jsUser)
             .then(() => {
-                return new this._model(obj);
+                return this._model(obj);
             });
     }
 
@@ -41,12 +41,23 @@ class DBModel {
                 .findOne(query)
                 .then(obj => {
                     if(obj) {
-                        resolve(new this._model(obj));
+                        const objInstance = this._model(obj);
+                        resolve(objInstance);
                     } else {
                         resolve(null);
                     }
                 }).catch(reject);
         });
+    }
+
+    find(query, options) {
+        return this._collection.find(query, options)
+            .toArray()
+            .then(array => array.map(this._model));
+    }
+    findOne(query, options) {
+        return this._collection.findOne(query, options)
+            .then(this._model);
     }
 }
 

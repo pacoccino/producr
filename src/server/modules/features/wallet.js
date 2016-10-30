@@ -11,7 +11,7 @@ const Wallet = {
                 // TODO user in req not updated
                 DBModels.Users.update(user);
 
-                return DBModels.Wallets._model(wallet);
+                return wallet;
             });
     },
 
