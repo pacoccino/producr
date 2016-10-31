@@ -1,5 +1,6 @@
 const ApiService = {
-    apiBaseUrl: process.env.NODE_ENV === 'development' ? 'http://localhost:3000/api' : '/api',
+    apiBaseUrl: '/api',
+    // apiBaseUrl: process.env.NODE_ENV === 'development' ? 'http://localhost:4000/api' : '/api',
     fetchApi: (endpoint, options) => {
         options = options || {};
         let url  = ApiService.apiBaseUrl;
@@ -20,7 +21,6 @@ const ApiService = {
 
         const reqOpts = Object.assign({}, apiOpts, options);
 
-        console.log(reqOpts)
         return fetch(url, reqOpts);
     },
 

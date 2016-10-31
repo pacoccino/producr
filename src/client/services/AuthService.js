@@ -6,6 +6,16 @@ const AuthService = {
     oAuthLogin: () => {
         window.location = apiUrl + '/auth/login';
     },
+    oAuthCallback: (code) => {
+        return ApiService.fetchApi("/auth/callback?code="+code)
+            .then(req => {
+                if(req.status === 200) {
+                    return true
+                } else {
+                    throw new Error("oAuth error");
+                }
+            });
+    },
     askLoginPW: (username, password) => {
         return ApiService.fetchApi("/auth/login",
             {
@@ -28,7 +38,6 @@ const AuthService = {
             .then(json => {
                 ApiService._jwt = json.token;
                 localStorage.setItem('jwt', json.token);
-                // TODO put jwt in fetch headers
             });
     },
     logout: () => {

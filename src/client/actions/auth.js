@@ -1,6 +1,9 @@
+import { browserHistory } from 'react-router';
+
 import AuthService from '../services/AuthService';
 import ApiService from '../services/ApiService';
 
+export const ACTION_NULL = 'ACTION_NULL';
 export const AUTH_NULL = 'AUTH_NULL';
 export const AUTH_REQUEST = 'AUTH_REQUEST';
 export const AUTH_SUCCESS = 'AUTH_SUCCESS';
@@ -40,7 +43,10 @@ export function loginPW(username, password) {
 export function logout() {
     return dispatch => {
         return AuthService.logout()
-            .then(() => dispatch(authenticateNull()));
+            .then(() => {
+                browserHistory.push('/');
+                dispatch(authenticateNull());
+            });
     }
 }
 

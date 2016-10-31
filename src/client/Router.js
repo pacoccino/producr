@@ -1,34 +1,55 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { Router, Route, IndexRoute, browserHistory, Link } from 'react-router';
+import { Router, Route, IndexRoute, browserHistory, Redirect } from 'react-router';
+import queryString from 'query-string';
 
 import RefreshIndicator from 'material-ui/RefreshIndicator';
 
+import AuthService from './services/AuthService';
 import LoginPage from './containers/LoginPage';
 
 import History from './containers/HistoryPage';
 import Transactions from './containers/TransactionsPage';
 import AppPage from './components/AppPage';
+import NoMatch from './components/NoMatch';
 import Profile from './containers/Profile';
 
 import { checkAuthentication }  from './actions/auth';
 
-const NoMatch = () => (
-    <div>
-        <span>The resource you requested desn't exists</span>
-        <Link to="/">Go home</Link>
-    </div>
-);
+const checkOAuth = (authCallback) => (nextState, replace, callback) => {
+
+    const qs = queryString.parse(nextState.location.search);
+    AuthService.oAuthCallback(qs.code)
+        .then(() =>{
+            replace('/');
+            authCallback();
+            callback();
+        })
+        .catch(() => {
+            replace('/');
+            // TODO catch oauth error
+            callback();
+        });
+};
 
 const LoggedApp = () => (
     <Router history={browserHistory}>
         <Route path="/" component={AppPage}>
-            <IndexRoute component={History} />
             <Route path="/history" component={History} />
             <Route path="/transactions" component={Transactions} />
             <Route path="/profile" component={Profile} />
             <Route path="/*" component={NoMatch} />
+            <IndexRoute component={History} />
         </Route>
+    </Router>
+);
+
+const NotLoggedApp = ({ authCallback }) => (
+    <Router history={browserHistory}>
+        <Route path="/auth/callback" onEnter={checkOAuth(authCallback)} />
+        <Route path="/login" component={LoginPage} />
+        <Redirect from="/" to="/login" />
+        <Route path="/*" component={NoMatch} />
     </Router>
 );
 
@@ -60,15 +81,13 @@ class AppRouter extends Component {
             if(this.props.auth.isAuthenticated) {
                 return <LoggedApp />;
             } else {
-                return <LoginPage />;
+                return <NotLoggedApp authCallback={this.props.checkAuthentication} />;
             }
         }
     }
 }
 
-const mapStateToProps = (state) => {
-    const { auth } = state;
-
+const mapStateToProps = ({ auth }) => {
     return {
         auth
     };

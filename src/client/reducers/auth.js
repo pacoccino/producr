@@ -21,7 +21,6 @@ function auth(state = authDefaultState, action) {
             return Object.assign({}, {
                 isFetching: false,
                 isAuthenticated: true,
-                jwt: action.jwt,
                 profile: action.profile
             });
         case AuthActions.AUTH_ERROR:

@@ -76,10 +76,10 @@ Authenticator.Middleware = () => {
 
     const authRouter = express.Router();
     authRouter.get('/api/auth/login', passport.authenticate('soundcloud'));
-    authRouter.get('/auth/callback',
+    authRouter.get('/api/auth/callback',
         passport.authenticate('soundcloud'),
         function(req, res) {
-            res.redirect('/');
+            res.status(200).send(null);
         });
 
     authRouter.get('/api/auth/logout', Authenticator.apiLogout());
