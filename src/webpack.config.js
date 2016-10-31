@@ -1,17 +1,22 @@
 'use strict';
+const config = require('./config.json');
 
-var path = require('path');
-var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const clientIndex = path.join(__dirname, 'client/index.js');
+const outputFolder = path.join(__dirname, config.staticFolder);
 
 module.exports = {
+  outputFolder,
   devtool: 'eval-source-map',
   entry: [
     'webpack-hot-middleware/client?reload=true',
-    path.join(__dirname, 'client/index.js')
+    clientIndex
   ],
   output: {
-    path: path.join(__dirname, '../build'),
+    path: outputFolder,
     filename: '[name].js',
     publicPath: '/'
   },

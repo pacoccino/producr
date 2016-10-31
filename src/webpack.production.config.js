@@ -1,17 +1,20 @@
 'use strict';
+const config = require('./config.json');
 
-var path = require('path');
-var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var StatsPlugin = require('stats-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const StatsPlugin = require('stats-webpack-plugin');
+
+const clientIndex = path.join(__dirname, 'client/index.js');
 
 module.exports = {
   entry: [
-    path.join(__dirname, 'client/index.js')
+    clientIndex
   ],
   output: {
-    path: path.join(__dirname, '../build/'),
+    path: path.join(__dirname, config.staticFolder),
     filename: '[name]-[hash].min.js',
     publicPath: '/'
   },

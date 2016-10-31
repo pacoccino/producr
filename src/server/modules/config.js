@@ -1,9 +1,9 @@
-var defaultConfig = require('../config.json');
+var defaultConfig = require('../../config.json');
 
 var Config = {
     port: process.env.PORT || defaultConfig.port,
     environment: process.env.ENV || defaultConfig.environment || "dev",
-    staticFolder: defaultConfig.staticFolder || "build"
+    staticFolder: defaultConfig.staticFolder
 };
 
 Config.services = defaultConfig.services;
@@ -23,7 +23,7 @@ Config.ssl = {
 };
 
 Config.jwt = {
-    secret: "jwtftw",
+    secret: process.env.JWT_SECRET || "jwtftw",
     expiration: 10*24*60*60 // expires in 10 days
 };
 

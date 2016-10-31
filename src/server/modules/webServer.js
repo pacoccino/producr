@@ -3,18 +3,16 @@ const path = require('path');
 const webpack = require('webpack');
 const webpackMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
-const config = require('../../webpack.config.js');
+const webpackConfig = require('../../webpack.config.js');
 
 const isDeveloping = process.env.NODE_ENV !== 'production';
-
-const staticDirectory = path.join(__dirname, '/../../../build/');
 
 const WebServer = (app) => {
 
     if (isDeveloping) {
-        const compiler = webpack(config);
+        const compiler = webpack(webpackConfig);
         const middleware = webpackMiddleware(compiler, {
-            publicPath: config.output.publicPath,
+            publicPath: webpackConfig.output.publicPath,
             contentBase: 'src',
             stats: {
                 colors: true,
@@ -25,17 +23,19 @@ const WebServer = (app) => {
                 modules: false
             }
         });
+        const hotMiddleware = webpackHotMiddleware(compiler);
 
         app.use(middleware);
-        app.use(webpackHotMiddleware(compiler));
+        app.use(hotMiddleware);
+
         app.get('*', function response(req, res) {
-            res.write(middleware.fileSystem.readFileSync(path.join(staticDirectory, "index.html")));
+            res.write(middleware.fileSystem.readFileSync(path.join(webpackConfig.outputFolder, "index.html")));
             res.end();
         });
     } else {
-        app.use(express.static(staticDirectory));
+        app.use(express.static(webpackConfig.outputFolder));
         app.get('*', function response(req, res) {
-            res.sendFile(path.join(staticDirectory, "index.html"));
+            res.sendFile(path.join(webpackConfig.outputFolder, "index.html"));
         });
 
     }
