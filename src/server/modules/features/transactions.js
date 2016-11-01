@@ -3,6 +3,7 @@ const async = require('async');
 
 const DBModels = require('../dbModels');
 const SoundCloudSugar = require('../../soundcloud/index').Sugar;
+const Wallet = require('./wallet');
 
 const Transactions = {
 
@@ -83,6 +84,15 @@ const Transactions = {
                 }
             });
         });
+    },
+
+    askTransaction({ user, historyPlay }) {
+        const userWallet = Wallet.getUserWallet(user);
+
+        let transaction = {
+            fromUserScId: user.sc_id,
+            toUserScId: historyPlay.owner_id
+        }
     }
 };
 

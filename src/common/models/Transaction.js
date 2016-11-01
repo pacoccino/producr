@@ -1,10 +1,11 @@
 const Record = require('immutable').Record;
 
+// TODO nest from et to
 const Transaction = new Record({
     _id: null,
     fromUserScId: null,
-    fromUserName: null,
     toUserScId: null,
+    fromUserName: null,
     toUserScName: null,
     amount: 0,
     date: Date.now(),

@@ -1,8 +1,10 @@
 const _ = require('lodash');
+const async = require('async');
 
 const SoundcloudResource = require('../../soundcloud/index').Resource;
 const SoundCloud = require('../../soundcloud/index');
 const DBModels = require('../dbModels');
+const Transactions = require('./transactions');
 
 const ListenedStates = {
     LISTENING: 'LISTENING',
@@ -49,16 +51,47 @@ const History = {
                 return play;
             });
     },
+    askForTransactions: ({ user, plays }) => {
+        return new Promise((resolve, reject) => {
+            async.map(plays, (historyPlay, cb) => {
+                return cb(null);
+                Transactions.askTransaction({ user, historyPlay })
+                    .then(transaction => {
+                        cb(null, transaction);
+                    })
+                    .catch(err => {
+                        cb(err);
+                    });
+            }, (err, transactions) => {
+                if(err) {
+                    reject(err);
+                } else {
+                    resolve(transactions);
+                }
+            });
+        });
+    },
+
     convertPlayToModel: (user) => (play) => {
         let historyTrack = {
-            track_id: play.track_id,
-            permalink_url: play.track.permalink_url,
-            played_by_sc_id: user.sc_id,
+            track: {
+                id: play.track.id,
+                title: play.track.title,
+                permalink_url: play.track.permalink_url,
+            },
+            artist: {
+                sc_id: play.track.user.id,
+                username: play.track.user.username,
+            },
+            player: {
+                sc_id: user.sc_id,
+                username: user.sc_profile.username,
+            },
             played_at: play.played_at,
             played_duration: play.played_duration,
             played_state: play.played_state,
-            artist: play.track.user.username,
-            title: play.track.title
+
+            transaction_id: null
         };
 
         // Convert to model optional (dbmodel does it at insert
@@ -122,7 +155,7 @@ const History = {
             sort: { played_at: -1 }
         };
         const query = {
-            played_by_sc_id: user.sc_id
+            "player.sc_id": user.sc_id
         };
         const userHistory = {
             sc_id: user.sc_id,
