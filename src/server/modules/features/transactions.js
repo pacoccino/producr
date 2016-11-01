@@ -9,7 +9,7 @@ const Transactions = {
 
     getUserTransactions: (user) => {
 
-        const sc_id = user.sc_id.toString();
+        const sc_id = user.sc_id;
         const query = {
             '$or': [
                 {
@@ -26,7 +26,7 @@ const Transactions = {
 
     getTransactionsFromUser: (user) => {
 
-        const sc_id = user.sc_id.toString();
+        const sc_id = user.sc_id;
         const query = {
             fromUserScId: sc_id
         };
@@ -36,7 +36,7 @@ const Transactions = {
 
     getTransactionsToUser: (user) => {
 
-        const sc_id = user.sc_id.toString();
+        const sc_id = user.sc_id;
         const query = {
             toUserScId: sc_id
         };
@@ -87,12 +87,24 @@ const Transactions = {
     },
 
     askTransaction({ user, historyPlay }) {
-        const userWallet = Wallet.getUserWallet(user);
+        // const userWallet = Wallet.getUserWallet(user);
 
         let transaction = {
-            fromUserScId: user.sc_id,
-            toUserScId: historyPlay.owner_id
-        }
+            fromUserScId: historyPlay.player.sc_id,
+            fromUserName: historyPlay.player.username,
+
+            toUserScId: historyPlay.artist.sc_id,
+            toUserName: historyPlay.artist.username,
+
+            trackId: historyPlay.track.id,
+            trackTitle: historyPlay.track.title,
+
+            amount: user.config && user.config.pricePerPlay || 1,
+
+            playId: historyPlay._id.toString()
+        };
+
+        return DBModels.Transactions.insert(transaction);
     }
 };
 

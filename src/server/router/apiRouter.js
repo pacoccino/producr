@@ -109,13 +109,6 @@ const ApiRouter = () => {
                     return transactions.map(transaction => transaction.toJS());
                 })
                 .then(transactions => {
-                    if(hydrate) {
-                        return Transactions.hydrateTransactions(transactions);
-                    } else {
-                        return transactions;
-                    }
-                })
-                .then(transactions => {
                     res.json(transactions);
                 })
                 .catch(next);

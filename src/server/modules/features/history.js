@@ -54,9 +54,10 @@ const History = {
     askForTransactions: ({ user, plays }) => {
         return new Promise((resolve, reject) => {
             async.map(plays, (historyPlay, cb) => {
-                return cb(null);
                 Transactions.askTransaction({ user, historyPlay })
                     .then(transaction => {
+                        // TODO put transaction id to play in db
+                        // historyPlay.transaction_id = transaction._id.toString()
                         cb(null, transaction);
                     })
                     .catch(err => {
@@ -136,7 +137,10 @@ const History = {
                             userCrawlerData.lastHistoryFetch = lastTrackAdded.played_at;
 
                             user = user.set('crawlers', userCrawlerData);
-                            return DBModels.Users.updateField(user, 'crawlers');
+                            return Promise.all([
+                                DBModels.Users.updateField(user, 'crawlers'),
+                                History.askForTransactions({ user, plays: insertedHistory })
+                            ]);
                         });
                 }
             })

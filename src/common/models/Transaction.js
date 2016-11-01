@@ -3,14 +3,18 @@ const Record = require('immutable').Record;
 // TODO nest from et to
 const Transaction = new Record({
     _id: null,
-    fromUserScId: null,
-    toUserScId: null,
-    fromUserName: null,
-    toUserScName: null,
-    amount: 0,
     date: Date.now(),
+
+    fromUserScId: null,
+    fromUserName: null,
+
+    toUserScId: null,
+    toUserName: null,
+
     trackId: null,
     trackTitle: null,
+
+    amount: 0,
     playId: null,
 }, 'Transaction');
 
