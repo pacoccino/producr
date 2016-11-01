@@ -5,7 +5,7 @@ const DBModels = require('../dbModels');
 const Wallet = {
 
     createUserWallet: (user) => {
-        return DBModels.Wallets.create()
+        return DBModels.Wallets.insert()
             .then(wallet => {
                 user = user.set('wallet_id', wallet._id);
                 // TODO user in req not updated

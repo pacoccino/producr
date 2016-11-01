@@ -45,10 +45,10 @@ class HistoryPlay extends Component {
         return (
             <TableRow>
                 <TableRowColumn style={styles.col}>
-                    {play.track.user.username}
+                    {play.artist}
                 </TableRowColumn>
                 <TableRowColumn style={styles.col}>
-                    {play.track.title}
+                    {play.title}
                 </TableRowColumn>
                 <TableRowColumn style={styles.col}>
                     {this.formatDate(play.played_at)}
@@ -66,7 +66,7 @@ class HistoryPlay extends Component {
                 <TableRowColumn>
                     <IconButton
                         tooltip="Go to track's page"
-                        href={play.track.permalink_url}
+                        href={play.permalink_url}
                         target="about_blank"
                         style={{verticalAlign: 'initial'}}
                         hoverColor={appTheme.palette.primary2Color}

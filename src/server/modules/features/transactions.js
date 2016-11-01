@@ -44,7 +44,7 @@ const Transactions = {
     },
 
     newTransaction(transaction) {
-        return DBModels.Transactions.create(transaction);
+        return DBModels.Transactions.insert(transaction);
     },
 
     hydrateTransaction(transaction) {

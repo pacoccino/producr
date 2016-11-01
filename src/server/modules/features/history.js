@@ -2,7 +2,7 @@ const _ = require('lodash');
 
 const SoundcloudResource = require('../../soundcloud/index').Resource;
 const SoundCloud = require('../../soundcloud/index');
-const DBWrapper = require('./../wrappers/index').DB;
+const DBModels = require('../dbModels');
 
 const ListenedStates = {
     LISTENING: 'LISTENING',
@@ -15,6 +15,8 @@ const ListenedTimes = {
 
 // TODO :
 // - get song duration and compare with play duration to better validate
+// get more than 9 last from soundcloud API
+// check if last returned is already stored, if not ask for next
 
 const History = {
 
@@ -30,7 +32,8 @@ const History = {
             return play;
         });
     },
-    getListenedState: (diff) => {
+    getListenedState: (play) => {
+        const diff = play.played_duration;
         if(_.isNil(diff)) {
             return ListenedStates.LISTENING;
         } else if(diff < ListenedTimes.SKIP) {
@@ -42,14 +45,28 @@ const History = {
     setListenedState: (history) => {
         return history
             .map(play => {
-                play.played_state = History.getListenedState(play.played_duration);
+                play.played_state = History.getListenedState(play);
                 return play;
             });
     },
+    convertPlayToModel: (user) => (play) => {
+        let historyTrack = {
+            track_id: play.track_id,
+            permalink_url: play.track.permalink_url,
+            played_by_sc_id: user.sc_id,
+            played_at: play.played_at,
+            played_duration: play.played_duration,
+            played_state: play.played_state,
+            artist: play.track.user.username,
+            title: play.track.title
+        };
 
-    updateUserHistory: (user, reset) => {
-        let updateData = {
-            fetchTime: Date.now()
+        // Convert to model optional (dbmodel does it at insert
+        return DBModels.PlaysHistory._model(historyTrack);
+    },
+    updateUserHistory: (user) => {
+        const updateData = {
+            lastFetched: user.crawlers && user.crawlers.lastHistoryFetch || 0
         };
 
         var resourceObject = new SoundcloudResource(user.sc_auth.access_token);
@@ -58,102 +75,65 @@ const History = {
         resourceObject.get();
 
         return SoundCloud.askResource(resourceObject)
-            .then(resource => { updateData.newHistory = resource.collection; })
-            .then(() => DBWrapper.collections.UserHistory
-                .find({sc_id: user.sc_id})
-                .next()
-            )
-            .then(userHistory => {
-                const lastFetched = userHistory && userHistory.lastFetched || 0;
+            .then(resource => {
+                updateData.newHistory = resource.collection;
+                if(!updateData.newHistory.length) return;
 
                 updateData.newHistory = History.computeDiff(updateData.newHistory);
+
+                // On retire le premier element, car on ne connait pas sa durée, mais on le recupere la prochaine fois
+                updateData.newHistory.shift();
+
+                // On ne garde que les nouvelles lectures
+                updateData.newHistory = updateData.newHistory.filter(play => play.played_at > updateData.lastFetched);
+
                 updateData.newHistory = History.setListenedState(updateData.newHistory);
 
-                if(reset) {
-                    return updateData;
-                }
-
-                updateData.oldLastTrackFetched = updateData.newHistory.find(play => play.played_at <= lastFetched);
-
-                updateData.newHistory = updateData.newHistory.filter(play => play.played_at > lastFetched);
-
-                if(updateData.oldLastTrackFetched) {
-                    updateData.newHistory = updateData.newHistory.concat(updateData.oldLastTrackFetched);
-                }
-
-                return updateData;
+                // Convertion dans le modele data
+                updateData.newHistory = updateData.newHistory.map(History.convertPlayToModel(user));
             })
-            .then((updateData) => reset ?
-                DBWrapper.collections.UserHistory.updateOne({sc_id: user.sc_id},
-                    {
-                        '$set': {
-                            lastFetched: updateData.fetchTime,
-                            history : updateData.newHistory
-                        },
-                    },
-                    { upsert: true }
-                )
-                :
-                DBWrapper.collections.UserHistory.updateOne(
-                    {sc_id: user.sc_id},
-                    {
-                        '$set': { lastFetched: updateData.fetchTime },
-                    },
-                    { upsert: true })
-                    .then(() => {
-                        if(updateData.newHistory.length > 0 && updateData.oldLastTrackFetched) {
-                            return DBWrapper.collections.UserHistory.updateOne({userId: user.id},
-                                {
-                                    '$pop': {
-                                        'history': -1
-                                    }
-                                }
-                            );
-                        }
+            .then(() => {
+                if(updateData.newHistory.length) {
+                    return DBModels.PlaysHistory.insertMultiple(updateData.newHistory)
+                        .then(insertedHistory => {
+                            const lastTrackAdded = updateData.newHistory[0];
 
-                    })
-                    .then(() => {
-                        if(updateData.newHistory.length > 0) {
-                            return DBWrapper.collections.UserHistory.updateOne({userId: user.id},
-                                {
-                                    '$push': {
-                                        'history': {
-                                            '$each': updateData.newHistory,
-                                            '$position': 0
-                                        }
-                                    }
-                                }
-                            )
-                        }
-                    })
-            );
+                            // On prend la date du dernier historique conservé pour fetch plus tard
+                            const userCrawlerData = user.crawlers || {};
+                            userCrawlerData.lastHistoryFetch = lastTrackAdded.played_at;
+
+                            user = user.set('crawlers', userCrawlerData);
+                            return DBModels.Users.updateField(user, 'crawlers');
+                        });
+                }
+            })
+            .then(() => {
+                return {
+                    nbAdded: updateData.newHistory.length
+                }
+            });
     },
 
     getUserHistory: ({ user, params }) => {
         params = params || {};
-        const limit = params.limit || 10;
-        const skip = params.skip || 0;
-
+        const options = {
+            limit: params.limit || 10,
+            skip: params.skip || 0,
+            sort: { played_at: -1 }
+        };
         const query = {
-            sc_id: user.sc_id
+            played_by_sc_id: user.sc_id
+        };
+        const userHistory = {
+            sc_id: user.sc_id,
+            lastFetched: user.crawlers && user.crawlers.lastHistoryFetch || 0,
+            history: []
         };
 
-        return DBWrapper.collections.UserHistory
-            .findOne(query)
-            .then(userHistoryFromDB => {
-
-                if(!userHistoryFromDB) {
-                    return {
-                        sc_id: user.sc_id,
-                        lastFetched: null,
-                        history: []
-                    };
-                }
-                return userHistoryFromDB;
-            })
-            .then(userHistory => {
-                userHistory.history = userHistory.history.slice(skip, skip+limit);
-                return userHistory
+        return DBModels.PlaysHistory.find(query, options)
+            .then(historyPlays => {
+                userHistory.history = historyPlays;
+                return userHistory;
             });
     }
 };

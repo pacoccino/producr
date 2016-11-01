@@ -12,7 +12,7 @@ const createUser = (profile, auth) => {
         sc_profile: profile,
         sc_auth: auth,
     };
-    return DBModels.Users.create(uts);
+    return DBModels.Users.insert(uts);
 };
 
 const updateUser = (user, profile, auth) => {

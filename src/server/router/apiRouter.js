@@ -27,9 +27,11 @@ const ApiRouter = () => {
             History.getUserHistory({
                 user: req.user,
                 params: req.query
-            }).then(history => {
-                res.json( history );
             })
+                .then(userHistory => {
+                    userHistory.history = userHistory.history.map(obj => obj.toJS());
+                    res.json( userHistory );
+                })
                 .catch(next);
         }
     );
@@ -38,11 +40,12 @@ const ApiRouter = () => {
     router.get('/update',
         Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
-            History.updateUserHistory(req.user, true)
-                .then(() => {
+            History.updateUserHistory(req.user)
+                .then(details => {
                     res.json({
                         success: true,
-                        message: 'History updated'
+                        message: 'History updated',
+                        details
                     });
                 })
                 .catch(next);
@@ -118,33 +121,33 @@ const ApiRouter = () => {
                 .catch(next);
         }
     );
-/*
+    /*
 
-    Transactions.newTransaction({
-        fromUserScId: "10878168",
-        toUserScId: "89545741",
-        trackId: "242918468",
-        amount: 10
-    });
-    Transactions.newTransaction({
-        fromUserScId: "10878168",
-        toUserScId: "89545741",
-        trackId: "219248965",
-        amount: 15
-    });
-    Transactions.newTransaction({
-        fromUserScId: "108647073",
-        toUserScId: "10878168",
-        trackId: "131977862",
-        amount: 20
-    });
-    Transactions.newTransaction({
-        fromUserScId: "108647073",
-        toUserScId: "10878168",
-        trackId: "77723419",
-        amount: 25
-    });
-*/
+     Transactions.newTransaction({
+     fromUserScId: "10878168",
+     toUserScId: "89545741",
+     trackId: "242918468",
+     amount: 10
+     });
+     Transactions.newTransaction({
+     fromUserScId: "10878168",
+     toUserScId: "89545741",
+     trackId: "219248965",
+     amount: 15
+     });
+     Transactions.newTransaction({
+     fromUserScId: "108647073",
+     toUserScId: "10878168",
+     trackId: "131977862",
+     amount: 20
+     });
+     Transactions.newTransaction({
+     fromUserScId: "108647073",
+     toUserScId: "10878168",
+     trackId: "77723419",
+     amount: 25
+     });
+     */
 
     return router;
 };
