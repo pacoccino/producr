@@ -151,14 +151,13 @@ class LoginPage extends Component {
                                     <RaisedButton
                                         fullWidth={true}
                                         label="Login"
-                                        style={{backgroundColor:'#f50'}}
                                         onClick={this.handleSubmit.bind(this)}
                                         type="submit"
                                     />
                                     <RaisedButton
                                         fullWidth={true}
                                         label="OauthLogin"
-                                        style={{backgroundColor:'#f50'}}
+                                        primary={true}
                                         onClick={this.props.oAuthLogin}
                                     />
                                 </div>

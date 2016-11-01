@@ -52,15 +52,15 @@ const Transactions = {
 
         promises.push(SoundCloudSugar.getUser(transaction.fromUserScId)
             .then(user => {
-                transaction.fromUserScId = user.username;
+                transaction.fromUserName = user.username;
             }));
         promises.push(SoundCloudSugar.getUser(transaction.toUserScId)
             .then(user => {
-                transaction.toUserScId = user.username;
+                transaction.toUserName = user.username;
             }));
         promises.push(SoundCloudSugar.getTrack(transaction.trackId)
             .then(track => {
-                transaction.trackId = track.title;
+                transaction.trackTitle = track.title;
             }));
 
         return Promise.all(promises).then(() => transaction);
