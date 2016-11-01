@@ -87,19 +87,26 @@ const Transactions = {
     },
 
     askTransaction({ user, historyPlay }) {
+        // TODO check wallet and remove money
         // const userWallet = Wallet.getUserWallet(user);
 
         let transaction = {
-            fromUserScId: historyPlay.player.sc_id,
-            fromUserName: historyPlay.player.username,
+            from: {
 
-            toUserScId: historyPlay.artist.sc_id,
-            toUserName: historyPlay.artist.username,
+                sc_id: historyPlay.player.sc_id,
+                username: historyPlay.player.username,
+            },
+            to: {
 
-            trackId: historyPlay.track.id,
-            trackTitle: historyPlay.track.title,
+                sc_id: historyPlay.artist.sc_id,
+                username: historyPlay.artist.username,
+            },
+            track: {
+                id: historyPlay.track.id,
+                title: historyPlay.track.title,
+            },
 
-            amount: user.config && user.config.pricePerPlay || 1,
+            amount: user.config && user.config.pricePerPlay || 1, // TODO default price
 
             playId: historyPlay._id.toString()
         };

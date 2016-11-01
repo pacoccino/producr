@@ -5,14 +5,8 @@ const Transaction = new Record({
     _id: null,
     date: Date.now(),
 
-    fromUserScId: null,
-    fromUserName: null,
-
-    toUserScId: null,
-    toUserName: null,
-
-    trackId: null,
-    trackTitle: null,
+    from: null,
+    to: null,
 
     amount: 0,
     playId: null,

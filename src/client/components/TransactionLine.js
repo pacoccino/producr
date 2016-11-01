@@ -30,11 +30,11 @@ class TransactionLine extends Component {
         let userColumns = null;
         const fromColumn =
             <TableRowColumn style={styles.col}>
-                {transaction.fromUserName}
+                {transaction.from.username}
             </TableRowColumn>;
         const toColumn =
             <TableRowColumn style={styles.col}>
-                {transaction.toUserName}
+                {transaction.to.username}
             </TableRowColumn>;
 
         if(this.props.type === "fromme") {
