@@ -52,10 +52,19 @@ const SoundCloudSugar = (SoundCloud) => {
                     reject(err);
                 });
         }),
-        
-        getSong: (songId) => new Promise((resolve, reject) => {
-            
-        })
+
+        getUser: (userId) => {
+            var resourceObject = new ResourceObject();
+            resourceObject.users(userId);
+            resourceObject.get();
+            return SoundCloud.askResource(resourceObject);
+        },
+        getTrack: (trackId) => {
+            var resourceObject = new ResourceObject();
+            resourceObject.tracks(trackId);
+            resourceObject.get();
+            return SoundCloud.askResource(resourceObject);
+        }
     };
 };
 

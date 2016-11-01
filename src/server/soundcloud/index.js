@@ -37,7 +37,7 @@ const SoundCloud = {
                         error:error
                     });
                 } else {
-                    const scUser = JSON.parse(body);
+                    const scUser = body;
                     resolve(scUser);
                 }
             });

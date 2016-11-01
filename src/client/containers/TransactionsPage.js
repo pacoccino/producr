@@ -26,6 +26,9 @@ const styles = {
     },
     progress: {
         margin: '40px'
+    },
+    selector: {
+        margin: 20
     }
 };
 
@@ -67,10 +70,7 @@ class Transactions extends Component {
         };
     }
 
-    componentWillMount() {
-        this.refreshTransactions();
-    }
-    componentWillUpdate() {
+    componentDidMount() {
         this.refreshTransactions();
     }
 
@@ -81,9 +81,11 @@ class Transactions extends Component {
 
     setTransactionType(type) {
         return () => {
+            this.props.dispatch(fetchTransactions(type));
             this.setState({
                 transactionType: type
             });
+
         };
     }
 
@@ -91,35 +93,41 @@ class Transactions extends Component {
         let transactions = this.props.transactions.transactions;
         // TODO filter transactions if not done by server
         /*if(this.state.transactionType === "fromme") {
-            transactions = transactions.filter(transaction => transaction.fromUserId === "myuserid");
-        }*/
+         transactions = transactions.filter(transaction => transaction.fromUserScId === "myuserid");
+         }*/
         return (
             <div>
-                <RaisedButton
-                    label="All"
-                    style={{backgroundColor:'#f50'}}
-                    onClick={this.setTransactionType("all")}
-                />
-                <RaisedButton
-                    label="From me"
-                    style={{backgroundColor:'#f50'}}
-                    onClick={this.setTransactionType("fromme")}
-                />
-                <RaisedButton
-                    label="To me"
-                    style={{backgroundColor:'#f50'}}
-                    onClick={this.setTransactionType("tome")}
-                />
                 <Paper style={styles.paper}>
                     <AppBar
                         title="Listening Transactions"
                         showMenuIconButton={false}
-                        >
+                    >
                         {Refresher(this.props.transactions.isFetching, this.refreshTransactions)}
                     </AppBar>
 
+                    <div style={styles.selector}>
+                        <RaisedButton
+                            label="All"
+                            style={{backgroundColor:'#f50'}}
+                            onClick={this.setTransactionType("all")}
+                            primary={this.state.transactionType === "all"}
+                        />
+                        <RaisedButton
+                            label="From me"
+                            style={{backgroundColor:'#f50'}}
+                            onClick={this.setTransactionType("fromme")}
+                            primary={this.state.transactionType === "fromme"}
+                        />
+                        <RaisedButton
+                            label="To me"
+                            style={{backgroundColor:'#f50'}}
+                            onClick={this.setTransactionType("tome")}
+                            primary={this.state.transactionType === "tome"}
+                        />
+                    </div>
+
                     {
-                        this.props.transactions.isFetching ?
+                        (this.props.transactions.isFetching || !this.props.transactions.transactions) ?
                             <CircularProgress
                                 size={80}
                                 thickness={5}

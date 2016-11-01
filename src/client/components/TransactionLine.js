@@ -14,6 +14,7 @@ const styles = {
     }
 };
 
+// TODO distinguer lignes from et tout avec couleur ou sigle
 class TransactionLine extends Component {
     static propTypes = {
         type: PropTypes.string,
@@ -29,11 +30,11 @@ class TransactionLine extends Component {
         let userColumns = null;
         const fromColumn =
             <TableRowColumn style={styles.col}>
-                {transaction.fromUserId}
+                {transaction.fromUserScId}
             </TableRowColumn>;
         const toColumn =
             <TableRowColumn style={styles.col}>
-                {transaction.toUserId}
+                {transaction.toUserScId}
             </TableRowColumn>;
 
         if(this.props.type === "fromme") {
@@ -47,7 +48,7 @@ class TransactionLine extends Component {
             <TableRow>
                 {userColumns}
                 <TableRowColumn style={styles.col}>
-                    {transaction.songId}
+                    {transaction.trackId}
                 </TableRowColumn>
                 <TableRowColumn style={styles.col}>
                     {this.formatDate(transaction.date)}

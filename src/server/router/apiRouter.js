@@ -88,6 +88,7 @@ const ApiRouter = () => {
         Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
             let type = req.query.type;
+            let hydrate = req.query.hr ? true : false;
             let getFn = null;
             switch(type) {
                 case "fromMe":
@@ -102,12 +103,48 @@ const ApiRouter = () => {
 
             getFn(req.user)
                 .then(transactions => {
-                    transactions = transactions.map(transaction => transaction.toJS());
+                    return transactions.map(transaction => transaction.toJS());
+                })
+                .then(transactions => {
+                    if(hydrate) {
+                        return Transactions.hydrateTransactions(transactions);
+                    } else {
+                        return transactions;
+                    }
+                })
+                .then(transactions => {
                     res.json(transactions);
                 })
                 .catch(next);
         }
     );
+/*
+
+    Transactions.newTransaction({
+        fromUserScId: "10878168",
+        toUserScId: "89545741",
+        trackId: "242918468",
+        amount: 10
+    });
+    Transactions.newTransaction({
+        fromUserScId: "10878168",
+        toUserScId: "89545741",
+        trackId: "219248965",
+        amount: 15
+    });
+    Transactions.newTransaction({
+        fromUserScId: "108647073",
+        toUserScId: "10878168",
+        trackId: "131977862",
+        amount: 20
+    });
+    Transactions.newTransaction({
+        fromUserScId: "108647073",
+        toUserScId: "10878168",
+        trackId: "77723419",
+        amount: 25
+    });
+*/
 
     return router;
 };

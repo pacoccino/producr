@@ -61,11 +61,11 @@ const ApiService = {
     },
 
     getTransactions: (type) => {
-        let url = 'transactions';
+        let url = 'transactions?hr=true';
         if(type === "fromme") {
-            url += "?type=fromMe";
+            url += "&type=fromMe";
         } else if(type === "tome") {
-            url += "?type=toMe";
+            url += "&type=toMe";
         }
         return ApiService.fetchApi(url)
             .then(req => req.json());
