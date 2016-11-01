@@ -96,7 +96,7 @@ const History = {
         };
 
         // Convert to model optional (dbmodel does it at insert
-        return DBModels.PlaysHistory._model(historyTrack);
+        return DBModels.HistoryPlays._model(historyTrack);
     },
     updateUserHistory: (user) => {
         const updateData = {
@@ -128,7 +128,7 @@ const History = {
             })
             .then(() => {
                 if(updateData.newHistory.length) {
-                    return DBModels.PlaysHistory.insertMultiple(updateData.newHistory)
+                    return DBModels.HistoryPlays.insertMultiple(updateData.newHistory)
                         .then(insertedHistory => {
                             const lastTrackAdded = updateData.newHistory[0];
 
@@ -167,7 +167,7 @@ const History = {
             history: []
         };
 
-        return DBModels.PlaysHistory.find(query, options)
+        return DBModels.HistoryPlays.find(query, options)
             .then(historyPlays => {
                 userHistory.history = historyPlays;
                 return userHistory;

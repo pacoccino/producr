@@ -7,6 +7,7 @@ const Transaction = new Record({
 
     from: null,
     to: null,
+    track: null,
 
     amount: 0,
     playId: null,

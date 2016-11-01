@@ -3,7 +3,7 @@ const DBWrapper = {};
 DBWrapper.initialize = (client) => {
     DBWrapper._mongo = client;
     DBWrapper.collections = {
-        PlaysHistory: client.collection('PlaysHistory'),
+        HistoryPlays: client.collection('HistoryPlays'),
         Transactions: client.collection('Transactions'),
         Users: client.collection('Users'),
         Wallets: client.collection('Wallets'),

@@ -48,7 +48,7 @@ class TransactionLine extends Component {
             <TableRow>
                 {userColumns}
                 <TableRowColumn style={styles.col}>
-                    {transaction.trackTitle}
+                    {transaction.track.title}
                 </TableRowColumn>
                 <TableRowColumn style={styles.col}>
                     {this.formatDate(transaction.date)}

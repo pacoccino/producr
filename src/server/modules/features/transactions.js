@@ -13,10 +13,10 @@ const Transactions = {
         const query = {
             '$or': [
                 {
-                    fromUserScId: sc_id
+                    "from.sc_id": sc_id
                 },
                 {
-                    toUserScId: sc_id
+                    "to.sc_id": sc_id
                 }
             ]
         };
@@ -28,7 +28,7 @@ const Transactions = {
 
         const sc_id = user.sc_id;
         const query = {
-            fromUserScId: sc_id
+            "from.sc_id": sc_id
         };
 
         return DBModels.Transactions.find(query);
@@ -38,7 +38,7 @@ const Transactions = {
 
         const sc_id = user.sc_id;
         const query = {
-            toUserScId: sc_id
+            "to.sc_id": sc_id
         };
 
         return DBModels.Transactions.find(query);
@@ -51,17 +51,17 @@ const Transactions = {
     hydrateTransaction(transaction) {
         const promises = [];
 
-        promises.push(SoundCloudSugar.getUser(transaction.fromUserScId)
+        promises.push(SoundCloudSugar.getUser(transaction.from.sc_id)
             .then(user => {
-                transaction.fromUserName = user.username;
+                transaction.from.username = user.username;
             }));
-        promises.push(SoundCloudSugar.getUser(transaction.toUserScId)
+        promises.push(SoundCloudSugar.getUser(transaction.to.sc_id)
             .then(user => {
-                transaction.toUserName = user.username;
+                transaction.to.username = user.username;
             }));
-        promises.push(SoundCloudSugar.getTrack(transaction.trackId)
+        promises.push(SoundCloudSugar.getTrack(transaction.track.id)
             .then(track => {
-                transaction.trackTitle = track.title;
+                transaction.track.title = track.title;
             }));
 
         return Promise.all(promises).then(() => transaction);
@@ -91,20 +91,10 @@ const Transactions = {
         // const userWallet = Wallet.getUserWallet(user);
 
         let transaction = {
-            from: {
 
-                sc_id: historyPlay.player.sc_id,
-                username: historyPlay.player.username,
-            },
-            to: {
-
-                sc_id: historyPlay.artist.sc_id,
-                username: historyPlay.artist.username,
-            },
-            track: {
-                id: historyPlay.track.id,
-                title: historyPlay.track.title,
-            },
+            from: historyPlay.player,
+            to: historyPlay.artist,
+            track: historyPlay.track,
 
             amount: user.config && user.config.pricePerPlay || 1, // TODO default price
 

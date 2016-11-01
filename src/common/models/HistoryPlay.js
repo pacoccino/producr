@@ -5,7 +5,7 @@ const Record = require('immutable').Record;
 // TODO Gerer modele nested
 // TODO allouer objectId plus proprement
 
-const HistoryTrack = new Record({
+const HistoryPlay = new Record({
     _id: null,
 
     track: null,
@@ -17,13 +17,13 @@ const HistoryTrack = new Record({
     played_state: null,
 
     transaction_id: null
-}, 'HistoryTrack');
+}, 'HistoryPlay');
 
 /*
- const HistoryTrack = function(values) {
+ const HistoryPlay = function(values) {
  values._id = values._id || new ObjectId();
  return HistoryTrackO(values);
  };
  */
 
-module.exports = HistoryTrack;
+module.exports = HistoryPlay;
