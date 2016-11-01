@@ -10,14 +10,14 @@ const AuthService = {
         return ApiService.fetchApi("/auth/callback?code="+code)
             .then(req => {
                 if(req.status === 200) {
-                    return true
+                    return;
                 } else {
                     throw new Error("oAuth error");
                 }
             });
     },
     askLoginPW: (username, password) => {
-        return ApiService.fetchApi("/auth/login",
+        return ApiService.fetchApi("/auth/loginpw",
             {
                 method: "POST",
                 body: JSON.stringify({
@@ -28,16 +28,17 @@ const AuthService = {
                     "Content-Type": "application/json"
                 }
             })
-            .then(req => {
-                if(req.status === 200) {
-                    return req.json()
+            .then(res => {
+                if(res.status === 200) {
+                    return res.json()
                 } else {
-                    return null;
+                    throw new Error("Login pw error");
                 }
             })
             .then(json => {
                 ApiService._jwt = json.token;
                 localStorage.setItem('jwt', json.token);
+                return json.token;
             });
     },
     logout: () => {

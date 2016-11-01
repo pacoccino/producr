@@ -110,7 +110,7 @@ const pwAuthMiddleware = (req, res, next) => {
         const token = jwt.sign(jwtToStore, Config.jwt.secret, {
             expiresIn: Config.jwt.expiration // expires in 10 days
         });
-        res.status(201).json({
+        res.status(200).json({
             success: true,
             message: 'Enjoy your token!',
             token: token

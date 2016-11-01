@@ -36,7 +36,11 @@ export function oAuthLogin() {
 export function loginPW(username, password) {
     return dispatch => {
         return AuthService.askLoginPW(username, password)
-            .then(profile => dispatch(authenticateSuccess(profile)))
+            .then(() => ApiService.getMe())
+            .then(profile => {
+                browserHistory.push('/'); // TODO Marche pas
+                dispatch(authenticateSuccess(profile));
+            })
     }
 }
 
