@@ -13,7 +13,11 @@ producr-api:
   ports:
     - "3000:3000"
   environment:
-    - NODE_ENV=production
-    - MONGO_URL=mongodb://172.17.0.1:33001/producr
-    - REDIS_HOST=172.17.0.1
-    - REDIS_PORT=33002
+    NODE_ENV: production
+    MONGO_URL: mongodb://172.17.0.1:33001/producr
+    REDIS_HOST: 172.17.0.1
+    REDIS_PORT: 33002
+    SC_CLIENT_ID:
+    SC_CLIENT_SECRET:
+  env_file:
+    - variables.env

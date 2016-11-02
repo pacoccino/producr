@@ -17,6 +17,10 @@ const RequestLogger = require('./modules/requestLogger');
 const App = () => {
 
     Connections.initialize()
+        .catch(err => {
+            console.error("Unable to connect to databases", err);
+            process.exit(-1);
+        })
         .then(() => {
             console.log("Connections initialized");
 
@@ -64,7 +68,7 @@ const App = () => {
             });
         })
         .catch(err => {
-            console.error("Unable to connect to databases", err);
+            console.error("Error while bootstrapping server", err);
             process.exit(-1);
         });
 };

@@ -6,7 +6,12 @@ var Config = {
     staticFolder: defaultConfig.staticFolder
 };
 
-Config.services = defaultConfig.services;
+Config.services = {
+    soundcloud: {
+        client_id: process.env.SC_CLIENT_ID || defaultConfig.services.soundcloud,
+        client_secret: process.env.SC_CLIENT_SECRET || defaultConfig.services.soundcloud
+    }
+};
 
 Config.connections = {
     mongoUrl: process.env.MONGO_URL || defaultConfig.connections.mongoUrl,
