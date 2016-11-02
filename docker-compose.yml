@@ -1,3 +1,8 @@
+## producr
+# container composition
+#
+# Override volumes, hosts and secret into docker-compose.override.yml that will not be commited
+
 producr-mongodb:
   image: "mongo:latest"
   ports:
@@ -18,4 +23,4 @@ producr-api:
     REDIS_HOST: 172.17.0.1
     REDIS_PORT: 33002
     SC_CLIENT_ID:
-    SC_CLIENT_SECRET: 
+    SC_CLIENT_SECRET:

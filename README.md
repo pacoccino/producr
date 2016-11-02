@@ -11,9 +11,14 @@ producr
 
 First, `npm i`
 
-Configure the app such as ports and databases either in `src/config.json` or via environment variables.
+Configure the app such as ports and databases either in `src/config.json`, via environment variables or in `docker-compose.override.yml` file.
+
+#### Run all services with docker compose
+`docker compose build`
+`docker compose up`
 
 #### Run all-in-one dev server
+If you already have mongodb and redis server
 `npm run server`
 
 #### Run production server
