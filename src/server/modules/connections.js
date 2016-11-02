@@ -19,7 +19,7 @@ Connections.initialize = () => new Promise((resolve, reject) => {
     const redisClient = Redis.createClient(options);
     connectionPromises.push(new Promise((res, rej) => {
         const onError = (err) => {
-            if(err.code === "ECONNREFUSED") {
+            if(err.code === "ECONNREFUSED" || err.code === "ECONNRESET") {
                 rej(err);
                 redisClient.removeListener('error', onError);
             } else {
