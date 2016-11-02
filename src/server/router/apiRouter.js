@@ -67,17 +67,17 @@ const ApiRouter = () => {
     router.put('/wallet',
         Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
-            let balance = req.query.balance || req.body.balance;
+            let addedBalance = req.query.balance || req.body.balance;
 
-            if(!validator.isInt(balance)) {
+            if(!validator.isInt(addedBalance)) {
                 return next(ApiError.InvalidParams({
                     balance: "integer"
                 }));
             }
-            balance = validator.toInt(balance);
+            addedBalance = validator.toInt(addedBalance);
             Wallet.updateUserWallet({
                 user: req.user,
-                balance
+                addedBalance
             })
                 .then(wallet => {
                     res.json(wallet.toJS());

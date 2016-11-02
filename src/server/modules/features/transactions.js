@@ -87,21 +87,25 @@ const Transactions = {
     },
 
     askTransaction({ user, historyPlay }) {
-        // TODO check wallet and remove money
+        // TODO check wallet
         // const userWallet = Wallet.getUserWallet(user);
 
+        let transactionAmount = user.config && user.config.pricePerPlay || 1; // TODO default price
         let transaction = {
 
             from: historyPlay.player,
             to: historyPlay.artist,
             track: historyPlay.track,
 
-            amount: user.config && user.config.pricePerPlay || 1, // TODO default price
+            amount: transactionAmount,
 
             playId: historyPlay._id.toString()
         };
 
-        return DBModels.Transactions.insert(transaction);
+        transactionAmount = -transactionAmount;
+
+        return Wallet.updateUserWallet({user, addedBalance: transactionAmount})
+            .then(() => DBModels.Transactions.insert(transaction));
     }
 };
 

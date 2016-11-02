@@ -31,16 +31,17 @@ const Wallet = {
         }
     },
 
-    updateUserWallet: ({ user, balance }) => {
+    updateUserWallet: ({ user, addedBalance }) => {
 
         return Wallet.getUserWallet(user)
             .then(wallet => {
-                if(!balance) return wallet;
+                if(!addedBalance) return wallet;
 
-                wallet = wallet.set('balance', wallet.balance + balance);
-                DBModels.Wallets.update(wallet);
+                const incData = {
+                    balance: addedBalance
+                };
 
-                return wallet;
+                return DBModels.Wallets.incField(wallet, incData);
             });
     }
 };

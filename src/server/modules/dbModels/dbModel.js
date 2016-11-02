@@ -64,6 +64,35 @@ class DBModel {
                 return this._model(obj);
             });
     }
+    updateFields(obj, fields) {
+        const objectId = ObjectId(obj._id);
+        const query = {_id: objectId};
+        const updateObject = {
+            "$set": {}
+        };
+        updateObject["$set"] = fields;
+
+        return this._update(query, updateObject)
+            .then(() => {
+                return this._model(obj);
+            });
+    }
+    _updateOperation(obj, operation, data) {
+        const objectId = ObjectId(obj._id);
+        const query = {_id: objectId};
+
+        const updateObject = {};
+        updateObject[operation] = data;
+
+        return this._update(query, updateObject);
+    }
+
+    incField(obj, data) {
+        return this._updateOperation(obj, '$inc', data)
+            .then(() => {
+                return this._model(obj);
+            });
+    }
 
     getById(_id, customField) {
 
@@ -105,17 +134,14 @@ class DBModel {
         return this._collection.findOne(query)
             .then(this._model);
     }
+
+    remove(obj) {
+        const objId = ObjectId(obj._id);
+        const query = {
+            _id: objId
+        };
+        return this._collection.deleteOne(query);
+    }
 }
-
-// TODO
-/*
- DBModel.prototype.delete = function(userId) {
- return new Promise((resolve, reject) => {
- if(!userId) reject("Delete user error: no userId provided");
-
- CacheWrapper.delete(USR_PREFIX + userId)
- .then(resolve, reject);
- });
- };*/
 
 module.exports = DBModel;
