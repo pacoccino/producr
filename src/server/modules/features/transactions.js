@@ -2,6 +2,7 @@ const _ = require('lodash');
 const async = require('async');
 
 const DBModels = require('../dbModels');
+const Config = require('../config');
 const SoundCloudSugar = require('../../soundcloud/index').Sugar;
 const Wallet = require('./wallet');
 
@@ -20,8 +21,11 @@ const Transactions = {
                 }
             ]
         };
+        const options = {
+            sort: { date: -1 }
+        };
 
-        return DBModels.Transactions.find(query);
+        return DBModels.Transactions.find(query, options);
     },
 
     getTransactionsFromUser: (user) => {
@@ -90,8 +94,9 @@ const Transactions = {
         // TODO check wallet
         // const userWallet = Wallet.getUserWallet(user);
 
-        let transactionAmount = user.config && user.config.pricePerPlay || 1; // TODO default price
+        let transactionAmount = user.config && user.config.pricePerPlay || Config.appDefaults.defaultPricePerPlay; // TODO default price
         let transaction = {
+            date: Date.now(),
 
             from: historyPlay.player,
             to: historyPlay.artist,

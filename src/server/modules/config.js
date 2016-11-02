@@ -27,4 +27,6 @@ Config.jwt = {
     expiration: 10*24*60*60 // expires in 10 days
 };
 
+Config.appDefaults = defaultConfig.appDefaults;
+
 module.exports = Config;

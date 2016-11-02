@@ -14,7 +14,7 @@ const styles = {
     }
 };
 
-// TODO distinguer lignes from et tout avec couleur ou sigle
+// TODO distinguer lignes from et to avec couleur ou sigle
 class TransactionLine extends Component {
     static propTypes = {
         type: PropTypes.string,
@@ -54,7 +54,7 @@ class TransactionLine extends Component {
                     {this.formatDate(transaction.date)}
                 </TableRowColumn>
                 <TableRowColumn style={styles.col}>
-                    {transaction.amount}
+                    {transaction.amount}€
                 </TableRowColumn>
                 {/*<TableRowColumn>
                     <IconButton

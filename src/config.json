@@ -14,5 +14,9 @@
       "host": "127.0.0.1",
       "port": 32002
     }
+  },
+
+  "appDefaults": {
+    "defaultPricePerPlay": 1
   }
 }
