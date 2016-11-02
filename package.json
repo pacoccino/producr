@@ -68,13 +68,15 @@
     "babel-preset-react-hmre": "^1.1.1",
     "babel-preset-stage-0": "^6.16.0",
     "css-loader": "^0.25.0",
-    "fsevents": "^1.0.14",
-    "html-webpack-plugin": "^2.24.0",
+@    "html-webpack-plugin": "^2.24.0",
     "react-scripts": "^0.7.0",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.3",
     "webpack-dev-middleware": "^1.8.4",
     "webpack-hot-middleware": "^2.13.0"
+  },
+  "optionalPeerDependencies": {
+    "fsevents": "^1.0.14"
   },
   "homepage": "http://producr.ngfar.io"
 }

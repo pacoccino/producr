@@ -1,12 +1,19 @@
-api:
+producr-mongodb:
+  image: "mongo:latest"
+  ports:
+    - "33001:27017"
+#  volumes:
+#    - "/opt/mongodb/db:/data/db"
+producr-redis:
+  image: "redis:latest"
+  ports:
+    - "33002:27017"
+producr-api:
   build: ./
   ports:
     - "3000:3000"
-  links:
-    - "mongodb:mongo"
-mongodb:
-  image: "mongo:latest"
-  ports:
-    - "32001:27017"
-#  volumes:
-#    - "/opt/mongodb/db:/data/db"
+  environment:
+    - NODE_ENV=production
+    - MONGO_URL=mongodb://172.17.0.1:33001/producr
+    - REDIS_HOST=172.17.0.1
+    - REDIS_PORT=33002
