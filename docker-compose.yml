@@ -1,0 +1,12 @@
+api:
+  build: ./
+  ports:
+    - "3000:3000"
+  links:
+    - "mongodb:mongo"
+mongodb:
+  image: "mongo:latest"
+  ports:
+    - "32001:27017"
+#  volumes:
+#    - "/opt/mongodb/db:/data/db"
