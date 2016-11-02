@@ -17,19 +17,27 @@ Connections.initialize = () => new Promise((resolve, reject) => {
         port: Config.connections.redis.port
     };
     const redisClient = Redis.createClient(options);
-    redisClient.on("error", function (err) {
-        console.log("Redis Error " + err);
-    });
-
-    connectionPromises.push(new Promise((res) => {
-        redisClient.on('ready', () => {
+    connectionPromises.push(new Promise((res, rej) => {
+        const onError = (err) => {
+            if(err.code === "ECONNREFUSED") {
+                rej(err);
+                redisClient.removeListener('error', onError);
+            } else {
+                console.log("Redis Error ", err);
+            }
+        };
+        const onReady = () => {
             console.info("Redis connected");
 
             Connections.redis = redisClient;
             Wrappers.Cache.initialize(redisClient);
 
+            redisClient.removeListener('ready', onReady);
             res();
-        });
+        };
+
+        redisClient.on("error", onError);
+        redisClient.on('ready', onReady);
     }));
 
 
