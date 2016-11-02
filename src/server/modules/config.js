@@ -8,8 +8,8 @@ var Config = {
 
 Config.services = {
     soundcloud: {
-        client_id: process.env.SC_CLIENT_ID || defaultConfig.services.soundcloud,
-        client_secret: process.env.SC_CLIENT_SECRET || defaultConfig.services.soundcloud
+        client_id: process.env.SC_CLIENT_ID || defaultConfig.services.soundcloud.client_id,
+        client_secret: process.env.SC_CLIENT_SECRET || defaultConfig.services.soundcloud.client_secret
     }
 };
 
