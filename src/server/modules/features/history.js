@@ -53,16 +53,22 @@ const History = {
     },
     askForTransactions: ({ user, plays }) => {
         return new Promise((resolve, reject) => {
-            async.map(plays, (historyPlay, cb) => {
-                Transactions.askTransaction({ user, historyPlay })
-                    .then(transaction => {
-                        // TODO put transaction id to play in db
-                        // historyPlay.transaction_id = transaction._id.toString()
-                        cb(null, transaction);
-                    })
-                    .catch(err => {
-                        cb(err);
-                    });
+            async.map(plays, (historyPlay, callback) => {
+
+                if(historyPlay.played_state === ListenedStates.LISTENED) {
+                    Transactions.askTransaction({ user, historyPlay })
+                        .then(transaction => {
+                            historyPlay = historyPlay.set("transaction_id", transaction._id.toString());
+                            DBModels.HistoryPlays.updateField(historyPlay, "transaction_id")
+                                .then(() => callback(null, historyPlay))
+                                .catch(err => callback(err));
+                        })
+                        .catch(err => {
+                            callback(err);
+                        });
+                } else {
+                    callback(null, historyPlay)
+                }
             }, (err, transactions) => {
                 if(err) {
                     reject(err);
