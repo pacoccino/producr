@@ -18,6 +18,4 @@ producr-api:
     REDIS_HOST: 172.17.0.1
     REDIS_PORT: 33002
     SC_CLIENT_ID:
-    SC_CLIENT_SECRET:
-  env_file:
-    - variables.env
+    SC_CLIENT_SECRET: 
