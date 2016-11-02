@@ -7,7 +7,7 @@ producr-mongodb:
 producr-redis:
   image: "redis:latest"
   ports:
-    - "33002:27017"
+    - "33002:6379"
 producr-api:
   build: ./
   ports:
