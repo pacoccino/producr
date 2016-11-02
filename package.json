@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "ava",
-    "start": "npm run server",
+    "start": "NODE_ENV=production npm run server",
     "server": "node src/server",
     "react": "node src/server/reactonly",
-    "dev": "nf start --procfile Procfile.dev",
-    "build": "webpack --config ./src/webpack.production.config.js --progress --profile --colors"
+    "clean": "rm -rf build",
+    "build": "npm run clean && NODE_ENV=production webpack --config ./src/webpack.config.js --progress --profile --colors"
   },
   "repository": {
     "type": "git",
@@ -46,6 +46,7 @@
     "mongodb": "^2.2.10",
     "passport": "^0.3.2",
     "passport-soundcloud": "^0.2.0",
+    "postcss-loader": "^1.1.0",
     "query-string": "^4.2.3",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",

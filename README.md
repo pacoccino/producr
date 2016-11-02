@@ -9,13 +9,15 @@ producr
 
 ## Running
 
-First configure the app such as ports and databases either in `src/config.json` or via environment variables.
+First, `npm i`
+
+Configure the app such as ports and databases either in `src/config.json` or via environment variables.
 
 #### Run all-in-one dev server
-`npm start`
+`npm run server`
 
 #### Run production server
-`npm run build && NODE_ENV=production npm start`
+`npm run build && npm start`
 
 In order to validate oAuth callback, you must use localhost:3000 for web server
 

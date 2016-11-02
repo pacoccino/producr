@@ -29,13 +29,13 @@ const WebServer = (app) => {
         app.use(hotMiddleware);
 
         app.get('*', function response(req, res) {
-            res.write(middleware.fileSystem.readFileSync(path.join(webpackConfig.outputFolder, "index.html")));
+            res.write(middleware.fileSystem.readFileSync(path.join(webpackConfig.output.path, "index.html")));
             res.end();
         });
     } else {
-        app.use(express.static(webpackConfig.outputFolder));
+        app.use(express.static(webpackConfig.output.path));
         app.get('*', function response(req, res) {
-            res.sendFile(path.join(webpackConfig.outputFolder, "index.html"));
+            res.sendFile(path.join(webpackConfig.output.path, "index.html"));
         });
 
     }
