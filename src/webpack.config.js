@@ -56,7 +56,10 @@ if(isProduction){
     webpackConfig.entry = ENTRY_FILE;
     webpackConfig.output.filename = '[name]-[hash].min.js';
 
+    // TODO remove that ...
+    webpackConfig.module.loaders[0].query.presets.push("react-hmre");
     plugins = plugins.concat(
+        new webpack.HotModuleReplacementPlugin(),
         new webpack.optimize.UglifyJsPlugin({
             'output': { 'comments': false },
             'compress': { 'warnings': false, 'screw_ie8': true }

@@ -85,7 +85,7 @@ class HeaderButton extends Component {
                 >
                     {this.props.children}
                 </div>
-                </Link>
+            </Link>
         );
     }
 }
