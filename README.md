@@ -3,7 +3,7 @@ producr
 
 > A web application to analyse your SoundCloud activity, such as listening history, stats about your tracks etc...
 
-![History screenshot](https://raw.githubusercontent.com/pakokrew/producr/master/docs/screen1.jpg)
+![History screenshot](https://raw.githubusercontent.com/pakokrew/producr/master/docs/screenhistory.jpg)
 
 ----------
 
