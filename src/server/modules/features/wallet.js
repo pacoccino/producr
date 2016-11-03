@@ -9,9 +9,8 @@ const Wallet = {
             .then(wallet => {
                 user = user.set('wallet_id', wallet._id);
                 // TODO user in req not updated
-                DBModels.Users.update(user);
-
-                return wallet;
+                return DBModels.Users.updateField(user, "wallet_id")
+                    .then(updatedUser => wallet);
             });
     },
 
@@ -35,6 +34,9 @@ const Wallet = {
 
         return Wallet.getUserWallet(user)
             .then(wallet => {
+                if(!wallet) {
+                    throw new Error("Wallet not found");
+                }
                 if(!addedBalance) return wallet;
 
                 const incData = {
