@@ -9,22 +9,25 @@ producr
 
 ## Running
 
-First, `npm i`
+You need to have Nodejs v6+ installed.
 
-Configure the app such as ports and databases either in `src/config.json`, via environment variables or in `docker-compose.override.yml` file.
+- Install dependencies
+`npm install`
+
+- Configure the app such as ports and databases either in `src/config.json`, via environment variables or in `docker-compose.override.yml` file.
 
 #### Run all services with docker compose
-`docker compose build`
-`docker compose up`
+`docker-compose build`
+`docker-compose up`
 
 #### Run all-in-one dev server
-If you already have mongodb and redis server
 `npm run server`
+*You need to have MongoDb and Redis servers up*
 
 #### Run production server
 `npm run build && npm start`
 
-In order to validate oAuth callback, you must use localhost:3000 for web server
+> In order to validate oAuth callback, you currently have to use localhost:3000 as application address.
 
 ## Technologies used
 
