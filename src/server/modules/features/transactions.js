@@ -92,9 +92,9 @@ const Transactions = {
 
     askPlayTransaction(historyPlay) {
         // TODO check wallet
-        // const userWallet = Wallet.getUserWallet(user);
+        // Check playstate
 
-        let transactionAmount = user.config && user.config.pricePerPlay || Config.appDefaults.defaultPricePerPlay;
+        let transactionAmount = Config.appDefaults.defaultPricePerPlay;
 
         let transaction = {
             date: Date.now(),
@@ -111,12 +111,16 @@ const Transactions = {
         // TODO revert changes if one fails
         return Promise.resolve()
             .then(()             => DBModels.Users.getById(historyPlay.player.sc_id, "sc_id"))
-            .then(fromUser       => Wallet.updateUserWallet({fromUser, addedBalance: -transactionAmount}))
+            .then(fromUser       => {
+                transactionAmount = fromUser.config && fromUser.config.pricePerPlay || transactionAmount;
+                return fromUser;
+            })
+            .then(fromUser       => Wallet.updateUserWallet({user: fromUser, addedBalance: -transactionAmount}))
             .then(fromUserWallet => DBModels.Users.getById(historyPlay.artist.sc_id, "sc_id"))
-            .then(toUser         => Wallet.updateUserWallet({toUser, addedBalance: transactionAmount}))
+            .then(toUser         => Wallet.updateUserWallet({user: toUser, addedBalance: transactionAmount}))
             .then(toUserWallet   => DBModels.Transactions.insert(transaction))
             .then(insertedTransaction => {
-                historyPlay = historyPlay.set("transaction_id", transaction._id.toString());
+                historyPlay = historyPlay.set("transaction_id", insertedTransaction._id.toString());
                 return DBModels.HistoryPlays.updateField(historyPlay, "transaction_id")
                     .then(() => insertedTransaction);
             });

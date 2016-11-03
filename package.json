@@ -4,7 +4,8 @@
   "description": "Help producers to get feedback from their listeners",
   "main": "src/server/index.js",
   "scripts": {
-    "test": "ava test --watch",
+    "test": "nyc ava test --watch",
+    "report": "nyc report --reporter=html",
     "start": "NODE_ENV=production npm run server",
     "server": "node src/server",
     "react": "node src/server/reactonly",
@@ -69,6 +70,7 @@
     "babel-preset-stage-0": "^6.16.0",
     "css-loader": "^0.25.0",
     "html-webpack-plugin": "^2.24.0",
+    "nyc": "^8.4.0",
     "react-scripts": "^0.7.0",
     "sinon": "^1.17.6",
     "style-loader": "^0.13.1",

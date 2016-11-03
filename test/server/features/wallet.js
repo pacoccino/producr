@@ -1,12 +1,12 @@
 import test from 'ava';
 import sinon from 'sinon';
 
-import DBModel from '../../src/server/modules/dbModels/dbModel';
-import DBModels from '../../src/server/modules/dbModels';
-import Wallet from '../../src/server/modules/features/wallet';
+import DBModel from '../../../src/server/modules/dbModels/dbModel';
+import DBModels from '../../../src/server/modules/dbModels';
+import Wallet from '../../../src/server/modules/features/wallet';
 
-import UserModel from '../../src/common/models/SoundCloudUser';
-import WalletModel from '../../src/common/models/Wallet';
+import UserModel from '../../../src/common/models/SoundCloudUser';
+import WalletModel from '../../../src/common/models/Wallet';
 
 DBModels.Wallets = new DBModel();
 DBModels.Users = new DBModel();
