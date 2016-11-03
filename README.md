@@ -12,17 +12,20 @@ producr
 You need to have Nodejs v6+ installed.
 
 - Install dependencies
+
 `npm install`
 
 - Configure the app such as ports and databases either in `src/config.json`, via environment variables or in `docker-compose.override.yml` file.
 
 #### Run all services with docker compose
 `docker-compose build`
+
 `docker-compose up`
 
-#### Run all-in-one dev server
+#### Run all-in-one dev server with Hot Module Reloading
 `npm run server`
-*You need to have MongoDb and Redis servers up*
+
+*You'll need to have MongoDb and Redis servers up*
 
 #### Run production server
 `npm run build && npm start`
@@ -48,4 +51,5 @@ You need to have Nodejs v6+ installed.
 
 This project is NOT linted. Linting is a good method to keep consistency over code, and mostly for catching bugs.
 I intentionaly don't use a tool like eslint, because I believe that one can write neat code without being watched by a list of rules.
+
 Tests fix the rest.

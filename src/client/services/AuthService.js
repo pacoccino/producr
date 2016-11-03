@@ -9,9 +9,7 @@ const AuthService = {
     oAuthCallback: (code) => {
         return ApiService.fetchApi("/auth/callback?code="+code)
             .then(req => {
-                if(req.status === 200) {
-                    return;
-                } else {
+                if(req.status !== 200) {
                     throw new Error("oAuth error");
                 }
             });
@@ -37,13 +35,13 @@ const AuthService = {
             })
             .then(json => {
                 ApiService._jwt = json.token;
-                localStorage.setItem('jwt', json.token);
+                localStorage.setItem(AuthService.JWT_LS_KEY, json.token);
                 return json.token;
             });
     },
     logout: () => {
         delete ApiService._jwt;
-        localStorage.removeItem('jwt');
+        localStorage.removeItem(AuthService.JWT_LS_KEY );
 
         return ApiService.fetchApi('/auth/logout')
             .then(req => req.text());
@@ -51,5 +49,14 @@ const AuthService = {
 };
 
 AuthService.JWT_LS_KEY = 'auth_jwt';
+
+const initializeAuth = () => {
+    const jwt = localStorage.getItem(AuthService.JWT_LS_KEY );
+    if(jwt) {
+        ApiService._jwt = jwt;
+    }
+};
+
+initializeAuth();
 
 export default AuthService;

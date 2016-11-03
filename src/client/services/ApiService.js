@@ -72,13 +72,5 @@ const ApiService = {
     },
 };
 
-function initializeApi() {
-    const jwt = localStorage.getItem('jwt');
-    if(jwt) {
-        ApiService._jwt = jwt;
-    }
-}
-
-initializeApi();
 
 export default ApiService;
