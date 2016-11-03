@@ -56,24 +56,18 @@ const History = {
             async.map(plays, (historyPlay, callback) => {
 
                 if(historyPlay.played_state === ListenedStates.LISTENED) {
-                    Transactions.askTransaction({ user, historyPlay })
-                        .then(transaction => {
-                            historyPlay = historyPlay.set("transaction_id", transaction._id.toString());
-                            DBModels.HistoryPlays.updateField(historyPlay, "transaction_id")
-                                .then(() => callback(null, historyPlay))
-                                .catch(err => callback(err));
-                        })
-                        .catch(err => {
-                            callback(err);
-                        });
+                    Transactions.askPlayTransaction(historyPlay)
+                        // history play with transaction id not updated cause of immutable
+                        .then(transaction => callback(null, historyPlay))
+                        .catch(callback);
                 } else {
                     callback(null, historyPlay)
                 }
-            }, (err, transactions) => {
+            }, (err, transactedPlays) => {
                 if(err) {
                     reject(err);
                 } else {
-                    resolve(transactions);
+                    resolve(transactedPlays);
                 }
             });
         });

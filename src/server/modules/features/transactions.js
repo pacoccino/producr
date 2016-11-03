@@ -90,11 +90,12 @@ const Transactions = {
         });
     },
 
-    askTransaction({ user, historyPlay }) {
+    askPlayTransaction(historyPlay) {
         // TODO check wallet
         // const userWallet = Wallet.getUserWallet(user);
 
-        let transactionAmount = user.config && user.config.pricePerPlay || Config.appDefaults.defaultPricePerPlay; // TODO default price
+        let transactionAmount = user.config && user.config.pricePerPlay || Config.appDefaults.defaultPricePerPlay;
+
         let transaction = {
             date: Date.now(),
 
@@ -107,10 +108,18 @@ const Transactions = {
             playId: historyPlay._id.toString()
         };
 
-        transactionAmount = -transactionAmount;
-
-        return Wallet.updateUserWallet({user, addedBalance: transactionAmount})
-            .then(() => DBModels.Transactions.insert(transaction));
+        // TODO revert changes if one fails
+        return Promise.resolve()
+            .then(()             => DBModels.Users.getById(historyPlay.player.sc_id, "sc_id"))
+            .then(fromUser       => Wallet.updateUserWallet({fromUser, addedBalance: -transactionAmount}))
+            .then(fromUserWallet => DBModels.Users.getById(historyPlay.artist.sc_id, "sc_id"))
+            .then(toUser         => Wallet.updateUserWallet({toUser, addedBalance: transactionAmount}))
+            .then(toUserWallet   => DBModels.Transactions.insert(transaction))
+            .then(insertedTransaction => {
+                historyPlay = historyPlay.set("transaction_id", transaction._id.toString());
+                return DBModels.HistoryPlays.updateField(historyPlay, "transaction_id")
+                    .then(() => insertedTransaction);
+            });
     }
 };
 
