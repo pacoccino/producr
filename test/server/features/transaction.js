@@ -19,11 +19,72 @@ var sandbox;
 test.beforeEach(function () {
     sandbox = sinon.sandbox.create();
 });
-test.afterEach(function () {
+test.afterEach.always(function () {
     sandbox.restore();
 });
 
-// TODO test if artist user doesnt exists
+test.serial('_createArtistUser', t => {
+    const playerUser = new UserModel({_id: 1, sc_id: 1});
+
+    const playMock = new HistoryPlayModel({
+        _id: "play_id",
+        player: {
+            sc_id: playerUser.sc_id
+        },
+        artist: {
+            sc_id: "whatever"
+        },
+        track: {
+            id: 3
+        }
+    });
+
+    let artistUser = null;
+    sandbox.stub(DBModels.Users, "insert", function(user) {
+        t.is(user.sc_id, "whatever");
+        artistUser = new UserModel(user);
+        return Promise.resolve(artistUser);
+    });
+
+    return Transactions._createArtistUser(playMock)
+        .then(artistUser => {
+            t.is(artistUser.sc_id, "whatever");
+        });
+});
+test.serial('_createArtistUser - already exists', t => {
+    const playerUser = new UserModel({_id: 1, sc_id: 1});
+    const artistUser = new UserModel({_id: 2, sc_id: "whatever"});
+
+    const playMock = new HistoryPlayModel({
+        _id: "play_id",
+        player: {
+            sc_id: playerUser.sc_id
+        },
+        artist: {
+            sc_id: artistUser.sc_id
+        },
+        track: {
+            id: 3
+        }
+    });
+
+    sandbox.stub(DBModels.Users, "getById", function(id, field) {
+        t.is(field, "sc_id");
+        t.is(id, artistUser.sc_id);
+        return Promise.resolve(artistUser);
+    });
+    sandbox.stub(DBModels.Users, "insert", function() {
+        const error = new Error("E11000 duplicate key error");
+        error.code = 11000;
+        return Promise.reject(error);
+    });
+
+    return Transactions._createArtistUser(playMock)
+        .then(artistUserR => {
+            t.is(artistUserR.sc_id, artistUser.sc_id);
+        });
+});
+
 test.serial('_prepareTransaction - no artist user', t => {
     const playerUser = new UserModel({_id: 1, sc_id: 1});
 
@@ -40,6 +101,13 @@ test.serial('_prepareTransaction - no artist user', t => {
         }
     });
 
+    let artistUser = null;
+    sandbox.stub(DBModels.Users, "insert", function(user) {
+        t.is(user.sc_id, "whatever");
+        artistUser = new UserModel(user);
+        return Promise.resolve(artistUser);
+    });
+
     sandbox.stub(DBModels.Users, "getById", function(id, field) {
         t.is(field, "sc_id");
         if(id === 1) {
@@ -53,6 +121,7 @@ test.serial('_prepareTransaction - no artist user', t => {
         .then(transactionData => {
             t.is(transactionData.fromUser, playerUser);
             t.not(transactionData.toUser, null);
+            t.is(transactionData.toUser, artistUser);
             t.is(transactionData.amount, Config.appDefaults.defaultPricePerPlay);
         });
 });
@@ -92,7 +161,7 @@ test.serial('_prepareTransaction - no priceperplay', t => {
         .catch(err => t.fail(err.stack));
 });
 
-test.serial('_prepareTransaction - priceperplay', t => {
+test.serial('_prepareTransaction', t => {
     const playerUser = new UserModel({
         _id: 1, sc_id: 1,
         config: {

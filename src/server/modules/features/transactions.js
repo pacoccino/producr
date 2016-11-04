@@ -90,6 +90,20 @@ const Transactions = {
         });
     },
 
+    // create artist user when doesnt exists
+    _createArtistUser(historyPlay) {
+        return DBModels.Users.insert({
+            sc_id: historyPlay.artist.sc_id
+        })
+        // in case of parallel execution, double insert can happen
+            .catch(err => {
+                if(err.code === 11000) {
+                    return DBModels.Users.getById(historyPlay.artist.sc_id, "sc_id");
+                } else {
+                    throw err;
+                }
+            });
+    },
     // Get necessary data for a play transaction: users, amount
     _prepareTransaction (historyPlay) {
         const transactionData = {};
@@ -103,7 +117,14 @@ const Transactions = {
             })
             .then(()       => DBModels.Users.getById(historyPlay.artist.sc_id, "sc_id"))
             .then(toUser   => {
-                transactionData.toUser = toUser;
+                if(toUser) {
+                    transactionData.toUser = toUser;
+                } else {
+                    Transactions._createArtistUser(historyPlay)
+                        .then(artistUser => {
+                            transactionData.toUser = artistUser;
+                        });
+                }
             })
             .then(() => transactionData);
     },

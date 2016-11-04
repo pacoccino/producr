@@ -17,7 +17,7 @@ var sandbox;
 test.beforeEach(function () {
     sandbox = sinon.sandbox.create();
 });
-test.afterEach(function () {
+test.afterEach.always(function () {
     sandbox.restore();
 });
 
