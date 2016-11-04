@@ -32,6 +32,7 @@ const Wallet = {
 
     updateUserWallet: ({ user, addedBalance }) => {
 
+        // TODO check if user doesnt exists
         return Wallet.getUserWallet(user)
             .then(wallet => {
                 if(!wallet) {

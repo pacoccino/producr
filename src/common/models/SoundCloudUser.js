@@ -7,7 +7,8 @@ const SoundCloudUser = new Record({
     sc_auth: null,
     sc_profile: null,
     wallet_id: null,
-    crawlers: null
+    crawlers: null,
+    config: null
 }, 'SoundCloudUser');
 
 SoundCloudUser.prototype.toClient = function() {

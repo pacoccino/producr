@@ -19,6 +19,7 @@ const updateUser = (user, profile, auth) => {
     user = user.set('sc_profile', profile);
     user = user.set('sc_auth', auth);
 
+    // TODO update multipleFields
     return DBModels.Users.update(user);
 };
 

@@ -90,35 +90,61 @@ const Transactions = {
         });
     },
 
-    askPlayTransaction(historyPlay) {
-        // TODO check wallet
-        // Check playstate
+    // Get necessary data for a play transaction: users, amount
+    _prepareTransaction (historyPlay) {
+        const transactionData = {};
+        let defaultAmount = Config.appDefaults.defaultPricePerPlay;
 
-        let transactionAmount = Config.appDefaults.defaultPricePerPlay;
-
-        let transaction = {
-            date: Date.now(),
-
-            from: historyPlay.player,
-            to: historyPlay.artist,
-            track: historyPlay.track,
-
-            amount: transactionAmount,
-
-            playId: historyPlay._id.toString()
-        };
-
-        // TODO revert changes if one fails
         return Promise.resolve()
-            .then(()             => DBModels.Users.getById(historyPlay.player.sc_id, "sc_id"))
-            .then(fromUser       => {
-                transactionAmount = fromUser.config && fromUser.config.pricePerPlay || transactionAmount;
-                return fromUser;
+            .then(()       => DBModels.Users.getById(historyPlay.player.sc_id, "sc_id"))
+            .then(fromUser => {
+                transactionData.fromUser = fromUser;
+                transactionData.amount = fromUser.config && fromUser.config.pricePerPlay || defaultAmount;
             })
-            .then(fromUser       => Wallet.updateUserWallet({user: fromUser, addedBalance: -transactionAmount}))
-            .then(fromUserWallet => DBModels.Users.getById(historyPlay.artist.sc_id, "sc_id"))
-            .then(toUser         => Wallet.updateUserWallet({user: toUser, addedBalance: transactionAmount}))
-            .then(toUserWallet   => DBModels.Transactions.insert(transaction))
+            .then(()       => DBModels.Users.getById(historyPlay.artist.sc_id, "sc_id"))
+            .then(toUser   => {
+                transactionData.toUser = toUser;
+            })
+            .then(() => transactionData);
+    },
+    // Update users wallet from a transaction
+    _updateWallets (transactionData) {
+
+        return Promise.resolve()
+            .then(() =>
+                Wallet.updateUserWallet({
+                    user: transactionData.fromUser,
+                    addedBalance: -transactionData.amount
+                })
+            )
+            .then(() =>
+                Wallet.updateUserWallet({
+                    user: transactionData.toUser,
+                    addedBalance: transactionData.amount
+                })
+            )
+            .then(() => transactionData);
+    },
+
+    askPlayTransaction(historyPlay) {
+
+        return Transactions._prepareTransaction(historyPlay)
+            .then(transactionData => Transactions._updateWallets(transactionData))
+            .then(transactionData => {
+                    let transaction = {
+                        date: Date.now(),
+
+                        from: historyPlay.player,
+                        to: historyPlay.artist,
+                        track: historyPlay.track,
+
+                        amount: transactionData.amount,
+
+                        playId: historyPlay._id.toString()
+                    };
+                    return DBModels.Transactions.insert(transaction);
+                }
+            )
             .then(insertedTransaction => {
                 historyPlay = historyPlay.set("transaction_id", insertedTransaction._id.toString());
                 return DBModels.HistoryPlays.updateField(historyPlay, "transaction_id")
