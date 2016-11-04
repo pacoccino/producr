@@ -2,26 +2,9 @@ const jwt = require('jsonwebtoken');
 const express = require('express');
 
 const SoundCloud = require('../soundcloud');
-const DBModels = require('./dbModels');
 const ApiError = require('./apiError');
 const Config = require('./config');
-
-
-const createUser = (profile, auth) => {
-    const uts = {
-        sc_id: profile.id,
-        sc_profile: profile,
-        sc_auth: auth,
-    };
-    return DBModels.Users.insert(uts);
-};
-
-const updateUser = (user, profile, auth) => {
-    user = user.set('sc_profile', profile);
-    user = user.set('sc_auth', auth);
-
-    return DBModels.Users.update(user);
-};
+const Users = require('./features/users');
 
 const SoundCloudLogin = function (username, password, cb) {
 
@@ -34,15 +17,15 @@ const SoundCloudLogin = function (username, password, cb) {
         })
         .then(profile => {
             scProfile = profile;
-            return DBModels.Users.getById(profile.id, "sc_id");
+            return Users.getById(profile.id, "sc_id");
         })
         .then(user => {
             if(user) {
-                updateUser(user, scProfile, scAuth)
+                Users.updateUserFromAuth(user, scProfile, scAuth)
                     .then(user => cb(null, user))
                     .catch(cb);
             } else {
-                createUser(scProfile, scAuth)
+                Users.newUserFromAuth(scProfile, scAuth)
                     .then(user => cb(null, user))
                     .catch(cb);
             }
@@ -70,7 +53,7 @@ const jwtMiddleware = (req, res, next) => {
                 }
                 return next(err);
             } else {
-                DBModels.Users.getById(decoded.userId)
+                Users.getById(decoded.userId)
                     .then(user => {
                         if(user) {
                             req.user = user;

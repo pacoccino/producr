@@ -2,26 +2,9 @@ const express = require('express');
 const passport = require('passport');
 const SoundCloudStrategy = require('passport-soundcloud').Strategy;
 
-const DBModels = require('./dbModels');
 const ApiError = require('./apiError');
 const Config = require('./config');
-
-const createUser = (profile, auth) => {
-    const uts = {
-        sc_id: profile.id,
-        sc_profile: profile,
-        sc_auth: auth,
-    };
-    return DBModels.Users.insert(uts);
-};
-
-const updateUser = (user, profile, auth) => {
-    user = user.set('sc_profile', profile);
-    user = user.set('sc_auth', auth);
-
-    // TODO update multipleFields
-    return DBModels.Users.update(user);
-};
+const Users = require('./features/users');
 
 const Authenticator = {};
 
@@ -30,7 +13,7 @@ Authenticator.serializer = (user, cb) => {
 };
 
 Authenticator.deserializer = (_id, cb) => {
-    DBModels.Users.getById(_id)
+    Users.getById(_id)
         .then(user => {
             if(user) {
                 cb(null, user);
@@ -49,14 +32,14 @@ Authenticator.SoundCloudStrategy = (accessToken, refreshToken, profile, cb) => {
             access_token: accessToken,
             refresh_token: refreshToken
         };
-        DBModels.Users.getById(scProfile.id, "sc_id")
+        Users.getByScId(scProfile.id)
             .then(user => {
                 if (user) {
-                    updateUser(user, scProfile, scAuth)
+                    Users.updateUserFromAuth(user, scProfile, scAuth)
                         .then(user => cb(null, user))
                         .catch(cb);
                 } else {
-                    createUser(scProfile, scAuth)
+                    Users.newUserFromAuth(scProfile, scAuth)
                         .then(user => cb(null, user))
                         .catch(cb);
                 }
