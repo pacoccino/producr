@@ -2,7 +2,7 @@ const ObjectId = require('bson').ObjectId;
 
 const normalizeId = (object) => {
     if(object && object["_id"]) {
-        object["_id"] = object(object["_id"]);
+        object["_id"] = ObjectId(object["_id"]);
     }
 };
 
@@ -99,21 +99,12 @@ class DBModel {
         const query = {};
         if(customField) {
             query[customField] = _id;
+        } else {
+            query["_id"] = _id;
         }
         normalizeId(query);
 
-        return new Promise((resolve, reject) => {
-            this._collection
-                .findOne(query)
-                .then(obj => {
-                    if(obj) {
-                        const objInstance = this._model(obj);
-                        resolve(objInstance);
-                    } else {
-                        resolve(null);
-                    }
-                }).catch(reject);
-        });
+        return this.findOne(query);
     }
 
     find(query, options) {
@@ -131,8 +122,17 @@ class DBModel {
     findOne(query) {
         normalizeId(query);
 
-        return this._collection.findOne(query)
-            .then(this._model);
+        return new Promise((resolve, reject) => {
+            this._collection.findOne(query)
+                .then(obj => {
+                    if(obj) {
+                        const objInstance = this._model(obj);
+                        resolve(objInstance);
+                    } else {
+                        resolve(null);
+                    }
+                }).catch(reject);
+        });
     }
 
     remove(obj) {
