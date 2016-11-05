@@ -1,7 +1,6 @@
 "use strict";
 const cluster = require('cluster');
-// TODO
-// const uuid = require('node-uuid');
+const uuid = require('node-uuid');
 const os = require('os');
 
 const Config = require('./config');
@@ -11,7 +10,7 @@ class RequestLogger {
         var timestamp = new Date();
 
         this.logData = {
-            _id: Math.random(),
+            _id: uuid.v1(),
             // _id: uuid.v1(),
             date: timestamp.getTime(),
             hostName: os.hostname(),
