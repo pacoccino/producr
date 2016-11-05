@@ -7,20 +7,63 @@ const Config = require('./config');
 
 const Connections = {};
 
-Connections.initialize = () => new Promise((resolve, reject) => {
+const initIndexes = () => {
+    const promises = [];
 
-    const connectionPromises = [];
+    promises.push(Connections.mongo.createIndex("Users", "sc_id", {
+        v: 1, unique: true, name: "Users.SC_uniqueness"
+    }));
 
-    // Redis
-    const options = {
-        host: Config.connections.redis.host,
-        port: Config.connections.redis.port
-    };
-    const redisClient = Redis.createClient(options);
-    connectionPromises.push(new Promise((res, rej) => {
+    promises.push(Connections.mongo.createIndex("HistoryPlays",
+        "player.sc_id",
+        { name: "HistoryPlays.player" }
+    ));
+
+    promises.push(Connections.mongo.createIndex("Transactions",
+        "from.sc_id",
+        { name: "Transactions.fromUser" }
+    ));
+
+    promises.push(Connections.mongo.createIndex("Transactions",
+        "to.sc_id",
+        { name: "Transactions.toUser" }
+    ));
+
+    return Promise.all(promises);
+};
+const initMongo = () => {
+    return new Promise((resolve, reject) => {
+
+        var url = Config.connections.mongoUrl;
+
+        MongoClient.connect(url, function(err, db) {
+            if (err) {
+                reject(err);
+            } else {
+                console.info("Mongo connected");
+
+                Connections.mongo = db;
+                Wrappers.DB.initialize(db);
+                DBModels.initialize();
+
+                initIndexes().then(resolve).catch(reject);
+            }
+        });
+    })
+};
+
+const initRedis = () => {
+    return new Promise((resolve, reject) => {
+
+        const options = {
+            host: Config.connections.redis.host,
+            port: Config.connections.redis.port
+        };
+        const redisClient = Redis.createClient(options);
+
         const onError = (err) => {
             if(err.code === "ECONNREFUSED" || err.code === "ECONNRESET") {
-                rej(err);
+                reject(err);
                 redisClient.removeListener('error', onError);
             } else {
                 console.log("Redis Error ", err);
@@ -33,31 +76,19 @@ Connections.initialize = () => new Promise((resolve, reject) => {
             Wrappers.Cache.initialize(redisClient);
 
             redisClient.removeListener('ready', onReady);
-            res();
+            resolve();
         };
 
         redisClient.on("error", onError);
         redisClient.on('ready', onReady);
-    }));
+    })
+};
 
+Connections.initialize = () => new Promise((resolve, reject) => {
 
-    // Mongo
-    var url = Config.connections.mongoUrl;
-    connectionPromises.push(new Promise((res,rej) => {
-        MongoClient.connect(url, function(err, db) {
-            if (err) {
-                rej(err);
-            } else {
-                console.info("Mongo connected");
-
-                Connections.mongo = db;
-                Wrappers.DB.initialize(db);
-                DBModels.initialize();
-
-                res();
-            }
-        });
-    }));
+    const connectionPromises = [];
+    connectionPromises.push(initMongo());
+    connectionPromises.push(initRedis());
 
     Promise.all(connectionPromises).then(resolve, reject);
 });

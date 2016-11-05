@@ -35,6 +35,7 @@ const History = {
         });
     },
     getListenedState: (play) => {
+        // TODO use song duration , use percentage, duration > played
         const diff = play.played_duration;
         if(_.isNil(diff)) {
             return ListenedStates.LISTENING;
