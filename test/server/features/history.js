@@ -1,6 +1,7 @@
 import test from 'ava';
 
 import History from '../../../src/server/modules/features/history';
+import HistoryModel from '../../../src/common/classModels/HistoryPlay';
 
 const histMock = [
     {
@@ -23,7 +24,7 @@ const histMock = [
         played_at: 15000,
         track: {duration: 1000}
     }
-];
+].map(play => new HistoryModel(play));
 
 // TODO test OVERTRACK
 
@@ -37,19 +38,20 @@ test('computeDifference', t => {
 });
 
 test('getListenedState', t => {
-    t.is(History.getListenedState({played_duration: null, track: {duration: 1000}}), History.ListenedStates.LISTENING);
-    t.is(History.getListenedState({played_duration: 0,    track: {duration: 1000}}), History.ListenedStates.SKIPPED);
-    t.is(History.getListenedState({played_duration: 5,    track: {duration: 1000}}), History.ListenedStates.SKIPPED);
-    t.is(History.getListenedState({played_duration: 20,   track: {duration: 1000}}), History.ListenedStates.LISTENED);
-    t.is(History.getListenedState({played_duration: 200,  track: {duration: 1000}}), History.ListenedStates.LISTENED);
+    let histDiffed = History.computeDiff(histMock);
+
+    t.is(histDiffed[0].getListenedState(), HistoryModel.ListenedStates.LISTENING);
+    t.is(histDiffed[1].getListenedState(), HistoryModel.ListenedStates.LISTENED);
+    t.is(histDiffed[2].getListenedState(), HistoryModel.ListenedStates.LISTENED);
+    t.is(histDiffed[3].getListenedState(), HistoryModel.ListenedStates.SKIPPED);
 });
 
 test('setListenedState', t => {
     let histDiffed = History.computeDiff(histMock);
     histDiffed = History.setListenedState(histDiffed);
 
-    t.is(histDiffed[0].played_state, History.ListenedStates.LISTENING);
-    t.is(histDiffed[1].played_state, History.ListenedStates.LISTENED);
-    t.is(histDiffed[2].played_state, History.ListenedStates.LISTENED);
-    t.is(histDiffed[3].played_state, History.ListenedStates.SKIPPED);
+    t.is(histDiffed[0].played_state, HistoryModel.ListenedStates.LISTENING);
+    t.is(histDiffed[1].played_state, HistoryModel.ListenedStates.LISTENED);
+    t.is(histDiffed[2].played_state, HistoryModel.ListenedStates.LISTENED);
+    t.is(histDiffed[3].played_state, HistoryModel.ListenedStates.SKIPPED);
 });

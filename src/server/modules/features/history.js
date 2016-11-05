@@ -5,16 +5,7 @@ const SoundcloudResource = require('../../soundcloud/index').Resource;
 const SoundCloud = require('../../soundcloud/index');
 const DBModels = require('../dbModels');
 const Transactions = require('./transactions');
-
-const ListenedStates = {
-    LISTENING: 'LISTENING',
-    LISTENED: 'LISTENED',
-    SKIPPED: 'SKIPPED',
-    OVERTRACK: 'OVERTRACK'
-};
-const ListenedTimes = {
-    SKIP: 10
-};
+const HistoryPlay = require('../../../common/classModels/HistoryPlay');
 
 // TODO :
 // get more than 9 last from soundcloud API
@@ -36,32 +27,10 @@ const History = {
             return play;
         });
     },
-    getListenedState: (play) => {
-        const diff = play.played_duration;
-        const songLength = play.track.duration; // What's track.full_duration ?
-
-        if(_.isNil(diff)) {
-            // We need to have another track in history to estimate played_duration
-            return ListenedStates.LISTENING;
-
-        } else if(diff > songLength) {
-            // Diff is greater than track duration, user exited application so we cannot know play duration.
-            // Can suppose that track is listened
-            return ListenedStates.OVERTRACK;
-
-        } else if(diff < ListenedTimes.SKIP) {
-            return ListenedStates.SKIPPED;
-
-        } else {
-            // Here we could compute percentage played_duration/track_duration to estimate listen
-            // But still keeping minimum time (not to pay very short track&demos
-            return ListenedStates.LISTENED;
-        }
-    },
     setListenedState: (history) => {
         return history
             .map(play => {
-                play.played_state = History.getListenedState(play);
+                play.played_state = play.getListenedState();
                 return play;
             });
     },
@@ -69,7 +38,7 @@ const History = {
         return new Promise((resolve, reject) => {
             async.map(plays, (historyPlay, callback) => {
 
-                if(historyPlay.played_state === ListenedStates.LISTENED) {
+                if(historyPlay.played_state === HistoryPlay.ListenedStates.LISTENED) {
                     Transactions.askPlayTransaction(historyPlay)
                         // history play with transaction id not updated cause of immutable
                         .then(transaction => callback(null, historyPlay))
@@ -110,7 +79,7 @@ const History = {
         };
 
         // Convert to model optional (dbmodel does it at insert
-        return DBModels.HistoryPlays._model(historyTrack);
+        return new HistoryPlay(historyTrack);
     },
     updateUserHistory: (user) => {
         const updateData = {
@@ -135,10 +104,8 @@ const History = {
                 // On ne garde que les nouvelles lectures
                 updateData.newHistory = updateData.newHistory.filter(play => play.played_at > updateData.lastFetched);
 
-                updateData.newHistory = History.setListenedState(updateData.newHistory);
-
-                // Convertion dans le modele data
                 updateData.newHistory = updateData.newHistory.map(History.convertPlayToModel(user));
+                updateData.newHistory = History.setListenedState(updateData.newHistory);
             })
             .then(() => {
                 if(updateData.newHistory.length) {
@@ -188,8 +155,5 @@ const History = {
             });
     }
 };
-
-History.ListenedStates = ListenedStates;
-History.ListenedTimes = ListenedTimes;
 
 module.exports = History;
