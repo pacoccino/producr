@@ -9,21 +9,25 @@ const Users = {
         return DBModels.Users.getById(sc_id, "sc_id");
     },
 
-    newUserFromAuth: (profile, auth) => {
+    newUserFromAuth: (sc_profile, sc_auth) => {
         const uts = {
-            sc_id: profile.id,
-            sc_profile: profile,
-            sc_auth: auth,
+            sc_id: sc_profile.id,
+            sc_profile,
+            sc_auth
         };
         return DBModels.Users.insert(uts);
     },
 
-    updateUserFromAuth: (user, profile, auth) => {
-        user = user.set('sc_profile', profile);
-        user = user.set('sc_auth', auth);
+    updateUserFromAuth: (user, sc_profile, sc_auth) => {
+        user = user.set('sc_profile', sc_profile);
+        user = user.set('sc_auth', sc_auth);
 
-        // TODO update multipleFields
-        return DBModels.Users.update(user);
+        const fields = {
+            sc_profile,
+            sc_auth
+        };
+
+        return DBModels.Users.updateFields(user, fields);
     },
 };
 
