@@ -9,20 +9,22 @@ const Transactions = require('./transactions');
 const ListenedStates = {
     LISTENING: 'LISTENING',
     LISTENED: 'LISTENED',
-    SKIPPED: 'SKIPPED'
+    SKIPPED: 'SKIPPED',
+    OVERTRACK: 'OVERTRACK'
 };
 const ListenedTimes = {
     SKIP: 10
 };
 
 // TODO :
-// - get song duration and compare with play duration to better validate
 // get more than 9 last from soundcloud API
 // check if last returned is already stored, if not ask for next
 
 const History = {
 
     computeDiff: (history) => {
+        // We compute played_duration from difference between two played_at
+
         return history.map((play, index) => {
             let diff = null;
             if(index !== 0) {
@@ -35,13 +37,24 @@ const History = {
         });
     },
     getListenedState: (play) => {
-        // TODO use song duration , use percentage, duration > played
         const diff = play.played_duration;
+        const songLength = play.track.duration; // What's track.full_duration ?
+
         if(_.isNil(diff)) {
+            // We need to have another track in history to estimate played_duration
             return ListenedStates.LISTENING;
+
+        } else if(diff > songLength) {
+            // Diff is greater than track duration, user exited application so we cannot know play duration.
+            // Can suppose that track is listened
+            return ListenedStates.OVERTRACK;
+
         } else if(diff < ListenedTimes.SKIP) {
             return ListenedStates.SKIPPED;
+
         } else {
+            // Here we could compute percentage played_duration/track_duration to estimate listen
+            // But still keeping minimum time (not to pay very short track&demos
             return ListenedStates.LISTENED;
         }
     },

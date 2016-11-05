@@ -5,6 +5,29 @@ const Wrappers = require('./wrappers');
 const DBModels = require('./dbModels');
 const Config = require('./config');
 
+/*
+const getMongoUrl = function(config) {
+    var url = "mongodb://";
+    if(config.auth) {
+        url += config.auth;
+        url += "@";
+    }
+
+    url += config.server;
+
+    var authDatabase = config.database;
+    if(authDatabase) {
+        url += "/";
+        url += authDatabase;
+    }
+    if(config.replicaSet) {
+        url += "?replicaSet=";
+        url += config.replicaSet;
+    }
+
+    return url;
+};*/
+
 const Connections = {};
 
 const initIndexes = () => {
