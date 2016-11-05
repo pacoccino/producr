@@ -5,21 +5,27 @@ import History from '../../../src/server/modules/features/history';
 const histMock = [
     {
         urn: 'foakfe',
-        played_at: 50000
+        played_at: 50000,
+        track: {duration: 1000}
     },
     {
         urn: 'dezfez',
-        played_at: 40000
+        played_at: 40000,
+        track: {duration: 1000}
     },
     {
         urn: 'fsdf',
-        played_at: 20000
+        played_at: 20000,
+        track: {duration: 1000}
     },
     {
         urn: 'foakfezfzefe',
-        played_at: 15000
+        played_at: 15000,
+        track: {duration: 1000}
     }
 ];
+
+// TODO test OVERTRACK
 
 test('computeDifference', t => {
     let histDiffed = History.computeDiff(histMock);
@@ -31,11 +37,11 @@ test('computeDifference', t => {
 });
 
 test('getListenedState', t => {
-    t.is(History.getListenedState({played_duration: null}), History.ListenedStates.LISTENING);
-    t.is(History.getListenedState({played_duration: 0}), History.ListenedStates.SKIPPED);
-    t.is(History.getListenedState({played_duration: 5}), History.ListenedStates.SKIPPED);
-    t.is(History.getListenedState({played_duration: 20}), History.ListenedStates.LISTENED);
-    t.is(History.getListenedState({played_duration: 200}), History.ListenedStates.LISTENED);
+    t.is(History.getListenedState({played_duration: null, track: {duration: 1000}}), History.ListenedStates.LISTENING);
+    t.is(History.getListenedState({played_duration: 0,    track: {duration: 1000}}), History.ListenedStates.SKIPPED);
+    t.is(History.getListenedState({played_duration: 5,    track: {duration: 1000}}), History.ListenedStates.SKIPPED);
+    t.is(History.getListenedState({played_duration: 20,   track: {duration: 1000}}), History.ListenedStates.LISTENED);
+    t.is(History.getListenedState({played_duration: 200,  track: {duration: 1000}}), History.ListenedStates.LISTENED);
 });
 
 test('setListenedState', t => {
