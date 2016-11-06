@@ -7,7 +7,7 @@ import DBModels from '../../../src/server/modules/dbModels';
 import Wallet from '../../../src/server/modules/features/wallet';
 import Transactions from '../../../src/server/modules/features/transactions';
 
-import HistoryPlayModel from '../../../src/common/models/HistoryPlay';
+import HistoryPlayModel from '../../../src/common/classModels/HistoryPlay';
 import TransactionModel from '../../../src/common/models/Transaction';
 import UserModel from '../../../src/common/models/SoundCloudUser';
 

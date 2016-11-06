@@ -1,32 +1,35 @@
 const ObjectId = require('bson').ObjectId;
 
-const hydrateProperties = (obj, props, data) => {
-    const keys = Object.keys(props);
+class ClassModel {
+    constructor(sourceObject) {
+        sourceObject = sourceObject || {};
 
-    keys.forEach(key => {
-        obj[key] = data[key] || null
-    });
-};
-
-function ClassModelWrapper(properties) {
-
-    function ClassModel(sourceObject) {
-        sourceObject = sourceObject || {};
-
-        if(!sourceObject._id) {
+        if (!sourceObject._id) {
             sourceObject._id = new ObjectId();
         }
-        hydrateProperties(this, properties, sourceObject);
-
+        this._hydrateProperties(this, sourceObject);
     }
 
-    ClassModel.prototype.toJS = function() {
+    toJS() {
         const jsObject = {};
-        hydrateProperties(jsObject, properties, this);
+        this._hydrateProperties(jsObject, this);
         return jsObject;
-    };
+    }
 
-    return ClassModel;
+    _hydrateProperties (obj, data)  {
+        const properties = this._getProperties();
+        const keys = Object.keys(properties);
+
+        keys.forEach(key => {
+            obj[key] = data[key] || null
+        });
+    }
+
+    _getProperties() {
+        return {
+            _id: 0
+        };
+    }
 }
 
-module.exports = ClassModelWrapper;
+module.exports = ClassModel;

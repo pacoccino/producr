@@ -167,7 +167,7 @@ const Transactions = {
                 }
             )
             .then(insertedTransaction => {
-                historyPlay = historyPlay.set("transaction_id", insertedTransaction._id.toString());
+                historyPlay.transaction_id = insertedTransaction._id.toString();
                 return DBModels.HistoryPlays.updateField(historyPlay, "transaction_id")
                     .then(() => insertedTransaction);
             });

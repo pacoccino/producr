@@ -7,31 +7,43 @@ const normalizeId = (object) => {
 };
 
 class DBModel {
-    constructor(model, collection) {
-        this._model = model;
+    constructor(Model, collection) {
+        if(!Model || !collection) {
+            throw "DBModel must be instanciated with model and collection";
+        }
+        this._model = Model;
         this._collection = collection;
+        this._convertObjectToModel = this._convertObjectToModel.bind(this);
+    }
+
+    _convertObjectToModel(object) {
+        if(object instanceof this._model) {
+            return object;
+        } else {
+            return new this._model(object);
+        }
     }
 
     _insert(data) {
         return this._collection.insert(data)
             .then(results => {
-                return results.ops.map(this._model);
+                return results.ops.map(this._convertObjectToModel);
             });
     }
 
     insert(obj) {
-        obj = this._model(obj);
-        obj = obj.toJS();
+        obj = this._convertObjectToModel(obj);
+        const jsObject = obj.toJS();
 
-        return this._insert(obj)
+        return this._insert(jsObject)
             .then(results => results[0]);
     }
 
     insertMultiple(array) {
-        array = array.map(this._model);
-        array = array.map(obj => obj.toJS());
+        array = array.map(this._convertObjectToModel);
+        const jsArray = array.map(obj => obj.toJS());
 
-        return this._insert(array);
+        return this._insert(jsArray);
     }
 
     _update(query, data) {
@@ -40,58 +52,51 @@ class DBModel {
     }
 
     update(obj) {
+        obj = this._convertObjectToModel(obj);
+
         const jsUser = obj.toJS();
-        jsUser._id = ObjectId(jsUser._id);
+        jsUser._id = ObjectId(jsUser._id); // ??
+
         const query = {_id: jsUser._id};
+        normalizeId(query);
 
         return this._update(query, jsUser)
             .then(() => {
-                return this._model(obj);
+                return this.obj(obj);
             });
     }
 
     updateField(obj, field) {
-        const objectId = ObjectId(obj._id);
-        const query = {_id: objectId};
-        const updateObject = {
-            "$set": {}
-        };
-        updateObject["$set"] = {};
-        updateObject["$set"][field] = obj[field];
+        obj = this._convertObjectToModel(obj);
 
-        return this._update(query, updateObject)
-            .then(() => {
-                return this._model(obj);
-            });
+        const fieldUpdate = {};
+        fieldUpdate[field] = obj[field];
+
+        return this.updateFields(obj, fieldUpdate);
+
     }
     updateFields(obj, fields) {
-        const objectId = ObjectId(obj._id);
-        const query = {_id: objectId};
-        const updateObject = {
-            "$set": {}
-        };
-        updateObject["$set"] = fields;
-
-        return this._update(query, updateObject)
-            .then(() => {
-                return this._model(obj);
-            });
+        // TODO Il y a un probleme quand on file des clés valeurs a update, l'objet retourné n'est pas update. Marche avec le field parceque l'objet est deja bon
+        return this._updateOperation(obj, "$set", fields);
     }
+
     _updateOperation(obj, operation, data) {
-        const objectId = ObjectId(obj._id);
-        const query = {_id: objectId};
+        obj = this._convertObjectToModel(obj);
+
+        const query = {_id: obj._id};
+        normalizeId(query);
 
         const updateObject = {};
         updateObject[operation] = data;
 
-        return this._update(query, updateObject);
+        return this._update(query, updateObject)
+            .then(() => {
+                return obj;
+            });
     }
 
     incField(obj, data) {
-        return this._updateOperation(obj, '$inc', data)
-            .then(() => {
-                return this._model(obj);
-            });
+        return this._updateOperation(obj, '$inc', data);
     }
 
     getById(_id, customField) {
@@ -117,7 +122,7 @@ class DBModel {
             .skip(skip)
             .limit(limit)
             .toArray()
-            .then(array => array.map(this._model));
+            .then(array => array.map(this._convertObjectToModel));
     }
     findOne(query) {
         normalizeId(query);
@@ -126,7 +131,7 @@ class DBModel {
             this._collection.findOne(query)
                 .then(obj => {
                     if(obj) {
-                        const objInstance = this._model(obj);
+                        const objInstance = this._convertObjectToModel(obj);
                         resolve(objInstance);
                     } else {
                         resolve(null);
