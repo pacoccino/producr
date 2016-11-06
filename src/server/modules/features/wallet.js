@@ -5,7 +5,16 @@ const DBModels = require('../dbModels');
 const Wallet = {
 
     createUserWallet: (user) => {
-        return DBModels.Wallets.insert()
+        const walletBase = {user_id: user._id};
+        return DBModels.Wallets.insert(walletBase)
+            .catch(err => {
+                // in case of parallel execution, double insert can happen
+                if(err.code === 11000) {
+                    return DBModels.Wallets.getById(user._id, "user_id");
+                } else {
+                    throw err;
+                }
+            })
             .then(wallet => {
                 user = user.set('wallet_id', wallet._id);
                 // TODO user in req not updated

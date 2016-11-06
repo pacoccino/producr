@@ -1,2 +1,4 @@
 - Prendre en compte les licenses des chansons (checker les preview)
 - Changer methode listened_state prenant en compte durée du son, duree d'ecoute, rapport, durée minimum ...
+- ID references dans mongo : ObjectId ou string ?
+- Wallet-> userId et/ou User->WalletId

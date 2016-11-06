@@ -95,8 +95,8 @@ const Transactions = {
         return DBModels.Users.insert({
             sc_id: historyPlay.artist.sc_id
         })
-        // in case of parallel execution, double insert can happen
             .catch(err => {
+                // in case of parallel execution, double insert can happen
                 if(err.code === 11000) {
                     return DBModels.Users.getById(historyPlay.artist.sc_id, "sc_id");
                 } else {

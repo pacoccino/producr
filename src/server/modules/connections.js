@@ -37,6 +37,10 @@ const initIndexes = () => {
         v: 1, unique: true, name: "Users.SC_uniqueness"
     }));
 
+    promises.push(Connections.mongo.createIndex("Wallets", "user_id", {
+        v: 1, unique: true, name: "Wallets.User_uniqueness"
+    }));
+
     promises.push(Connections.mongo.createIndex("HistoryPlays",
         "player.sc_id",
         { name: "HistoryPlays.player" }
