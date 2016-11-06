@@ -48,7 +48,7 @@ const NotLoggedApp = ({ authCallback }) => (
     <Router history={browserHistory}>
         <Route path="/auth/callback" onEnter={checkOAuth(authCallback)} />
         <Route path="/login" component={LoginPage} />
-        <Redirect from="/" to="/login" />
+        <Redirect from="/*" to="/login" />
         <Route path="/*" component={NoMatch} />
     </Router>
 );
