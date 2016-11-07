@@ -1,6 +1,8 @@
 import test from 'ava';
 
-import History from '../../../src/server/modules/features/history';
+import Features from '../../../src/server/modules/features';
+Features.init();
+
 import HistoryModel from '../../../src/common/classModels/HistoryPlay';
 
 const histMock = [
@@ -29,7 +31,7 @@ const histMock = [
 // TODO test OVERTRACK
 
 test('computeDifference', t => {
-    let histDiffed = History.computeDiff(histMock);
+    let histDiffed = Features.History.computeDiff(histMock);
 
     t.is(histDiffed[0].played_duration, null);
     t.is(histDiffed[1].played_duration, 10);
@@ -38,7 +40,7 @@ test('computeDifference', t => {
 });
 
 test('getListenedState', t => {
-    let histDiffed = History.computeDiff(histMock);
+    let histDiffed = Features.History.computeDiff(histMock);
 
     t.is(histDiffed[0].getListenedState(), HistoryModel.ListenedStates.LISTENING);
     t.is(histDiffed[1].getListenedState(), HistoryModel.ListenedStates.LISTENED);
@@ -47,8 +49,8 @@ test('getListenedState', t => {
 });
 
 test('setListenedState', t => {
-    let histDiffed = History.computeDiff(histMock);
-    histDiffed = History.setListenedState(histDiffed);
+    let histDiffed = Features.History.computeDiff(histMock);
+    histDiffed = Features.History.setListenedState(histDiffed);
 
     t.is(histDiffed[0].played_state, HistoryModel.ListenedStates.LISTENING);
     t.is(histDiffed[1].played_state, HistoryModel.ListenedStates.LISTENED);

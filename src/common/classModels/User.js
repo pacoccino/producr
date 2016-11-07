@@ -11,8 +11,8 @@ class SoundCloudUser extends ClassModel {
             sc_profile: null,
 
             wallet_id: null,
-            crawlers: null,
-            config: null
+            crawlers: {},
+            config: {}
         };
     }
 

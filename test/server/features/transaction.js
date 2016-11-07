@@ -4,8 +4,9 @@ import sinon from 'sinon';
 import Config from '../../../src/server/modules/config';
 import DBModel from '../../../src/server/modules/dbModels/dbModel';
 import DBModels from '../../../src/server/modules/dbModels';
-import Wallet from '../../../src/server/modules/features/wallet';
-import Transactions from '../../../src/server/modules/features/transactions';
+
+import Features from '../../../src/server/modules/features';
+Features.init();
 
 import HistoryPlayModel from '../../../src/common/classModels/HistoryPlay';
 import TransactionModel from '../../../src/common/classModels/Transaction';
@@ -48,7 +49,7 @@ test.serial('_createArtistUser', t => {
         return Promise.resolve(artistUser);
     });
 
-    return Transactions._createArtistUser(playMock)
+    return Features.Transactions._createArtistUser(playMock)
         .then(artistUser => {
             t.is(artistUser.sc_id, "whatever");
         });
@@ -81,7 +82,7 @@ test.serial('_createArtistUser - already exists', t => {
         return Promise.reject(error);
     });
 
-    return Transactions._createArtistUser(playMock)
+    return Features.Transactions._createArtistUser(playMock)
         .then(artistUserR => {
             t.is(artistUserR.sc_id, artistUser.sc_id);
         });
@@ -119,7 +120,7 @@ test.serial('_prepareTransaction - no artist user', t => {
         }
     });
 
-    return Transactions._prepareTransaction(playMock)
+    return Features.Transactions._prepareTransaction(playMock)
         .then(transactionData => {
             t.is(transactionData.fromUser, playerUser);
             t.not(transactionData.toUser, null);
@@ -154,7 +155,7 @@ test.serial('_prepareTransaction - no priceperplay', t => {
         }
     });
 
-    return Transactions._prepareTransaction(playMock)
+    return Features.Transactions._prepareTransaction(playMock)
         .then(transactionData => {
             t.is(transactionData.fromUser, playerUser);
             t.is(transactionData.toUser, artistUser);
@@ -194,7 +195,7 @@ test.serial('_prepareTransaction', t => {
         }
     });
 
-    return Transactions._prepareTransaction(playMock)
+    return Features.Transactions._prepareTransaction(playMock)
         .then(transactionData => {
             t.is(transactionData.fromUser, playerUser);
             t.is(transactionData.toUser, artistUser);
@@ -214,7 +215,7 @@ test.serial('_updateWallets', t => {
         amount: 10
     };
 
-    sandbox.stub(Wallet, "updateUserWallet", function({ user, addedBalance }) {
+    sandbox.stub(Features.Wallet, "updateUserWallet", function({ user, addedBalance }) {
         if(user.sc_id === 1) {
             t.is(user, playerUser);
             t.is(addedBalance, -10);
@@ -226,7 +227,7 @@ test.serial('_updateWallets', t => {
     });
 
 
-    return Transactions._updateWallets(transactionData)
+    return Features.Transactions._updateWallets(transactionData)
         .then(transactionDataR => {
             t.is(transactionDataR, transactionData);
         })
@@ -243,17 +244,16 @@ test.serial('_assertAccountable - false', t => {
         amount: 10
     };
 
-    sandbox.stub(Wallet, "getUserWallet", function(user) {
+    sandbox.stub(Features.Wallet, "getUserWallet", function(user) {
         t.is(user, playerUser);
         return Promise.resolve(playerWallet);
     });
 
-
-    return Transactions._assertAccountable(transactionData)
-        .then(accountable => {
-            t.is(accountable, false);
+    return Features.Transactions._assertAccountable(transactionData)
+        .then(() => {
+            t.fail();
         })
-        .catch(err => t.fail(err.stack));
+        .catch(err => t.is(err, "NOT_ACCOUNTABLE"));
 });
 test.serial('_assertAccountable - true', t => {
     const playerUser = new UserModel({_id: 1, sc_id: 1});
@@ -265,15 +265,14 @@ test.serial('_assertAccountable - true', t => {
         amount: 10
     };
 
-    sandbox.stub(Wallet, "getUserWallet", function(user) {
+    sandbox.stub(Features.Wallet, "getUserWallet", function(user) {
         t.is(user, playerUser);
         return Promise.resolve(playerWallet);
     });
 
-
-    return Transactions._assertAccountable(transactionData)
-        .then(accountable => {
-            t.is(accountable, true);
+    return Features.Transactions._assertAccountable(transactionData)
+        .then(transactionDataR => {
+            t.is(transactionDataR, transactionData);
         })
         .catch(err => t.fail(err.stack));
 });
@@ -287,15 +286,14 @@ test.serial('_assertAccountable - true ==', t => {
         amount: 10
     };
 
-    sandbox.stub(Wallet, "getUserWallet", function(user) {
+    sandbox.stub(Features.Wallet, "getUserWallet", function(user) {
         t.is(user, playerUser);
         return Promise.resolve(playerWallet);
     });
 
-
-    return Transactions._assertAccountable(transactionData)
-        .then(accountable => {
-            t.is(accountable, true);
+    return Features.Transactions._assertAccountable(transactionData)
+        .then(transactionDataR => {
+            t.is(transactionDataR, transactionData);
         })
         .catch(err => t.fail(err.stack));
 });
@@ -340,11 +338,15 @@ test.serial('askPlayTransaction', t => {
         return Promise.resolve(inserted);
     });
 
-    sandbox.stub(Transactions, "_prepareTransaction", function(hp) {
+    sandbox.stub(Features.Transactions, "_prepareTransaction", function(hp) {
         t.is(hp, playMock);
         return Promise.resolve(transactionData);
     });
-    sandbox.stub(Transactions, "_updateWallets", function(td) {
+    sandbox.stub(Features.Transactions, "_assertAccountable", function(td) {
+        t.is(td, transactionData);
+        return Promise.resolve(transactionData);
+    });
+    sandbox.stub(Features.Transactions, "_updateWallets", function(td) {
         t.is(td, transactionData);
         return Promise.resolve(transactionData);
     });
@@ -355,13 +357,63 @@ test.serial('askPlayTransaction', t => {
         return Promise.resolve(null);
     });
 
-    return Transactions.askPlayTransaction(playMock)
+    return Features.Transactions.askPlayTransaction(playMock)
         .then(transaction => {
             t.is(transaction.from.sc_id, playMock.player.sc_id);
             t.is(transaction.to.sc_id, playMock.artist.sc_id);
             t.is(transaction.track.id, playMock.track.id);
             t.is(transaction.amount, 10);
             t.is(transaction.play_id, playMock._id);
+        })
+        .catch(err => t.fail(err.stack));
+});
+
+
+test.serial('askPlayTransaction - not enough moneyyy', t => {
+    const playerUser = new UserModel({_id: 1, sc_id: 1});
+    const artistUser = new UserModel({_id: 2, sc_id: 2});
+
+    const playMock = new HistoryPlayModel({
+        _id: "play_id",
+        player: {
+            sc_id: playerUser.sc_id
+        },
+        artist: {
+            sc_id: artistUser.sc_id
+        },
+        track: {
+            id: 3
+        }
+    });
+
+    const transactionData ={
+        fromUser: playerUser,
+        toUser: artistUser,
+        amount: 10
+    };
+
+
+    sandbox.stub(DBModels.Users, "getById", function(id, field) {
+        t.is(field, "sc_id");
+        if(id === 1) {
+            return Promise.resolve(playerUser);
+        } else {
+            return Promise.resolve(artistUser);
+        }
+    });
+
+    sandbox.stub(Features.Transactions, "_prepareTransaction", function(hp) {
+        t.is(hp, playMock);
+        return Promise.resolve(transactionData);
+    });
+    sandbox.stub(Features.Transactions, "_assertAccountable", function(td) {
+        t.is(td, transactionData);
+        return Promise.reject("NOT_ACCOUNTABLE");
+    });
+
+    return Features.Transactions.askPlayTransaction(playMock)
+        .then(result => {
+            t.is(result, false);
         })
         .catch(err => t.fail(err.stack));
 });

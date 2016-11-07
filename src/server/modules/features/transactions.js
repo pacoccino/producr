@@ -102,7 +102,7 @@ const Transactions = {
             .catch(err => {
                 // in case of parallel execution, double insert can happen
                 if(err.code === 11000) {
-                    return Users.getByScId(historyPlay.artist.sc_id);
+                    return Features.Users.getByScId(historyPlay.artist.sc_id);
                 } else {
                     throw err;
                 }
@@ -114,12 +114,12 @@ const Transactions = {
         let defaultAmount = Config.appDefaults.defaultPricePerPlay;
 
         return Promise.resolve()
-            .then(()       => Users.getByScId(historyPlay.player.sc_id))
+            .then(()       => Features.Users.getByScId(historyPlay.player.sc_id))
             .then(fromUser => {
                 transactionData.fromUser = fromUser;
                 transactionData.amount = fromUser.config && fromUser.config.pricePerPlay || defaultAmount;
             })
-            .then(()       => Users.getByScId(historyPlay.artist.sc_id))
+            .then(()       => Features.Users.getByScId(historyPlay.artist.sc_id))
             .then(toUser   => {
                 if(toUser) {
                     transactionData.toUser = toUser;
@@ -156,14 +156,19 @@ const Transactions = {
         return Promise.resolve()
             .then(() => Features.Wallet.getUserWallet(transactionData.fromUser))
             .then(playerWallet => {
-                return (transactionData.amount <= playerWallet.balance);
+                if (transactionData.amount <= playerWallet.balance) {
+                    return transactionData;
+                } else {
+                    throw "NOT_ACCOUNTABLE";
+                }
             });
     },
 
     askPlayTransaction(historyPlay) {
 
-        return Transactions._prepareTransaction(historyPlay)
-            .then(transactionData => Transactions._updateWallets(transactionData))
+        return Features.Transactions._prepareTransaction(historyPlay)
+            .then(transactionData => Features.Transactions._assertAccountable(transactionData))
+            .then(transactionData => Features.Transactions._updateWallets(transactionData))
             .then(transactionData => {
                     let transaction = {
                         date: Date.now(),
@@ -183,6 +188,13 @@ const Transactions = {
                 historyPlay.transaction_id = insertedTransaction._id.toString();
                 return DBModels.HistoryPlays.updateField(historyPlay, "transaction_id")
                     .then(() => insertedTransaction);
+            })
+            .catch(error => {
+                if(error === "NOT_ACCOUNTABLE") {
+                    return false;
+                } else {
+                    throw error;
+                }
             });
     }
 };

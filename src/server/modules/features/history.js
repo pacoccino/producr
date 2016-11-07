@@ -118,7 +118,7 @@ const History = {
         });
     },
     updateUserHistory: (user) => {
-        if(user.crawlers && user.crawlers.historyFetching) {
+        if(user.crawlers.historyFetching) {
             return Promise.reject({
                 isFetching: true
             });
@@ -126,10 +126,9 @@ const History = {
 
         const updateData = {
             user: user,
-            lastFetched: user.crawlers && user.crawlers.lastHistoryFetch || 0,
+            lastFetched: user.crawlers.lastHistoryFetch || 0,
             newHistory: []
         };
-        user.crawlers = user.crawlers || {};
         user.crawlers.historyFetching = true;
         const beforeHistoryFetchingUpdater = {
             "crawlers.historyFetching": true
@@ -157,7 +156,6 @@ const History = {
                             const lastTrackAdded = updateData.newHistory[0];
 
                             // On prend la date du dernier historique conservé pour fetch plus tard
-                            user.crawlers = user.crawlers || {};
                             user.crawlers.lastHistoryFetch = lastTrackAdded.played_at;
 
                             const lastHistoryFetchUpdater = {
@@ -171,7 +169,6 @@ const History = {
                 }
             })
             .then(() => {
-                user.crawlers = user.crawlers || {};
                 user.crawlers.historyFetching = false;
                 const afterHistoryFetchingUpdater = {
                     "crawlers.historyFetching": false
@@ -197,7 +194,7 @@ const History = {
         };
         const userHistory = {
             sc_id: user.sc_id,
-            lastFetched: user.crawlers && user.crawlers.lastHistoryFetch || 0,
+            lastFetched: user.crawlers.lastHistoryFetch || 0,
             history: []
         };
 

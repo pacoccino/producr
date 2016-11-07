@@ -3,7 +3,9 @@ import sinon from 'sinon';
 
 import DBModel from '../../../src/server/modules/dbModels/dbModel';
 import DBModels from '../../../src/server/modules/dbModels';
-import Wallet from '../../../src/server/modules/features/wallet';
+
+import Features from '../../../src/server/modules/features';
+Features.init();
 
 import UserModel from '../../../src/common/classModels/User';
 import WalletModel from '../../../src/common/classModels/Wallet';
@@ -34,7 +36,7 @@ test.serial('createUserWallet', t => {
         return Promise.resolve(new UserModel());
     });
 
-    return Wallet.createUserWallet(mockUser)
+    return Features.Wallet.createUserWallet(mockUser)
         .then(wallet => {
             t.is(wallet._id, "wallet_id");
             t.is(wallet.balance, 0);
@@ -47,11 +49,11 @@ test.serial('getUserWallet - without wallet', t => {
     const tUser = new UserModel(mockUser);
     tUser.wallet_id = null;
 
-    sandbox.stub(Wallet, "createUserWallet", function() {
+    sandbox.stub(Features.Wallet, "createUserWallet", function() {
         return Promise.resolve(new WalletModel({_id: "wallet_id"}));
     });
 
-    return Wallet.getUserWallet(tUser)
+    return Features.Wallet.getUserWallet(tUser)
         .then(wallet => {
             t.is(wallet._id, "wallet_id");
             t.is(wallet.balance, 0);
@@ -67,7 +69,7 @@ test.serial('getUserWallet - with wallet', t => {
         return Promise.resolve(new WalletModel({_id: id, balance: 15}));
     });
 
-    return Wallet.getUserWallet(tUser)
+    return Features.Wallet.getUserWallet(tUser)
         .then(wallet => {
             t.is(wallet._id, "wallet_id");
             t.is(wallet.balance, 15);
@@ -83,14 +85,14 @@ test.serial('getUserWallet - with missing wallet', t => {
         return Promise.resolve(null);
     });
 
-    return Wallet.getUserWallet(tUser)
+    return Features.Wallet.getUserWallet(tUser)
         .then(() => t.fail())
         .catch(() => t.pass());
 });
 
 test.serial('updateUserWallet', t => {
 
-    sandbox.stub(Wallet, "getUserWallet", function() {
+    sandbox.stub(Features.Wallet, "getUserWallet", function() {
         return Promise.resolve(new WalletModel({_id: "wallet_id"}));
     });
     sandbox.stub(DBModels.Wallets, "incField", function(wallet, inc) {
@@ -98,7 +100,7 @@ test.serial('updateUserWallet', t => {
     });
 
 
-    return Wallet.updateUserWallet({ user: mockUser, addedBalance: 10 })
+    return Features.Wallet.updateUserWallet({ user: mockUser, addedBalance: 10 })
         .then(wallet => {
             t.is(wallet.balance, 10);
         });
@@ -106,11 +108,11 @@ test.serial('updateUserWallet', t => {
 
 test.serial('updateUserWallet - missing', t => {
 
-    sandbox.stub(Wallet, "getUserWallet", function() {
+    sandbox.stub(Features.Wallet, "getUserWallet", function() {
         return Promise.resolve(null);
     });
 
-    return Wallet.updateUserWallet({ user: mockUser, addedBalance: 10 })
+    return Features.Wallet.updateUserWallet({ user: mockUser, addedBalance: 10 })
         .then(() => t.fail())
         .catch(() => t.pass());
 });
