@@ -17,7 +17,7 @@ const SoundCloudLogin = function (username, password, cb) {
         })
         .then(profile => {
             scProfile = profile;
-            return Users.getById(profile.id, "sc_id");
+            return Users.getByScId(scProfile.id)
         })
         .then(user => {
             if(user) {

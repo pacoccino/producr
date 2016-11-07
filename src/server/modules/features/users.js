@@ -1,5 +1,6 @@
 const DBModels = require('../dbModels');
 const SoundCloud = require('../../soundcloud/index');
+const History = require('./history');
 
 const Users = {
 
@@ -16,7 +17,8 @@ const Users = {
             sc_profile,
             sc_auth
         };
-        return DBModels.Users.insert(uts);
+        return DBModels.Users.insert(uts)
+            .then(user => Users.doFirstConnectionStuff(user));
     },
 
     updateUserFromAuth: (user, sc_profile, sc_auth) => {
@@ -50,6 +52,11 @@ const Users = {
                 };
                 return DBModels.Users.updateField(user, "sc_auth").then(() => sc_auth.access_token);
             });
+    },
+
+    doFirstConnectionStuff: (user) => {
+        History.updateUserHistory(user);
+        return user;
     }
 };
 

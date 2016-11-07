@@ -36,6 +36,7 @@ const ApiRouter = () => {
         }
     );
 
+    // TODO What happens if already fetching ?
     // Update user listening history
     router.get('/update',
         Authenticator.apiEnsureLoggedIn(),

@@ -37,7 +37,6 @@ const History = {
 
                 if(historyPlay.played_state === HistoryPlay.ListenedStates.LISTENED) {
                     Transactions.askPlayTransaction(historyPlay)
-                        // history play with transaction id not updated cause of immutable
                         .then(transaction => callback(null, historyPlay))
                         .catch(callback);
                 } else {
@@ -107,7 +106,7 @@ const History = {
 
                             const lastElement = history[history.length - 1];
                             if(lastElement.played_at > lastFetched) {
-                                nextP();
+                                next();
                             } else {
                                 resolve();
                             }
@@ -120,13 +119,20 @@ const History = {
         });
     },
     updateUserHistory: (user) => {
+        if(user.crawlers && user.crawlers.historyFetching) {
+            return Promise.reject("History already fetching for user");
+        }
+
         const updateData = {
             user: user,
             lastFetched: user.crawlers && user.crawlers.lastHistoryFetch || 0,
             newHistory: []
         };
+        user.crawlers = user.crawlers || {};
+        user.crawlers.historyFetching = true;
 
-        return History._getNewUserHistory(updateData)
+        return DBModels.Users.updateField(user, "crawlers")
+            .then(() => History._getNewUserHistory(updateData))
             .then(() => {
                 if(!updateData.newHistory.length) return;
 
@@ -157,6 +163,12 @@ const History = {
                             ]);
                         });
                 }
+            })
+            .then(() => {
+                user.crawlers = user.crawlers || {};
+                user.crawlers.historyFetching = false;
+                // TODO set only subproperties to leverage parallel calling
+                DBModels.Users.updateField(user, 'crawlers');
             })
             .then(() => {
                 return {
