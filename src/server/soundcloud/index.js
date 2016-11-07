@@ -11,7 +11,7 @@ const SoundCloud = {
 
     authWithCredentials(username, password) {
         return new Promise((resolve, reject) => {
-            var options = {
+            const options = {
                 url: "https://api.soundcloud.com/oauth2/token",
                 method: "POST",
                 form: {
@@ -37,8 +37,7 @@ const SoundCloud = {
                         error:error
                     });
                 } else {
-                    const scUser = body;
-                    resolve(scUser);
+                    resolve(body);
                 }
             });
         });
@@ -46,7 +45,7 @@ const SoundCloud = {
 
     refreshToken(refresh_token) {
         return new Promise((resolve, reject) => {
-            var options = {
+            const options = {
                 url: "https://api.soundcloud.com/oauth2/token",
                 method: "POST",
                 form: {
@@ -70,8 +69,7 @@ const SoundCloud = {
                         error:error
                     });
                 } else {
-                    const scAuth = body;
-                    resolve(scAuth);
+                    resolve(body);
                 }
             });
         });
@@ -130,7 +128,7 @@ const SoundCloud = {
     },
 
     getRequestData(request) {
-        var data = null;
+        let data = null;
         if (!request.requestData) {
             return data;
         }
@@ -175,20 +173,20 @@ const SoundCloud = {
                 url = SoundCloud.buildApiUrl(resourceObject);
             }
 
-            var params = {};
+            const params = {};
             params.client_id = Config.services.soundcloud.client_id;
             Object.assign(params, resourceObject.requestOptions);
 
-            var headers = {
+            const headers = {
                 "Content-Type": "application/json"
             };
             if (SoundCloud.isPrivateRequest(resourceObject)) {
                 headers.Authorization = "OAuth " + resourceObject.userToken;
             }
 
-            var data = SoundCloud.getRequestData(resourceObject);
+            const data = SoundCloud.getRequestData(resourceObject);
 
-            var options = {
+            const options = {
                 url: url,
                 method: resourceObject.requestType,
                 qs: params,
@@ -203,7 +201,7 @@ const SoundCloud = {
 
             request(options, function (error, response, body) {
                 if (error || response.statusCode !== 200) {
-                    var reqError = {
+                    const reqError = {
                         request: options,
                         code: response && response.statusCode,
                         message: response && response.statusMessage,
