@@ -24,10 +24,7 @@ const ApiRouter = () => {
     router.get('/history',
         Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
-            History.getUserHistory({
-                user: req.user,
-                params: req.query
-            })
+            History.getUserHistory(req.user, req.query)
                 .then(userHistory => {
                     userHistory.history = userHistory.history.map(obj => obj.toJS());
                     res.json( userHistory );
@@ -36,7 +33,6 @@ const ApiRouter = () => {
         }
     );
 
-    // TODO What happens if already fetching ?
     // Update user listening history
     router.get('/update',
         Authenticator.apiEnsureLoggedIn(),

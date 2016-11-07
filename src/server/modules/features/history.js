@@ -120,7 +120,7 @@ const History = {
     },
     updateUserHistory: (user) => {
         if(user.crawlers && user.crawlers.historyFetching) {
-            return Promise.reject("History already fetching for user");
+            return History._waitHistoryUpdated(user);
         }
 
         const updateData = {
@@ -177,7 +177,7 @@ const History = {
             });
     },
 
-    getUserHistory: ({ user, params }) => {
+    getUserHistory: (user, params) => {
         params = params || {};
         const options = {
             limit: params.limit || 10,
@@ -198,6 +198,25 @@ const History = {
                 userHistory.history = historyPlays;
                 return userHistory;
             });
+    },
+    _waitHistoryUpdated(user) {
+        const checkDelay = 500;
+
+        return new Promise((resolve, reject) => {
+            const check = () => {
+                Users.getById(user._id).then(
+                    freshUser => {
+                        if(freshUser.crawlers && freshUser.crawlers.historyFetching) {
+                            setTimeout(check, checkDelay);
+                        } else {
+                            resolve();
+                        }
+                    }
+                ).catch(reject);
+            };
+
+            check();
+        });
     }
 };
 
