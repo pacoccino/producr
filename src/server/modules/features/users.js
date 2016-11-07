@@ -19,8 +19,8 @@ const Users = {
     },
 
     updateUserFromAuth: (user, sc_profile, sc_auth) => {
-        user = user.set('sc_profile', sc_profile);
-        user = user.set('sc_auth', sc_auth);
+        user.sc_profile =  sc_profile;
+        user.sc_auth = sc_auth;
 
         const fields = {
             sc_profile,

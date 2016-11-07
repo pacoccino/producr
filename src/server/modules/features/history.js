@@ -114,10 +114,9 @@ const History = {
                             const lastTrackAdded = updateData.newHistory[0];
 
                             // On prend la date du dernier historique conservé pour fetch plus tard
-                            const userCrawlerData = user.crawlers || {};
-                            userCrawlerData.lastHistoryFetch = lastTrackAdded.played_at;
+                            user.crawlers = user.crawlers || {};
+                            user.crawlers.lastHistoryFetch = lastTrackAdded.played_at;
 
-                            user = user.set('crawlers', userCrawlerData);
                             return Promise.all([
                                 DBModels.Users.updateField(user, 'crawlers'),
                                 History.askForTransactions({ user, plays: insertedHistory })

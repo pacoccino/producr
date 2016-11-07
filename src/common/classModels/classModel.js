@@ -21,7 +21,7 @@ class ClassModel {
         const keys = Object.keys(properties);
 
         keys.forEach(key => {
-            obj[key] = data[key] || null
+            obj[key] = data[key] || properties[key];
         });
     }
 

@@ -13,14 +13,14 @@ class HistoryPlay extends ClassModel {
 
     _getProperties() {
         return {
-            _id: 0,
-            track: 0,
-            artist: 0,
-            player: 0,
-            played_at: 0,
-            played_duration: 0,
-            played_state: 0,
-            transaction_id: 0,
+            _id: null,
+            track: null,
+            artist: null,
+            player: null,
+            played_at: null,
+            played_duration: null,
+            played_state: null,
+            transaction_id: null,
         };
     }
 

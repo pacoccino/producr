@@ -5,11 +5,13 @@ import DBModel from '../../../src/server/modules/dbModels/dbModel';
 import DBModels from '../../../src/server/modules/dbModels';
 import Wallet from '../../../src/server/modules/features/wallet';
 
-import UserModel from '../../../src/common/models/SoundCloudUser';
-import WalletModel from '../../../src/common/models/Wallet';
+import UserModel from '../../../src/common/classModels/User';
+import WalletModel from '../../../src/common/classModels/Wallet';
 
-DBModels.Wallets = new DBModel();
-DBModels.Users = new DBModel();
+const mockCollection = {};
+
+DBModels.Wallets = new DBModel(WalletModel, mockCollection);
+DBModels.Users = new DBModel(UserModel, mockCollection);
 
 const mockUser = new UserModel();
 
@@ -42,7 +44,8 @@ test.serial('createUserWallet', t => {
 
 test.serial('getUserWallet - without wallet', t => {
 
-    const tUser = mockUser.set("wallet_id", null);
+    const tUser = new UserModel(mockUser);
+    tUser.wallet_id = null;
 
     sandbox.stub(Wallet, "createUserWallet", function() {
         return Promise.resolve(new WalletModel({_id: "wallet_id"}));
@@ -57,7 +60,8 @@ test.serial('getUserWallet - without wallet', t => {
 
 test.serial('getUserWallet - with wallet', t => {
 
-    const tUser = mockUser.set("wallet_id", "wallet_id");
+    const tUser = new UserModel(mockUser);
+    tUser.wallet_id = "wallet_id";
 
     sandbox.stub(DBModels.Wallets, "getById", function(id) {
         return Promise.resolve(new WalletModel({_id: id, balance: 15}));
@@ -72,7 +76,8 @@ test.serial('getUserWallet - with wallet', t => {
 
 test.serial('getUserWallet - with missing wallet', t => {
 
-    const tUser = mockUser.set("wallet_id", "wallet_id");
+    const tUser = new UserModel(mockUser);
+    tUser.wallet_id =  "wallet_id";
 
     sandbox.stub(DBModels.Wallets, "getById", function() {
         return Promise.resolve(null);

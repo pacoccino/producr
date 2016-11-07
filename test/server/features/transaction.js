@@ -8,12 +8,13 @@ import Wallet from '../../../src/server/modules/features/wallet';
 import Transactions from '../../../src/server/modules/features/transactions';
 
 import HistoryPlayModel from '../../../src/common/classModels/HistoryPlay';
-import TransactionModel from '../../../src/common/models/Transaction';
-import UserModel from '../../../src/common/models/SoundCloudUser';
+import TransactionModel from '../../../src/common/classModels/Transaction';
+import UserModel from '../../../src/common/classModels/User';
 
-DBModels.Transactions = new DBModel();
-DBModels.HistoryPlays = new DBModel();
-DBModels.Users = new DBModel();
+const mockCollection = {};
+DBModels.Transactions = new DBModel(TransactionModel, mockCollection);
+DBModels.HistoryPlays = new DBModel(HistoryPlayModel, mockCollection);
+DBModels.Users = new DBModel(UserModel, mockCollection);
 
 var sandbox;
 test.beforeEach(function () {
@@ -267,7 +268,7 @@ test.serial('askPlayTransaction', t => {
 
     sandbox.stub(DBModels.Transactions, "insert", function(tr) {
         let inserted = new TransactionModel(tr);
-        inserted = inserted.set("_id", "1");
+        inserted._id = "1";
 
         return Promise.resolve(inserted);
     });

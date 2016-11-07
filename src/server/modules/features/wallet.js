@@ -6,6 +6,7 @@ const Wallet = {
 
     createUserWallet: (user) => {
         const walletBase = {user_id: user._id};
+
         return DBModels.Wallets.insert(walletBase)
             .catch(err => {
                 // in case of parallel execution, double insert can happen
@@ -16,8 +17,7 @@ const Wallet = {
                 }
             })
             .then(wallet => {
-                user = user.set('wallet_id', wallet._id);
-                // TODO user in req not updated
+                user.wallet_id = wallet._id;
                 return DBModels.Users.updateField(user, "wallet_id")
                     .then(updatedUser => wallet);
             });
@@ -41,7 +41,6 @@ const Wallet = {
 
     updateUserWallet: ({ user, addedBalance }) => {
 
-        // TODO check if user doesnt exists
         return Wallet.getUserWallet(user)
             .then(wallet => {
                 if(!wallet) {

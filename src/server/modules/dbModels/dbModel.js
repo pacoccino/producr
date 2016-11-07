@@ -76,7 +76,8 @@ class DBModel {
 
     }
     updateFields(obj, fields) {
-        // TODO Il y a un probleme quand on file des clés valeurs a update, l'objet retourné n'est pas update. Marche avec le field parceque l'objet est deja bon
+        // Todo, take array instead of object, to return real updated object
+        // Il y a un probleme quand on file des clés valeurs a update, l'objet retourné n'est pas update. Marche avec le field parceque l'objet est deja bon
         return this._updateOperation(obj, "$set", fields);
     }
 
