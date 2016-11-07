@@ -31,7 +31,7 @@ const Users = {
         return DBModels.Users.updateFields(user, fields);
     },
 
-    tryToRefreshUser: (user) => {
+    refreshUserToken: (user) => {
         const refreshToken = user.sc_auth.refresh_token;
 
         return SoundCloud.refreshToken(refreshToken)

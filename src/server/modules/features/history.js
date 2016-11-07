@@ -81,15 +81,26 @@ const History = {
     _getNewUserHistory: (updateData) => {
         return new Promise((resolve, reject) => {
             const lastFetched = updateData.lastFetched;
-            const userToken = updateData.user.sc_auth.access_token;
+            let userToken = updateData.user.sc_auth.access_token;
 
             const getOptions = {
                 limit: 50
             };
 
-            const historyCursor = SoundCloudSugar.getPaginatedHistory(userToken, getOptions);
-            const nextP = () => {
+            let historyCursor = SoundCloudSugar.getPaginatedHistory(userToken, getOptions);
+            const next = () => {
                 historyCursor.next()
+                    .catch(error => {
+                        if(error.code === 401) {
+                            return Users.refreshUserToken(updateData.user)
+                                .then(token => {
+                                    historyCursor.resourceObject.updateToken(token);
+                                    return historyCursor.next();
+                                });
+                        } else {
+                            throw error;
+                        }
+                    })
                     .then(history => {
                         if(history) {
                             updateData.newHistory = updateData.newHistory.concat(history);
@@ -105,7 +116,7 @@ const History = {
                         }
                     }).catch(reject);
             };
-            nextP();
+            next();
         });
     },
     updateUserHistory: (user) => {
@@ -116,18 +127,6 @@ const History = {
         };
 
         return History._getNewUserHistory(updateData)
-            /*// TODO refactor this to be used elsewhere
-            .catch(error => {
-                if(error.code === 401) {
-                    return Users.tryToRefreshUser(user)
-                        .then(token => {
-                            resourceObject.updateToken(token);
-                            return SoundCloud.askResource(resourceObject);
-                        });
-                } else {
-                    throw error;
-                }
-            })*/
             .then(() => {
                 if(!updateData.newHistory.length) return;
 

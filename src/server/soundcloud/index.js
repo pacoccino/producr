@@ -227,19 +227,22 @@ const SoundCloud = {
 
     askPaginatedResource(resourceObject) {
 
-        resourceObject.requestOptions.linked_partitioning = 1;
 
         const NOMORE = "nomore";
+        const cursor = {
+            resourceObject
+        };
+        cursor.resourceObject.requestOptions.linked_partitioning = 1;
 
         let nextHref = null;
-        const getNext = () => {
+        cursor.next = () => {
             if(nextHref === NOMORE) {
                 return Promise.resolve(null);
             }
             if(nextHref) {
-                resourceObject.forcedUrl = nextHref;
+                cursor.resourceObject.forcedUrl = nextHref;
             }
-            return SoundCloud.askResource(resourceObject)
+            return SoundCloud.askResource(cursor.resourceObject)
                 .then(resource => {
                     if(resource.next_href) {
                         nextHref = resource.next_href;
@@ -250,9 +253,7 @@ const SoundCloud = {
                 });
         };
 
-        return {
-            next: getNext
-        };
+        return cursor;
     },
 
     cachedResource(resourceObject) {
