@@ -10,6 +10,7 @@ import Transactions from '../../../src/server/modules/features/transactions';
 import HistoryPlayModel from '../../../src/common/classModels/HistoryPlay';
 import TransactionModel from '../../../src/common/classModels/Transaction';
 import UserModel from '../../../src/common/classModels/User';
+import WalletModel from '../../../src/common/classModels/Wallet';
 
 const mockCollection = {};
 DBModels.Transactions = new DBModel(TransactionModel, mockCollection);
@@ -232,6 +233,72 @@ test.serial('_updateWallets', t => {
         .catch(err => t.fail(err.stack));
 });
 
+test.serial('_assertAccountable - false', t => {
+    const playerUser = new UserModel({_id: 1, sc_id: 1});
+    const playerWallet = new WalletModel({_id: 1, balance: 5});
+
+    const transactionData ={
+        fromUser: playerUser,
+        toUser: null,
+        amount: 10
+    };
+
+    sandbox.stub(Wallet, "getUserWallet", function(user) {
+        t.is(user, playerUser);
+        return Promise.resolve(playerWallet);
+    });
+
+
+    return Transactions._assertAccountable(transactionData)
+        .then(accountable => {
+            t.is(accountable, false);
+        })
+        .catch(err => t.fail(err.stack));
+});
+test.serial('_assertAccountable - true', t => {
+    const playerUser = new UserModel({_id: 1, sc_id: 1});
+    const playerWallet = new WalletModel({_id: 1, balance: 15});
+
+    const transactionData ={
+        fromUser: playerUser,
+        toUser: null,
+        amount: 10
+    };
+
+    sandbox.stub(Wallet, "getUserWallet", function(user) {
+        t.is(user, playerUser);
+        return Promise.resolve(playerWallet);
+    });
+
+
+    return Transactions._assertAccountable(transactionData)
+        .then(accountable => {
+            t.is(accountable, true);
+        })
+        .catch(err => t.fail(err.stack));
+});
+test.serial('_assertAccountable - true ==', t => {
+    const playerUser = new UserModel({_id: 1, sc_id: 1});
+    const playerWallet = new WalletModel({_id: 1, balance: 10});
+
+    const transactionData ={
+        fromUser: playerUser,
+        toUser: null,
+        amount: 10
+    };
+
+    sandbox.stub(Wallet, "getUserWallet", function(user) {
+        t.is(user, playerUser);
+        return Promise.resolve(playerWallet);
+    });
+
+
+    return Transactions._assertAccountable(transactionData)
+        .then(accountable => {
+            t.is(accountable, true);
+        })
+        .catch(err => t.fail(err.stack));
+});
 
 test.serial('askPlayTransaction', t => {
     const playerUser = new UserModel({_id: 1, sc_id: 1});

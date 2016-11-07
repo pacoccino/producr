@@ -4,7 +4,7 @@ const SoundCloudStrategy = require('passport-soundcloud').Strategy;
 
 const ApiError = require('./apiError');
 const Config = require('./config');
-const Users = require('./features/users');
+const Features = require('./features');
 
 const Authenticator = {};
 
@@ -13,7 +13,7 @@ Authenticator.serializer = (user, cb) => {
 };
 
 Authenticator.deserializer = (_id, cb) => {
-    Users.getById(_id)
+    Features.Users.getById(_id)
         .then(user => {
             if(user) {
                 cb(null, user);
@@ -38,14 +38,14 @@ Authenticator.SoundCloudStrategy = (accessToken, refreshToken, profile, cb) => {
         } else {
             scAuth.type = "non-expiring";
         }
-        Users.getByScId(scProfile.id)
+        Features.Users.getByScId(scProfile.id)
             .then(user => {
                 if (user) {
-                    Users.updateUserFromAuth(user, scProfile, scAuth)
+                    Features.Users.updateUserFromAuth(user, scProfile, scAuth)
                         .then(user => cb(null, user))
                         .catch(cb);
                 } else {
-                    Users.newUserFromAuth(scProfile, scAuth)
+                    Features.Users.newUserFromAuth(scProfile, scAuth)
                         .then(user => cb(null, user))
                         .catch(cb);
                 }

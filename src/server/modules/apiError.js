@@ -34,5 +34,6 @@ ApiError.BadCredentials = () => new ApiError(401, "Bad credentials");
 ApiError.TokenExpired = () => new ApiError(401, "Token expired");
 ApiError.InvalidToken = (err) => new ApiError(400, "Invalid token", err);
 ApiError.InvalidParams = (params) => new ApiError(400, "Invalid parameters", params);
+ApiError.Custom = (message) => new ApiError(500, message);
 
 module.exports = ApiError;

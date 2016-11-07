@@ -2,9 +2,7 @@ const express = require('express');
 const validator = require('validator');
 
 const Authenticator = require('../modules/authenticator');
-const History = require('../modules/features/history');
-const Transactions = require('../modules/features/transactions');
-const Wallet = require('../modules/features/wallet');
+const Features = require('../modules/features');
 const ApiError = require('../modules/apiError');
 
 const ApiRouter = () => {
@@ -24,7 +22,7 @@ const ApiRouter = () => {
     router.get('/history',
         Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
-            History.getUserHistory(req.user, req.query)
+            Features.History.getUserHistory(req.user, req.query)
                 .then(userHistory => {
                     userHistory.history = userHistory.history.map(obj => obj.toJS());
                     res.json( userHistory );
@@ -37,7 +35,8 @@ const ApiRouter = () => {
     router.get('/update',
         Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
-            History.updateUserHistory(req.user)
+            // TODO catch when fetching
+            Features.History.updateUserHistory(req.user)
                 .then(details => {
                     res.json({
                         success: true,
@@ -45,7 +44,13 @@ const ApiRouter = () => {
                         details
                     });
                 })
-                .catch(next);
+                .catch(error => {
+                    if(error.isFetching) {
+                        next(ApiError.Custom("User history already fetching"));
+                    } else {
+                        next(error);
+                    }
+                });
         }
     );
 
@@ -53,7 +58,7 @@ const ApiRouter = () => {
     router.get('/wallet',
         Authenticator.apiEnsureLoggedIn(),
         (req, res, next) => {
-            Wallet.getUserWallet(req.user)
+            Features.Wallet.getUserWallet(req.user)
                 .then(wallet => {
                     res.json(wallet.toJS());
                 })
@@ -72,7 +77,7 @@ const ApiRouter = () => {
                 }));
             }
             addedBalance = validator.toInt(addedBalance);
-            Wallet.updateUserWallet({
+            Features.Wallet.updateUserWallet({
                 user: req.user,
                 addedBalance
             })
@@ -92,13 +97,13 @@ const ApiRouter = () => {
             let getFn = null;
             switch(type) {
                 case "fromMe":
-                    getFn = Transactions.getTransactionsFromUser;
+                    getFn = Features.Transactions.getTransactionsFromUser;
                     break;
                 case "toMe":
-                    getFn = Transactions.getTransactionsToUser;
+                    getFn = Features.Transactions.getTransactionsToUser;
                     break;
                 default:
-                    getFn = Transactions.getUserTransactions;
+                    getFn = Features.Transactions.getUserTransactions;
             }
 
             getFn(req.user)

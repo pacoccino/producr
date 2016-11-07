@@ -4,9 +4,8 @@ const async = require('async');
 const SoundCloud = require('../../soundcloud/index');
 const SoundCloudSugar = SoundCloud.Sugar;
 const DBModels = require('../dbModels');
-const Transactions = require('./transactions');
 const HistoryPlay = require('../../../common/classModels/HistoryPlay');
-const Users = require('./users');
+const Features = require('./index');
 
 const History = {
 
@@ -36,7 +35,7 @@ const History = {
             async.map(plays, (historyPlay, callback) => {
 
                 if(historyPlay.played_state === HistoryPlay.ListenedStates.LISTENED) {
-                    Transactions.askPlayTransaction(historyPlay)
+                    Features.Transactions.askPlayTransaction(historyPlay)
                         .then(transaction => callback(null, historyPlay))
                         .catch(callback);
                 } else {
@@ -91,7 +90,7 @@ const History = {
                 historyCursor.next()
                     .catch(error => {
                         if(error.code === 401) {
-                            return Users.refreshUserToken(updateData.user)
+                            return Features.Users.refreshUserToken(updateData.user)
                                 .then(token => {
                                     historyCursor.resourceObject.updateToken(token);
                                     return historyCursor.next();
@@ -120,7 +119,9 @@ const History = {
     },
     updateUserHistory: (user) => {
         if(user.crawlers && user.crawlers.historyFetching) {
-            return History._waitHistoryUpdated(user);
+            return Promise.reject({
+                isFetching: true
+            });
         }
 
         const updateData = {
@@ -130,8 +131,10 @@ const History = {
         };
         user.crawlers = user.crawlers || {};
         user.crawlers.historyFetching = true;
-
-        return DBModels.Users.updateField(user, "crawlers")
+        const beforeHistoryFetchingUpdater = {
+            "crawlers.historyFetching": true
+        };
+        return DBModels.Users.updateFields(user, beforeHistoryFetchingUpdater)
             .then(() => History._getNewUserHistory(updateData))
             .then(() => {
                 if(!updateData.newHistory.length) return;
@@ -157,8 +160,11 @@ const History = {
                             user.crawlers = user.crawlers || {};
                             user.crawlers.lastHistoryFetch = lastTrackAdded.played_at;
 
+                            const lastHistoryFetchUpdater = {
+                                "crawlers.lastHistoryFetch": lastTrackAdded.played_at
+                            };
                             return Promise.all([
-                                DBModels.Users.updateField(user, 'crawlers'),
+                                DBModels.Users.updateFields(user, lastHistoryFetchUpdater),
                                 History.askForTransactions({ user, plays: insertedHistory })
                             ]);
                         });
@@ -167,8 +173,10 @@ const History = {
             .then(() => {
                 user.crawlers = user.crawlers || {};
                 user.crawlers.historyFetching = false;
-                // TODO set only subproperties to leverage parallel calling
-                DBModels.Users.updateField(user, 'crawlers');
+                const afterHistoryFetchingUpdater = {
+                    "crawlers.historyFetching": false
+                };
+                return DBModels.Users.updateFields(user, afterHistoryFetchingUpdater);
             })
             .then(() => {
                 return {
@@ -204,7 +212,7 @@ const History = {
 
         return new Promise((resolve, reject) => {
             const check = () => {
-                Users.getById(user._id).then(
+                Features.Users.getById(user._id).then(
                     freshUser => {
                         if(freshUser.crawlers && freshUser.crawlers.historyFetching) {
                             setTimeout(check, checkDelay);

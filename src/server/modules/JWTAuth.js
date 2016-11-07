@@ -4,7 +4,7 @@ const express = require('express');
 const SoundCloud = require('../soundcloud');
 const ApiError = require('./apiError');
 const Config = require('./config');
-const Users = require('./features/users');
+const Features = require('./features');
 
 const SoundCloudLogin = function (username, password, cb) {
 
@@ -17,15 +17,15 @@ const SoundCloudLogin = function (username, password, cb) {
         })
         .then(profile => {
             scProfile = profile;
-            return Users.getByScId(scProfile.id)
+            return Features.Users.getByScId(scProfile.id)
         })
         .then(user => {
             if(user) {
-                Users.updateUserFromAuth(user, scProfile, scAuth)
+                Features.Users.updateUserFromAuth(user, scProfile, scAuth)
                     .then(user => cb(null, user))
                     .catch(cb);
             } else {
-                Users.newUserFromAuth(scProfile, scAuth)
+                Features.Users.newUserFromAuth(scProfile, scAuth)
                     .then(user => cb(null, user))
                     .catch(cb);
             }
@@ -53,7 +53,7 @@ const jwtMiddleware = (req, res, next) => {
                 }
                 return next(err);
             } else {
-                Users.getById(decoded.userId)
+                Features.Users.getById(decoded.userId)
                     .then(user => {
                         if(user) {
                             req.user = user;

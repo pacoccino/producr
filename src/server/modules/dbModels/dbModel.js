@@ -73,7 +73,6 @@ class DBModel {
         fieldUpdate[field] = obj[field];
 
         return this.updateFields(obj, fieldUpdate);
-
     }
     updateFields(obj, fields) {
         // Todo, take array instead of object, to return real updated object

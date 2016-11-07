@@ -4,7 +4,8 @@ const async = require('async');
 const DBModels = require('../dbModels');
 const Config = require('../config');
 const SoundCloudSugar = require('../../soundcloud/index').Sugar;
-const Wallet = require('./wallet');
+
+const Features = require('./index');
 
 const Transactions = {
 
@@ -101,7 +102,7 @@ const Transactions = {
             .catch(err => {
                 // in case of parallel execution, double insert can happen
                 if(err.code === 11000) {
-                    return DBModels.Users.getById(historyPlay.artist.sc_id, "sc_id");
+                    return Users.getByScId(historyPlay.artist.sc_id);
                 } else {
                     throw err;
                 }
@@ -113,12 +114,12 @@ const Transactions = {
         let defaultAmount = Config.appDefaults.defaultPricePerPlay;
 
         return Promise.resolve()
-            .then(()       => DBModels.Users.getById(historyPlay.player.sc_id, "sc_id"))
+            .then(()       => Users.getByScId(historyPlay.player.sc_id))
             .then(fromUser => {
                 transactionData.fromUser = fromUser;
                 transactionData.amount = fromUser.config && fromUser.config.pricePerPlay || defaultAmount;
             })
-            .then(()       => DBModels.Users.getById(historyPlay.artist.sc_id, "sc_id"))
+            .then(()       => Users.getByScId(historyPlay.artist.sc_id))
             .then(toUser   => {
                 if(toUser) {
                     transactionData.toUser = toUser;
@@ -136,18 +137,27 @@ const Transactions = {
 
         return Promise.resolve()
             .then(() =>
-                Wallet.updateUserWallet({
+                Features.Wallet.updateUserWallet({
                     user: transactionData.fromUser,
                     addedBalance: -transactionData.amount
                 })
             )
             .then(() =>
-                Wallet.updateUserWallet({
+                Features.Wallet.updateUserWallet({
                     user: transactionData.toUser,
                     addedBalance: transactionData.amount
                 })
             )
             .then(() => transactionData);
+    },
+    // Verify if user can afford transaction
+    _assertAccountable (transactionData) {
+
+        return Promise.resolve()
+            .then(() => Features.Wallet.getUserWallet(transactionData.fromUser))
+            .then(playerWallet => {
+                return (transactionData.amount <= playerWallet.balance);
+            });
     },
 
     askPlayTransaction(historyPlay) {

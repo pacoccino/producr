@@ -1,5 +1,5 @@
 const DBModels = require('../dbModels');
-const History = require('../features/history');
+const Features = require('../features');
 
 const HistoryFetcher = {};
 
@@ -34,7 +34,7 @@ HistoryFetcher.fetch = () => {
 
     return DBModels.Users.forEachSeries((user, cb) => {
         if(isUserFetchable(user)) {
-            History.updateUserHistory(user)
+            Features.History.updateUserHistory(user)
                 .then(updateData => {
                     updatedUsers++;
                     tracksAdded += updateData.nbAdded;

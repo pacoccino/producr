@@ -1,6 +1,6 @@
 const DBModels = require('../dbModels');
 const SoundCloud = require('../../soundcloud/index');
-const History = require('./history');
+const Features = require('./index');
 
 const Users = {
 
@@ -55,7 +55,7 @@ const Users = {
     },
 
     doFirstConnectionStuff: (user) => {
-        History.updateUserHistory(user);
+        Features.History.updateUserHistory(user);
         return user;
     }
 };
