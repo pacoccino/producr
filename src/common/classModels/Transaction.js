@@ -12,7 +12,7 @@ class SoundCloudUser extends ClassModel {
             track: null,
 
             amount: 0,
-            playId: null,
+            play_id: null,
         };
     }
 }

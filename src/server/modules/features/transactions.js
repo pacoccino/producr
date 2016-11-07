@@ -161,7 +161,7 @@ const Transactions = {
 
                         amount: transactionData.amount,
 
-                        playId: historyPlay._id.toString()
+                        play_id: historyPlay._id.toString()
                     };
                     return DBModels.Transactions.insert(transaction);
                 }

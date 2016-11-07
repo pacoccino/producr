@@ -294,7 +294,7 @@ test.serial('askPlayTransaction', t => {
             t.is(transaction.to.sc_id, playMock.artist.sc_id);
             t.is(transaction.track.id, playMock.track.id);
             t.is(transaction.amount, 10);
-            t.is(transaction.playId, playMock._id);
+            t.is(transaction.play_id, playMock._id);
         })
         .catch(err => t.fail(err.stack));
 });
