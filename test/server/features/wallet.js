@@ -38,7 +38,7 @@ test.serial('createUserWallet', t => {
         .then(wallet => {
             t.is(wallet._id, "wallet_id");
             t.is(wallet.balance, 0);
-            // t.is(mockUser.wallet_id, "wallet_id"); // TODO
+            t.is(mockUser.wallet_id, "wallet_id");
         });
 });
 

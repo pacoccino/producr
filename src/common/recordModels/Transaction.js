@@ -1,6 +1,5 @@
 const Record = require('immutable').Record;
 
-// TODO nest from et to
 const TransactionRecord = new Record({
     _id: null,
     date: null,
@@ -12,14 +11,5 @@ const TransactionRecord = new Record({
     amount: 0,
     play_id: null,
 }, 'Transaction');
-
-/*
-function Transaction(source) {
-    source._id = source._id || new ObjectId();
-    source.date = source.date || Date.now();
-
-    return TransactionRecord(source).toJS();
-}
-*/
 
 module.exports = TransactionRecord;

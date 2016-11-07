@@ -79,7 +79,6 @@ const History = {
             transaction_id: null
         };
 
-        // Convert to model optional (dbmodel does it at insert
         return new HistoryPlay(historyTrack);
     },
     updateUserHistory: (user) => {
