@@ -11,6 +11,8 @@ const Authenticator = require('./modules/authenticator');
 const JWTAuthenticator = require('./modules/JWTAuth');
 const WebServer = require('./modules/webServer');
 
+const HistoryFetcher = require('./modules/workers/historyFetcher');
+
 const Config = require('./modules/config');
 const RequestLogger = require('./modules/requestLogger');
 
@@ -61,6 +63,7 @@ const App = () => {
             app.use(ApiError.Middleware());
 
             WebServer(app);
+            HistoryFetcher.cron();
 
             // Starting server
             app.listen(app.get('port'), () => {

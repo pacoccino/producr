@@ -7,6 +7,8 @@ DBWrapper.initialize = (client) => {
         Transactions: client.collection('Transactions'),
         Users: client.collection('Users'),
         Wallets: client.collection('Wallets'),
+
+        Large: client.collection('Large'),
     };
 };
 

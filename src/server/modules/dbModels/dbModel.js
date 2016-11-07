@@ -62,7 +62,7 @@ class DBModel {
 
         return this._update(query, jsUser)
             .then(() => {
-                return this.obj(obj);
+                return obj;
             });
     }
 
@@ -147,6 +147,60 @@ class DBModel {
             _id: objId
         };
         return this._collection.deleteOne(query);
+    }
+
+    forEach_stream(fn) {
+        return new Promise((resolve, reject) => {
+            const cursor = this._collection.find();
+
+            cursor.on('data', fn);
+            cursor.once('end', () => {
+                resolve();
+            })
+        });
+    }
+    forEach_forEach(fn) {
+        return new Promise((resolve, reject) => {
+            this._collection.find().forEach(fn, error => {
+                if(error) {
+                    reject(error);
+                } else {
+                    resolve();
+                }
+            });
+
+        });
+    }
+
+    forEachSeries(fn, options) {
+        options = options || {};
+        const { batchSize = 10 } = options;
+
+        return new Promise((resolve, reject) => {
+            let cursor = this._collection.find();
+
+            cursor = cursor.batchSize(batchSize);
+
+            const fetchNextDoc = () => {
+                cursor.next().then(doc => {
+                    if(doc) {
+                        const instance = this._convertObjectToModel(doc);
+                        fn(instance,
+                            error => {
+                                if(error) {
+                                    reject(error);
+                                } else {
+                                    fetchNextDoc();
+                                }
+                            })
+                    } else {
+                        resolve();
+                    }
+                }).catch(err => reject(err));
+            };
+
+            fetchNextDoc();
+        });
     }
 }
 

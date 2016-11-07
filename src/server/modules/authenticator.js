@@ -27,11 +27,17 @@ Authenticator.deserializer = (_id, cb) => {
 Authenticator.SoundCloudStrategy = (accessToken, refreshToken, profile, cb) => {
 
     process.nextTick(function () {
-        let scProfile = profile._json;
-        let scAuth = {
+        const scProfile = profile._json;
+        const scAuth = {
             access_token: accessToken,
             refresh_token: refreshToken
         };
+        if(refreshToken) {
+            scAuth.refresh_token = refreshToken;
+            scAuth.type = "expiring";
+        } else {
+            scAuth.type = "non-expiring";
+        }
         Users.getByScId(scProfile.id)
             .then(user => {
                 if (user) {
@@ -55,7 +61,8 @@ Authenticator.Middleware = () => {
     passport.use(new SoundCloudStrategy({
         clientID: Config.services.soundcloud.client_id,
         clientSecret: Config.services.soundcloud.client_secret,
-        callbackURL: "http://localhost:3000/auth/callback?serviceId=soundcloud"
+        callbackURL: "http://localhost:3000/auth/callback?serviceId=soundcloud",
+        // scope: 'non-expiring'
     }, Authenticator.SoundCloudStrategy));
 
     const authRouter = express.Router();
@@ -68,9 +75,18 @@ Authenticator.Middleware = () => {
 
     authRouter.get('/api/auth/logout', Authenticator.apiLogout());
 
+    // Force user to re-auth when sc_auth corrupted
+    const ensureAuthValid = (req, res, next) => {
+        if(req.isAuthenticated() && !req.user.sc_auth) {
+            req.logout();
+        }
+        next();
+    };
+
     return [
         passport.initialize(),
         passport.session(),
+        ensureAuthValid,
         authRouter
     ];
 };

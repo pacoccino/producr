@@ -44,6 +44,39 @@ const SoundCloud = {
         });
     },
 
+    refreshToken(refresh_token) {
+        return new Promise((resolve, reject) => {
+            var options = {
+                url: "https://api.soundcloud.com/oauth2/token",
+                method: "POST",
+                form: {
+                    client_id: Config.services.soundcloud.client_id,
+                    client_secret: Config.services.soundcloud.client_secret,
+                    grant_type: 'refresh_token',
+                    refresh_token
+                }
+            };
+
+            request(options, (error, response, body) => {
+                if(body) {
+                    body = JSON.parse(body);
+                }
+                if (error || response.statusCode !== 200) {
+                    reject({
+                        request: options,
+                        code: response && response.statusCode,
+                        message: response && response.statusMessage,
+                        body,
+                        error:error
+                    });
+                } else {
+                    const scAuth = body;
+                    resolve(scAuth);
+                }
+            });
+        });
+    },
+
     isPrivateRequest(requestData) {
         if (requestData.resource === "me") return true;
         if (requestData.resource === "recently-played") return true;
@@ -168,7 +201,7 @@ const SoundCloud = {
                 if (error || response.statusCode !== 200) {
                     var reqError = {
                         request: options,
-                        response: response && response.statusCode,
+                        code: response && response.statusCode,
                         message: response && response.statusMessage,
                         body,
                         error

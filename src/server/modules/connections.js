@@ -102,12 +102,11 @@ const initRedis = () => {
             Connections.redis = redisClient;
             Wrappers.Cache.initialize(redisClient);
 
-            redisClient.removeListener('ready', onReady);
             resolve();
         };
 
         redisClient.on("error", onError);
-        redisClient.on('ready', onReady);
+        redisClient.once('ready', onReady);
     })
 };
 

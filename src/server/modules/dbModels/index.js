@@ -15,10 +15,14 @@ DBModels.initialize = () => {
     const userCollection = DBWrapper.collections.Users;
     const walletCollection = DBWrapper.collections.Wallets;
 
+    const largeCollection = DBWrapper.collections.Large;
+
     DBModels.HistoryPlays = new DBModel(HistoryPlayModel, hystoryPlaysCollection);
     DBModels.Transactions = new DBModel(TransactionModel, transactionCollection);
     DBModels.Users = new DBModel(UserModel, userCollection);
     DBModels.Wallets = new DBModel(WalletModel, walletCollection);
+
+    DBModels.Large = new DBModel(WalletModel, largeCollection);
 };
 
 

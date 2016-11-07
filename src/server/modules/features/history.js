@@ -6,6 +6,7 @@ const SoundCloud = require('../../soundcloud/index');
 const DBModels = require('../dbModels');
 const Transactions = require('./transactions');
 const HistoryPlay = require('../../../common/classModels/HistoryPlay');
+const Users = require('./users');
 
 // TODO :
 // get more than 9 last from soundcloud API
@@ -92,6 +93,18 @@ const History = {
         resourceObject.get();
 
         return SoundCloud.askResource(resourceObject)
+            // TODO refactor this to be used elsewhere
+            .catch(error => {
+                if(error.code === 401) {
+                    return Users.tryToRefreshUser(user)
+                        .then(token => {
+                            resourceObject.updateToken(token);
+                            return SoundCloud.askResource(resourceObject);
+                        });
+                } else {
+                    throw error;
+                }
+            })
             .then(resource => {
                 updateData.newHistory = resource.collection;
                 if(!updateData.newHistory.length) return;

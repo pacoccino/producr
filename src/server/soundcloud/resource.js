@@ -103,6 +103,10 @@ class SoundCloudResource {
                this.resource + ':' +
                this.resourceId;
     }
+
+    updateToken(token) {
+        this.userToken = token || null;
+    }
 }
 
 module.exports = SoundCloudResource;
