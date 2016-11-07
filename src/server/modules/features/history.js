@@ -1,16 +1,12 @@
 const _ = require('lodash');
 const async = require('async');
 
-const SoundcloudResource = require('../../soundcloud/index').Resource;
 const SoundCloud = require('../../soundcloud/index');
+const SoundCloudSugar = SoundCloud.Sugar;
 const DBModels = require('../dbModels');
 const Transactions = require('./transactions');
 const HistoryPlay = require('../../../common/classModels/HistoryPlay');
 const Users = require('./users');
-
-// TODO :
-// get more than 9 last from soundcloud API
-// check if last returned is already stored, if not ask for next
 
 const History = {
 
@@ -81,18 +77,46 @@ const History = {
 
         return new HistoryPlay(historyTrack);
     },
+
+    _getNewUserHistory: (updateData) => {
+        return new Promise((resolve, reject) => {
+            const lastFetched = updateData.lastFetched;
+            const userToken = updateData.user.sc_auth.access_token;
+
+            const getOptions = {
+                limit: 50
+            };
+
+            const historyCursor = SoundCloudSugar.getPaginatedHistory(userToken, getOptions);
+            const nextP = () => {
+                historyCursor.next()
+                    .then(history => {
+                        if(history) {
+                            updateData.newHistory = updateData.newHistory.concat(history);
+
+                            const lastElement = history[history.length - 1];
+                            if(lastElement.played_at > lastFetched) {
+                                nextP();
+                            } else {
+                                resolve();
+                            }
+                        } else {
+                            resolve();
+                        }
+                    }).catch(reject);
+            };
+            nextP();
+        });
+    },
     updateUserHistory: (user) => {
         const updateData = {
-            lastFetched: user.crawlers && user.crawlers.lastHistoryFetch || 0
+            user: user,
+            lastFetched: user.crawlers && user.crawlers.lastHistoryFetch || 0,
+            newHistory: []
         };
 
-        var resourceObject = new SoundcloudResource(user.sc_auth.access_token);
-        resourceObject.me();
-        resourceObject.playHistory();
-        resourceObject.get();
-
-        return SoundCloud.askResource(resourceObject)
-            // TODO refactor this to be used elsewhere
+        return History._getNewUserHistory(updateData)
+            /*// TODO refactor this to be used elsewhere
             .catch(error => {
                 if(error.code === 401) {
                     return Users.tryToRefreshUser(user)
@@ -103,9 +127,8 @@ const History = {
                 } else {
                     throw error;
                 }
-            })
-            .then(resource => {
-                updateData.newHistory = resource.collection;
+            })*/
+            .then(() => {
                 if(!updateData.newHistory.length) return;
 
                 updateData.newHistory = History.computeDiff(updateData.newHistory);

@@ -10,7 +10,8 @@ class SoundCloudResource {
         this.userToken = userToken || null;
         this.requestType = "GET";
         this.requestData = null;
-        this.requestOptions = null;
+        this.requestOptions = {};
+        this.forcedUrl = null;
     }
 
     // Privates
@@ -71,9 +72,8 @@ class SoundCloudResource {
     }
 
     // Resource method
-    get(options) {
+    get() {
         this.requestType = "GET";
-        this.requestOptions = options;
     }
     post(data) {
         this.requestType = "POST";
@@ -100,12 +100,18 @@ class SoundCloudResource {
 
     getUrn() {
         return this.space + ':' +
-               this.resource + ':' +
-               this.resourceId;
+            this.resource + ':' +
+            this.resourceId;
     }
 
     updateToken(token) {
         this.userToken = token || null;
+    }
+
+    limit(l) {
+        if(l) {
+            this.requestOptions.limit = l;
+        }
     }
 }
 

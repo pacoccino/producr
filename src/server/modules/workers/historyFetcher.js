@@ -6,6 +6,8 @@ const HistoryFetcher = {};
 HistoryFetcher.cronDelay = 5 * 60 * 1000; // 5 minutes
 // HistoryFetcher.cronDelay = 10 * 1000; // 10 secondes
 
+HistoryFetcher._fetching = false;
+
 const isUserFetchable = (user) => {
     if(!user) return false;
     if(!user.sc_auth) return false;
@@ -20,16 +22,22 @@ HistoryFetcher.fillDatabase = () => {
 };
 
 HistoryFetcher.fetch = () => {
+    if(HistoryFetcher._fetching) {
+        return Promise.reject("History fetch asked but already working");
+    }
+    HistoryFetcher._fetching = true;
     console.info("History fetch starting");
 
     const errors = [];
     let updatedUsers = 0;
+    let tracksAdded = 0;
 
     return DBModels.Users.forEachSeries((user, cb) => {
         if(isUserFetchable(user)) {
             History.updateUserHistory(user)
                 .then(updateData => {
                     updatedUsers++;
+                    tracksAdded += updateData.nbAdded;
                     cb(null);
                 })
                 .catch(updateError => {
@@ -46,12 +54,14 @@ HistoryFetcher.fetch = () => {
             if(errors.length) {
                 console.error('There was some history fetch errors:', errors);
             }
-            console.info('History fetch ended, updated '+updatedUsers+' users.');
+            console.info('History fetch ended, updated '+updatedUsers+' users, '+tracksAdded+' tracks.');
         }
+        HistoryFetcher._fetching = false;
     });
 };
 
 HistoryFetcher.cron = () => {
+    console.info("History cronner enabled");
     function fetch() {
         HistoryFetcher.fetch()
             .catch(err => {
@@ -60,7 +70,6 @@ HistoryFetcher.cron = () => {
     }
     HistoryFetcher._cronner = setInterval(fetch, HistoryFetcher.cronDelay);
     fetch();
-    console.info("History cronner enabled");
 };
 HistoryFetcher.stopCron = () => {
     clearInterval(HistoryFetcher._cronner);

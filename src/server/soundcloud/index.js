@@ -168,12 +168,16 @@ const SoundCloud = {
             /*if (!SoundCloud.isValidRequest(resourceObject)) {
                 throw "Not valid request";
             }*/
-            var url = SoundCloud.buildApiUrl(resourceObject);
+            let url = null;
+            if(resourceObject.forcedUrl) {
+                url = resourceObject.forcedUrl;
+            } else {
+                url = SoundCloud.buildApiUrl(resourceObject);
+            }
 
             var params = {};
             params.client_id = Config.services.soundcloud.client_id;
-            // params.limit = 10;
-            // TODO request options
+            Object.assign(params, resourceObject.requestOptions);
 
             var headers = {
                 "Content-Type": "application/json"
@@ -219,6 +223,36 @@ const SoundCloud = {
                 }
             });
         });
+    },
+
+    askPaginatedResource(resourceObject) {
+
+        resourceObject.requestOptions.linked_partitioning = 1;
+
+        const NOMORE = "nomore";
+
+        let nextHref = null;
+        const getNext = () => {
+            if(nextHref === NOMORE) {
+                return Promise.resolve(null);
+            }
+            if(nextHref) {
+                resourceObject.forcedUrl = nextHref;
+            }
+            return SoundCloud.askResource(resourceObject)
+                .then(resource => {
+                    if(resource.next_href) {
+                        nextHref = resource.next_href;
+                    } else {
+                        nextHref = NOMORE;
+                    }
+                    return resource.collection;
+                });
+        };
+
+        return {
+            next: getNext
+        };
     },
 
     cachedResource(resourceObject) {

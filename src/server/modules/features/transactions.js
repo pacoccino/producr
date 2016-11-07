@@ -8,7 +8,8 @@ const Wallet = require('./wallet');
 
 const Transactions = {
 
-    getUserTransactions: (user) => {
+    getUserTransactions: (user, params) => {
+        params = params || {};
 
         const sc_id = user.sc_id;
         const query = {
@@ -22,6 +23,8 @@ const Transactions = {
             ]
         };
         const options = {
+            limit: params.limit || 10,
+            skip: params.skip || 0,
             sort: { date: -1 }
         };
 

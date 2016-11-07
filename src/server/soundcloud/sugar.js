@@ -17,41 +17,17 @@ const SoundCloudSugar = (SoundCloud) => {
                 .catch(reject);
         }),
 
-        getHistory: (token) => new Promise((resolve, reject) => {
+        getPaginatedHistory: (token, options) => {
+            options = options || {};
             var resourceObject = new ResourceObject(token);
 
-            resourceObject.recentlyPlayed();
-            resourceObject.tracks();
+            resourceObject.me();
+            resourceObject.playHistory();
             resourceObject.get();
+            resourceObject.limit(options.limit);
 
-            SoundCloud.askResource(resourceObject)
-                .then(resource => {
-                    var history = resource.collection;
-                    async.map(history, (play, cb) => {
-                        play.date = moment(new Date(play.played_at)).format();
-                        play.name = play.urn;
-                        var trackResource = ResourceObject.fromUrn(play.urn);
-                        SoundCloud.cachedResource(trackResource)
-                            .then((track) => {
-                                play.name = trackResource.resourceId + ': ' + track.title + ' - ' + track.user.username;
-                                cb(null, play);
-                            })
-                            .catch((err) => {
-                                play.name = trackResource.resourceId + ': (Unkonwn)';
-                                cb(null, play);
-                            });
-                    }, (err, results) => {
-                        if(err) {
-                            reject(err);
-                        } else {
-                            resolve(results);
-                        }
-                    });
-                })
-                .catch(err => {
-                    reject(err);
-                });
-        }),
+            return SoundCloud.askPaginatedResource(resourceObject);
+        },
 
         getUser: (userId) => {
             var resourceObject = new ResourceObject();
