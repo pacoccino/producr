@@ -179,6 +179,17 @@ const History = {
                 return {
                     nbAdded: updateData.newHistory.length
                 }
+            })
+            .catch(err => {
+                // TODO refacto
+                user.crawlers.historyFetching = false;
+                const afterHistoryFetchingUpdater = {
+                    "crawlers.historyFetching": false
+                };
+                return DBModels.Users.updateFields(user, afterHistoryFetchingUpdater)
+                    .then(() => {
+                        throw err;
+                    })
             });
     },
 
