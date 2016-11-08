@@ -22,12 +22,12 @@ class TransactionLine extends Component {
         transaction: PropTypes.object.isRequired
     };
 
-    formatDate(timestamp) {
-        return moment(new Date(timestamp)).format("DD-MM-YYYY HH:mm:ss");
-    }
-
     render() {
         const transaction = this.props.transaction;
+        const date = moment(new Date(transaction.date));
+
+        const transactionDate = date.format("DD-MM-YYYY");
+        const transactionHour = date.format("HH:mm");
         let userColumns = null;
         const fromColumn =
             <TableRowColumn style={styles.col} key="from_column">
@@ -52,7 +52,7 @@ class TransactionLine extends Component {
                     {transaction.track.title}
                 </TableRowColumn>
                 <TableRowColumn style={styles.col}>
-                    {this.formatDate(transaction.date)}
+                    {transactionHour} <br/> {transactionDate}
                 </TableRowColumn>
                 <TableRowColumn style={styles.col}>
                     <span>

@@ -28,9 +28,7 @@ class TransactionsTable extends Component {
         return (
             <Table
                 selectable={false}>
-                <TableHeader
-                    displaySelectAll={false}
-                    adjustForCheckbox={false}>
+                <TableBody displayRowCheckbox={false}>
                     <TableRow>
                         {userColumns}
                         <TableHeaderColumn tooltip="Song that started the transaction">Track</TableHeaderColumn>
@@ -38,8 +36,6 @@ class TransactionsTable extends Component {
                         <TableHeaderColumn tooltip="Transaction amount">Amount</TableHeaderColumn>
                         {/*<TableHeaderColumn>Actions</TableHeaderColumn>*/}
                     </TableRow>
-                </TableHeader>
-                <TableBody displayRowCheckbox={false}>
                     {
                         this.props.transactions.map(transaction =>
                             <TransactionLine transaction={transaction} type={this.props.type} key={transaction._id} />
