@@ -234,7 +234,7 @@ test.serial('_updateWallets', t => {
         .catch(err => t.fail(err.stack));
 });
 
-test.serial('_assertAccountable - false', t => {
+test.serial('_verifyWalletBalance - false', t => {
     const playerUser = new UserModel({_id: 1, sc_id: 1});
     const playerWallet = new WalletModel({_id: 1, balance: 5});
 
@@ -249,13 +249,13 @@ test.serial('_assertAccountable - false', t => {
         return Promise.resolve(playerWallet);
     });
 
-    return Features.Transactions._assertAccountable(transactionData)
+    return Features.Transactions._verifyWalletBalance(transactionData)
         .then(() => {
             t.fail();
         })
         .catch(err => t.is(err, "NOT_ACCOUNTABLE"));
 });
-test.serial('_assertAccountable - true', t => {
+test.serial('_verifyWalletBalance - true', t => {
     const playerUser = new UserModel({_id: 1, sc_id: 1});
     const playerWallet = new WalletModel({_id: 1, balance: 15});
 
@@ -270,13 +270,13 @@ test.serial('_assertAccountable - true', t => {
         return Promise.resolve(playerWallet);
     });
 
-    return Features.Transactions._assertAccountable(transactionData)
+    return Features.Transactions._verifyWalletBalance(transactionData)
         .then(transactionDataR => {
             t.is(transactionDataR, transactionData);
         })
         .catch(err => t.fail(err.stack));
 });
-test.serial('_assertAccountable - true ==', t => {
+test.serial('_verifyWalletBalance - true ==', t => {
     const playerUser = new UserModel({_id: 1, sc_id: 1});
     const playerWallet = new WalletModel({_id: 1, balance: 10});
 
@@ -291,7 +291,7 @@ test.serial('_assertAccountable - true ==', t => {
         return Promise.resolve(playerWallet);
     });
 
-    return Features.Transactions._assertAccountable(transactionData)
+    return Features.Transactions._verifyWalletBalance(transactionData)
         .then(transactionDataR => {
             t.is(transactionDataR, transactionData);
         })
@@ -342,7 +342,7 @@ test.serial('askPlayTransaction', t => {
         t.is(hp, playMock);
         return Promise.resolve(transactionData);
     });
-    sandbox.stub(Features.Transactions, "_assertAccountable", function(td) {
+    sandbox.stub(Features.Transactions, "_verifyWalletBalance", function(td) {
         t.is(td, transactionData);
         return Promise.resolve(transactionData);
     });
@@ -406,7 +406,7 @@ test.serial('askPlayTransaction - not enough moneyyy', t => {
         t.is(hp, playMock);
         return Promise.resolve(transactionData);
     });
-    sandbox.stub(Features.Transactions, "_assertAccountable", function(td) {
+    sandbox.stub(Features.Transactions, "_verifyWalletBalance", function(td) {
         t.is(td, transactionData);
         return Promise.reject("NOT_ACCOUNTABLE");
     });

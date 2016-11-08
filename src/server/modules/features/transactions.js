@@ -151,7 +151,7 @@ const Transactions = {
             .then(() => transactionData);
     },
     // Verify if user can afford transaction
-    _assertAccountable (transactionData) {
+    _verifyWalletBalance (transactionData) {
 
         return Promise.resolve()
             .then(() => Features.Wallet.getUserWallet(transactionData.fromUser))
@@ -167,7 +167,7 @@ const Transactions = {
     askPlayTransaction(historyPlay) {
 
         return Features.Transactions._prepareTransaction(historyPlay)
-            .then(transactionData => Features.Transactions._assertAccountable(transactionData))
+            .then(transactionData => Features.Transactions._verifyWalletBalance(transactionData))
             .then(transactionData => Features.Transactions._updateWallets(transactionData))
             .then(transactionData => {
                     let transaction = {
