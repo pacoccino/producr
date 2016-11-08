@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const BUILD_DIR = path.resolve(__dirname, '../build');
 const APP_DIR = path.resolve(__dirname, 'client');
+const ASSETS_DIR = path.resolve(__dirname, 'public');
 const ENTRY_FILE = path.resolve(APP_DIR, 'index.js');
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -12,7 +13,7 @@ let plugins = [
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.DefinePlugin({ 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)}),
     new HtmlWebpackPlugin({
-        template: 'src/public/index.tpl.html',
+        template: ASSETS_DIR + '/index.tpl.html',
         inject: 'body',
         filename: 'index.html'
     })
@@ -36,6 +37,10 @@ let modules = {
         {
             test: /\.css/,
             loader: 'style!css?modules&localIdentName=[name]---[local]---[hash:base64:5]'
+        },
+        {
+            test: /\.(jpg|png)$/,
+            loader: 'url?limit=25000'
         }
     ]
 };

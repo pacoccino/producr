@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router';
+import PC from './PC';
 
 import { Paper, RaisedButton } from 'material-ui';
 import appTheme from '../theme';
@@ -74,7 +74,7 @@ const FAQ = () => (
             </div>
 
             <div style={styles.answer}>
-                This app is currently a prototype. No real money is involved for now. It uses a virtual currency (pc) to prove that the concept works.
+                This app is currently a prototype. No real money is involved for now. It uses a virtual currency (<PC/>) to prove that the concept works.
                 At your first login, we will offer you some coins which will allow you to spend on the platform.
             </div>
 

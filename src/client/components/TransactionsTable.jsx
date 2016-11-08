@@ -14,9 +14,9 @@ class TransactionsTable extends Component {
     render() {
         let userColumns = null;
         const fromColumn =
-            <TableHeaderColumn tooltip="Transaction came from this user">From</TableHeaderColumn>;
+            <TableHeaderColumn tooltip="Transaction came from this user" key="from_column">From</TableHeaderColumn>;
         const toColumn =
-            <TableHeaderColumn tooltip="Transaction went to this user">To</TableHeaderColumn>;
+            <TableHeaderColumn tooltip="Transaction went to this user" key="to_column">To</TableHeaderColumn>;
 
         if(this.props.type === "fromme") {
             userColumns = [toColumn];
@@ -39,11 +39,10 @@ class TransactionsTable extends Component {
                         {/*<TableHeaderColumn>Actions</TableHeaderColumn>*/}
                     </TableRow>
                 </TableHeader>
-                <TableBody
-                    displayRowCheckbox={false}>
+                <TableBody displayRowCheckbox={false}>
                     {
-                        this.props.transactions.map((transaction, index) =>
-                            <TransactionLine transaction={transaction} type={this.props.type} key={index} />
+                        this.props.transactions.map(transaction =>
+                            <TransactionLine transaction={transaction} type={this.props.type} key={transaction._id} />
                         )
                     }
                 </TableBody>

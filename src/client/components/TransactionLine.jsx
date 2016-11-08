@@ -3,14 +3,15 @@ import moment from 'moment';
 
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 
-import IconButton from 'material-ui/IconButton';
-import OpenInNew from 'material-ui/svg-icons/action/open-in-new';
-import FileCloudDownload from 'material-ui/svg-icons/file/cloud-download';
-import appTheme from '../theme';
+import PC from './PC';
 
 const styles = {
     col: {
         overflow: 'hidden'
+    },
+    pc: {
+        top: '-1px',
+        position: 'relative',
     }
 };
 
@@ -29,11 +30,11 @@ class TransactionLine extends Component {
         const transaction = this.props.transaction;
         let userColumns = null;
         const fromColumn =
-            <TableRowColumn style={styles.col}>
+            <TableRowColumn style={styles.col} key="from_column">
                 {transaction.from.username}
             </TableRowColumn>;
         const toColumn =
-            <TableRowColumn style={styles.col}>
+            <TableRowColumn style={styles.col} key="to_column">
                 {transaction.to.username}
             </TableRowColumn>;
 
@@ -54,28 +55,10 @@ class TransactionLine extends Component {
                     {this.formatDate(transaction.date)}
                 </TableRowColumn>
                 <TableRowColumn style={styles.col}>
-                    {transaction.amount}€
+                    <span>
+                        {transaction.amount}<PC style={styles.pc}/>
+                    </span>
                 </TableRowColumn>
-                {/*<TableRowColumn>
-                    <IconButton
-                        tooltip="Go to track's page"
-                        href=""
-                        target="about_blank"
-                        style={{verticalAlign: 'initial'}}
-                        hoverColor={appTheme.palette.primary2Color}
-                    >
-                        <OpenInNew
-                            hoverColor={appTheme.palette.primary2Color}
-                        />
-                    </IconButton>
-                    <IconButton
-                        tooltip="Download"
-                    >
-                        <FileCloudDownload
-                            hoverColor={appTheme.palette.primary2Color}
-                        />
-                    </IconButton>
-                </TableRowColumn>*/}
             </TableRow>
         );
     }
