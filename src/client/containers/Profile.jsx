@@ -8,6 +8,7 @@ import { lightGreenA700 } from 'material-ui/styles/colors';
 import RaisedButton from 'material-ui/RaisedButton';
 
 import appTheme from '../theme';
+import PC from '../components/PC';
 
 import { logout }  from '../actions/auth';
 import { fetchWallet, updateWallet }  from '../actions/wallet';
@@ -146,7 +147,7 @@ class Profile extends Component {
                                         margin: 15
                                     }}
                                 >
-                                    {this.props.wallet.balance}€
+                                    {this.props.wallet.balance}<PC/>
                                 </Paper>
                             </div>
                         }
