@@ -10,7 +10,8 @@ const styles = {
         fontSize: 15,
         padding: '18px',
         cursor: 'pointer',
-        border: '1px solid rgba(0, 0, 0, 0.51)',
+        borderLeft: '1px solid rgba(0, 0, 0, 0.51)',
+        borderRight: '1px solid rgba(0, 0, 0, 0.51)',
         display: 'flex',
         justifyContent: 'space-around',
         flexDirection: 'row',
@@ -25,14 +26,14 @@ const styles = {
 
 class HeaderButton extends Component {
     static propTypes = {
-        href: PropTypes.object,
+        href: PropTypes.string,
         click: PropTypes.func,
-        bgColor: PropTypes.object,
+        style: PropTypes.object,
         focus: PropTypes.bool,
     };
 
     static contextTypes = {
-        router: React.PropTypes.func.isRequired
+        router: React.PropTypes.object.isRequired
     };
 
     constructor(props) {
@@ -59,8 +60,7 @@ class HeaderButton extends Component {
     }
 
     render() {
-        var linkStyle = Object.assign({}, styles.container);
-
+        var linkStyle = Object.assign({}, styles.container, this.props.style);
         if (this.props.href && this.context.router.isActive({pathname:this.props.href})) {
             linkStyle.backgroundColor = appTheme.palette.shadowColor;
             linkStyle.color = appTheme.palette.alternateTextColor;
@@ -72,20 +72,20 @@ class HeaderButton extends Component {
                 linkStyle.color = appTheme.palette.accent3Color;
             }
         }
+        if(this.props.style && this.props.style.backgroundColor)
+            linkStyle.backgroundColor = this.props.style.backgroundColor;
+        if(this.props.style && this.props.style.color)
+            linkStyle.color = this.props.style.color;
 
         return (
-            <Link
-                to={this.props.href}
-                onClick={this.props.click}
-                style={styles.link}>
                 <div
                     style={linkStyle}
                     onMouseEnter={this.toggleHover}
                     onMouseLeave={this.toggleHover}
+                    onClick={this.onClick}
                 >
                     {this.props.children}
                 </div>
-            </Link>
         );
     }
 }

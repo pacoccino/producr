@@ -27,10 +27,10 @@ const styles = {
 
     },
     titleGroup: {
-        backgroundColor: appTheme.palette.primary1Color,
         cursor: 'default'
     },
     title: {
+        backgroundColor: appTheme.palette.primary1Color,
         color: appTheme.palette.alternateTextColor,
         fontSize: 24,
         padding: '15px 20px'
@@ -43,45 +43,55 @@ class Header extends Component {
         logout: PropTypes.func.isRequired
     };
 
-    constructor(props) {
-        super(props);
-        this.state = {openDrawer: false};
-    }
-
-    handleToggle = () => this.setState({openDrawer: !this.state.openDrawer});
-
     render() {
         return (
             <div>
                 <div style={styles.header}>
-                    <Toolbar showMenuIconButton={false}
+                    <Toolbar
                              noGutter={true}
                              style={styles.toolbar}
                     >
                         <ToolbarGroup style={styles.titleGroup}>
-                            <span style={styles.title}>SoundCloud producr</span>
+                            <HeaderButton href="/" style={styles.title}>
+                                producr
+                            </HeaderButton>
 
-                            <HeaderButton href="/history">
-                                History
-                            </HeaderButton>
-                            <HeaderButton href="/transactions">
-                                Transactions
-                            </HeaderButton>
+                            {
+                                this.props.profile ?
+                                    <div style={{display: 'inherit'}}>
+                                        <HeaderButton href="/history">
+                                            History
+                                        </HeaderButton>
+                                        <HeaderButton href="/transactions">
+                                            Transactions
+                                        </HeaderButton>
+                                    </div> : <div></div>
+                            }
                         </ToolbarGroup>
 
                         <ToolbarGroup>
-                            <HeaderButton href="/profile">
-                                <div>
-                                    <Avatar
-                                        style={{marginRight: 10}}
-                                        src={this.props.profile.avatar_url}
-                                        size={25}
-                                    />
-                                </div>
-                                <div>
-                                    {this.props.profile.username}
-                                </div>
-                            </HeaderButton>
+                            {
+                                this.props.profile ?
+                                    <HeaderButton href="/profile">
+                                        <div>
+                                            <Avatar
+                                                style={{marginRight: 10}}
+                                                src={this.props.profile.avatar_url}
+                                                size={25}
+                                            />
+                                        </div>
+                                        <div>
+                                            {this.props.profile.username}
+                                        </div>
+                                    </HeaderButton>
+                                    :
+                                    <HeaderButton href="/login">
+                                        <div>
+                                            Login
+                                        </div>
+                                    </HeaderButton>
+
+                            }
                         </ToolbarGroup>
                     </Toolbar>
                 </div>

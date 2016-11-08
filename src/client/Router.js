@@ -12,6 +12,7 @@ import History from './containers/HistoryPage';
 import Transactions from './containers/TransactionsPage';
 import AppPage from './components/AppPage';
 import NoMatch from './components/NoMatch';
+import Welcome from './components/Welcome';
 import Profile from './containers/Profile';
 
 import { checkAuthentication }  from './actions/auth';
@@ -46,10 +47,14 @@ const LoggedApp = () => (
 
 const NotLoggedApp = ({ authCallback }) => (
     <Router history={browserHistory}>
-        <Route path="/auth/callback" onEnter={checkOAuth(authCallback)} />
-        <Route path="/login" component={LoginPage} />
-        <Redirect from="/*" to="/login" />
-        <Route path="/*" component={NoMatch} />
+        <Route path="/" component={AppPage}>
+            <Route path="/auth/callback" onEnter={checkOAuth(authCallback)} />
+            <Route path="/welcome" component={Welcome} />
+            <Route path="/login" component={LoginPage} />
+            <Redirect from="/*" to="/welcome" />
+            <Route path="/*" component={NoMatch} />
+            <IndexRoute component={Welcome} />
+        </Route>
     </Router>
 );
 
