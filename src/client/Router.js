@@ -12,6 +12,7 @@ import History from './containers/HistoryPage';
 import Transactions from './containers/TransactionsPage';
 import AppPage from './components/AppPage';
 import NoMatch from './components/NoMatch';
+import FAQ from './components/FAQ';
 import Welcome from './components/Welcome';
 import Profile from './containers/Profile';
 
@@ -39,6 +40,7 @@ const LoggedApp = () => (
             <Route path="/history" component={History} />
             <Route path="/transactions" component={Transactions} />
             <Route path="/profile" component={Profile} />
+            <Route path="/qa" component={FAQ} />
             <Route path="/*" component={NoMatch} />
             <IndexRoute component={History} />
         </Route>
@@ -50,6 +52,7 @@ const NotLoggedApp = ({ authCallback }) => (
         <Route path="/" component={AppPage}>
             <Route path="/auth/callback" onEnter={checkOAuth(authCallback)} />
             <Route path="/welcome" component={Welcome} />
+            <Route path="/qa" component={FAQ} />
             <Route path="/login" component={LoginPage} />
             <Redirect from="/*" to="/welcome" />
             <Route path="/*" component={NoMatch} />

@@ -67,6 +67,10 @@ class Header extends Component {
                                         </HeaderButton>
                                     </div> : <div></div>
                             }
+
+                            <HeaderButton href="/qa">
+                                Q&A
+                            </HeaderButton>
                         </ToolbarGroup>
 
                         <ToolbarGroup>

@@ -16,6 +16,10 @@ const styles = {
     },
     header: {
         color: appTheme.palette.accent3Color
+    },
+    producr: {
+        color: appTheme.palette.primary1Color,
+        fontWeight: 400
     }
 };
 
@@ -24,7 +28,7 @@ const Welcome = () => (
         <Paper style={styles.paper}>
             <h1 style={styles.header}>Welcome !</h1>
             <p>
-                <b>producr</b> is an application aimed to revolutionize exchanges between producers and consumers.
+                <span style={styles.producr}>producr</span> is an application aimed to revolutionize exchanges between producers and consumers.
             </p>
             <p>
                 It simply connects to your SoundCloud account and record your listening history.

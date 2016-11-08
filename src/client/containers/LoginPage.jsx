@@ -147,7 +147,7 @@ class LoginPage extends Component {
                         <div style={styles.mainLoginSection}>
 
                             <p style={styles.oauthDesc}>
-                                <b>producr</b> need to be linked with your SoundCloud account.
+                                <b>producr</b> needs to be linked with your SoundCloud account.
                                 <br/>
                                 You will be asked your credentials and to authorize our application.
                             </p>
