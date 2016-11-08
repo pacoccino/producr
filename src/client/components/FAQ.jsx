@@ -66,7 +66,7 @@ const FAQ = () => (
             <div style={styles.answer}>
                 <span style={styles.producr}>producr</span> is a platform that allows people to donate money to the artists they listen on SoundCloud. After having put some money on it, each track you listen will generate a micro-transaction and the artist will receive some money. Artists can then connect on the app and get the money back.
                 <br/>
-                <span style={styles.emphasis}>These transactions are only available for independant music creators.</span>
+                <span style={styles.emphasis}>These transactions are only available for independent music creators.</span>
             </div>
 
             <div style={styles.question}>

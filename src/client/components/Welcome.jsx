@@ -20,6 +20,9 @@ const styles = {
     producr: {
         color: appTheme.palette.primary1Color,
         fontWeight: 400
+    },
+    emphasis: {
+        fontWeight: 400
     }
 };
 
@@ -28,12 +31,12 @@ const Welcome = () => (
         <Paper style={styles.paper}>
             <h1 style={styles.header}>Welcome !</h1>
             <p>
-                <span style={styles.producr}>producr</span> is an application aimed to revolutionize exchanges between producers and consumers.
+                <span style={styles.producr}>producr</span> is an application aimed to revolutionize exchanges between <span style={styles.emphasis}>independent</span> producers and consumers.
             </p>
             <p>
-                It simply connects to your SoundCloud account and record your listening history.
+                It simply connects to your SoundCloud account and records your listening history.
                 <br/>
-                On the app you have a wallet that you can charge, and each track that you play will generate a micro-transaction from you to the producer, in order to donate some money to him.
+                This app holds a wallet that you can charge, and each track that you play will generate a micro-transaction from you to the producer, in order to donate some money to him.
             </p>
             <p>
                 First step is to connect with your SoundCloud account. On first login, we will offer you some money to redistribute to the artists you love.
