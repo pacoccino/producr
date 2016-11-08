@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 
-import { routerReducer } from 'react-router-redux'
+//import { routerReducer } from 'react-router-redux'
 
 import auth from './auth';
 import transactions from './transactions';
@@ -13,7 +13,7 @@ const rootReducer = combineReducers({
     transactions,
     wallet,
 
-    routing: routerReducer
+    //routing: routerReducer
 });
 
 export default rootReducer;

@@ -1,5 +1,3 @@
-import { browserHistory } from 'react-router';
-
 import AuthService from '../services/AuthService';
 import ApiService from '../services/ApiService';
 
@@ -33,12 +31,12 @@ export function oAuthLogin() {
         type: ACTION_NULL
     };
 }
+
 export function loginPW(username, password) {
     return dispatch => {
         return AuthService.askLoginPW(username, password)
             .then(() => ApiService.getMe())
             .then(profile => {
-                browserHistory.push('/'); // TODO Marche pas
                 dispatch(authenticateSuccess(profile));
             })
     }
@@ -48,7 +46,6 @@ export function logout() {
     return dispatch => {
         return AuthService.logout()
             .then(() => {
-                browserHistory.push('/');
                 dispatch(authenticateNull());
             });
     }

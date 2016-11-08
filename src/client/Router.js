@@ -16,11 +16,11 @@ import FullLoader from './components/FullLoader';
 import Welcome from './components/Welcome';
 import Profile from './containers/Profile';
 
-import store from './store';
-
 import { checkAuthentication }  from './actions/auth';
 
-const history = syncHistoryWithStore(browserHistory, store);
+// import store from './store';
+// const history = syncHistoryWithStore(browserHistory, store);
+const history = browserHistory;
 
 const checkOAuth = (authCallback) => (nextState, replace, callback) => {
 
