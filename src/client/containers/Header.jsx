@@ -17,14 +17,14 @@ const styles = {
     toolbar: {
         backgroundColor: appTheme.palette.headerBlack,
         width: '764px',
-        margin: 'auto'
+        margin: 'auto',
+        height: 50,
     },
     menuButton: {
         height: '100%',
         padding: '5px 0px',
         color: appTheme.palette.accent2Color,
         hoverColor: appTheme.palette.accent1Color
-
     },
     titleGroup: {
         cursor: 'default'

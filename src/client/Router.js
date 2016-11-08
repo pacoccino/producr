@@ -1,9 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Router, Route, IndexRoute, browserHistory, Redirect } from 'react-router';
+import { syncHistoryWithStore } from 'react-router-redux'
 import queryString from 'query-string';
-
-import RefreshIndicator from 'material-ui/RefreshIndicator';
 
 import AuthService from './services/AuthService';
 import LoginPage from './containers/LoginPage';
@@ -13,10 +12,15 @@ import Transactions from './containers/TransactionsPage';
 import AppPage from './components/AppPage';
 import NoMatch from './components/NoMatch';
 import FAQ from './components/FAQ';
+import FullLoader from './components/FullLoader';
 import Welcome from './components/Welcome';
 import Profile from './containers/Profile';
 
+import store from './store';
+
 import { checkAuthentication }  from './actions/auth';
+
+const history = syncHistoryWithStore(browserHistory, store);
 
 const checkOAuth = (authCallback) => (nextState, replace, callback) => {
 
@@ -35,7 +39,7 @@ const checkOAuth = (authCallback) => (nextState, replace, callback) => {
 };
 
 const LoggedApp = () => (
-    <Router history={browserHistory}>
+    <Router history={history}>
         <Route path="/" component={AppPage}>
             <Route path="/history" component={History} />
             <Route path="/transactions" component={Transactions} />
@@ -48,7 +52,7 @@ const LoggedApp = () => (
 );
 
 const NotLoggedApp = ({ authCallback }) => (
-    <Router history={browserHistory}>
+    <Router history={history}>
         <Route path="/" component={AppPage}>
             <Route path="/auth/callback" onEnter={checkOAuth(authCallback)} />
             <Route path="/welcome" component={Welcome} />
@@ -60,16 +64,6 @@ const NotLoggedApp = ({ authCallback }) => (
         </Route>
     </Router>
 );
-
-const Loader = () => (
-    <div>
-        <RefreshIndicator
-            size={100}
-            left={100}
-            top={100}
-            status={"loading"}
-        />
-    </div>);
 
 class AppRouter extends Component {
 
@@ -84,7 +78,7 @@ class AppRouter extends Component {
 
     render() {
         if(this.props.auth.isFetching) {
-            return <Loader />;
+            return <FullLoader />;
         } else {
             if(this.props.auth.isAuthenticated) {
                 return <LoggedApp />;

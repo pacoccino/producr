@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-import { Link } from 'react-router';
 
 import appTheme from '../theme';
 
@@ -29,7 +28,6 @@ class HeaderButton extends Component {
         href: PropTypes.string,
         click: PropTypes.func,
         style: PropTypes.object,
-        focus: PropTypes.bool,
     };
 
     static contextTypes = {
@@ -39,10 +37,16 @@ class HeaderButton extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            hover: false
+            hover: false,
+            selected: false
         };
         this.toggleHover = this.toggleHover.bind(this);
         this.onClick = this.onClick.bind(this);
+    }
+    componentWillMount() {
+        this.context.router.listen(() =>{
+            this.setState({selected: (this.props.href && this.context.router.isActive({pathname:this.props.href}))})
+        })
     }
 
     onClick(event){
@@ -61,7 +65,8 @@ class HeaderButton extends Component {
 
     render() {
         var linkStyle = Object.assign({}, styles.container, this.props.style);
-        if (this.props.href && this.context.router.isActive({pathname:this.props.href})) {
+
+        if(this.state.selected) {
             linkStyle.backgroundColor = appTheme.palette.shadowColor;
             linkStyle.color = appTheme.palette.alternateTextColor;
         } else {
@@ -72,6 +77,7 @@ class HeaderButton extends Component {
                 linkStyle.color = appTheme.palette.accent3Color;
             }
         }
+
         if(this.props.style && this.props.style.backgroundColor)
             linkStyle.backgroundColor = this.props.style.backgroundColor;
         if(this.props.style && this.props.style.color)
