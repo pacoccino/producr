@@ -4,6 +4,11 @@ import TransactionLine from './TransactionLine';
 
 import { Table, TableHeader, TableRow, TableHeaderColumn, TableBody } from 'material-ui/Table';
 
+import appTheme from '../theme';
+
+const noTrans = {
+    color: appTheme.palette.accent3Color
+};
 class TransactionsTable extends Component {
 
     static propTypes = {
@@ -12,6 +17,20 @@ class TransactionsTable extends Component {
     };
 
     render() {
+        if(this.props.transactions.length) {
+            return this.renderTable();
+        } else {
+            return this.renderNoTrans();
+        }
+    }
+    renderNoTrans() {
+        return (
+            <div>
+                <p style={noTrans}>You have no transactions</p>
+            </div>
+        );
+    }
+    renderTable() {
         let userColumns = null;
         const fromColumn =
             <TableHeaderColumn tooltip="Transaction came from this user" key="from_column">From</TableHeaderColumn>;
