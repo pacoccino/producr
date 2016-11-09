@@ -49,6 +49,7 @@ class LoginCallback extends Component {
     };
 
     showWelcome(username) {
+        // TODO if user doesnt click, doesnt update app
         this.setState({
             welcoming: true,
             username: username || "pacopac"
@@ -64,6 +65,7 @@ class LoginCallback extends Component {
     }
 
     checkOAuth() {
+        // TODO show message and wait for update
         const code = this.props.location.query.code;
         AuthService.oAuthCallback(code)
             .then(res =>{

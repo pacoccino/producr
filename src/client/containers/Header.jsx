@@ -71,6 +71,7 @@ class Header extends Component {
                     </HeaderButton>
                 ;
             } else {
+                // TODO is shown on first welcome screen
                 authColumns =
                     <HeaderButton href="/login">
                         <div>
