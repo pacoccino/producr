@@ -17,6 +17,7 @@
   },
 
   "appDefaults": {
-    "defaultPricePerPlay": 1
+    "defaultPricePerPlay": 1,
+    "welcomeWallet": 500
   }
 }
