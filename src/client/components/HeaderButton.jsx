@@ -9,8 +9,6 @@ const styles = {
         fontSize: 15,
         padding: '18px',
         cursor: 'pointer',
-        borderLeft: '1px solid rgba(0, 0, 0, 0.51)',
-        borderRight: '1px solid rgba(0, 0, 0, 0.51)',
         display: 'flex',
         justifyContent: 'space-around',
         flexDirection: 'row',

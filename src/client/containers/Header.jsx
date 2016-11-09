@@ -37,6 +37,14 @@ const styles = {
     },
 };
 
+const Separator = () => (
+    <div style={{
+        height: '100%',
+        width: '1px',
+        backgroundColor: 'rgba(0, 0, 0, 0.51)'
+    }}></div>
+);
+
 class Header extends Component {
     static propTypes = {
         auth: PropTypes.object,
@@ -90,19 +98,25 @@ class Header extends Component {
                                         <HeaderButton href="/history">
                                             History
                                         </HeaderButton>
+                                        <Separator/>
                                         <HeaderButton href="/transactions">
                                             Transactions
                                         </HeaderButton>
-                                    </div> : <div></div>
+                                        <Separator/>
+                                    </div>
+                                    : null
                             }
 
                             <HeaderButton href="/qa">
                                 Q&A
                             </HeaderButton>
+                            <Separator/>
                         </ToolbarGroup>
 
                         <ToolbarGroup>
+                            <Separator/>
                             { authColumns }
+                            <Separator/>
                         </ToolbarGroup>
                     </Toolbar>
                 </div>
