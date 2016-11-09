@@ -60,6 +60,7 @@
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
     "request": "^2.78.0",
+    "url-loader": "^0.5.7",
     "validator": "^6.1.0",
     "webpack-hot-middleware": "^2.13.2"
   },
