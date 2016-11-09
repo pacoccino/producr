@@ -1,4 +1,5 @@
 const DBModels = require('../dbModels');
+const Config = require('../config');
 const SoundCloud = require('../../soundcloud/index');
 const Features = require('./index');
 
@@ -55,8 +56,14 @@ const Users = {
     },
 
     doFirstConnectionStuff: (user) => {
-        Features.History.updateUserHistory(user);
-        return user;
+        // todo, update after first fetch ...
+        // On oauth callback, first time send info, show popup, update history, give money, show completion and open app
+
+
+        return Promise.resolve()
+            .then(() => Features.History.updateUserHistory(user))
+            .then(() => Features.Wallet.updateUserWallet({user, addedBalance: Config.appDefaults.welcomeWallet}))
+            .then(() => user);
     }
 };
 

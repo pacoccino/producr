@@ -32,7 +32,7 @@ const History = {
     },
     askForTransactions: ({ user, plays }) => {
         return new Promise((resolve, reject) => {
-            async.map(plays, (historyPlay, callback) => {
+            async.mapSeries(plays, (historyPlay, callback) => {
 
                 if(historyPlay.played_state === HistoryPlay.ListenedStates.LISTENED) {
                     Features.Transactions.askPlayTransaction(historyPlay)

@@ -9,6 +9,7 @@ const Features = require('./index');
 
 const Transactions = {
 
+    INSUFFICIENT_FOUNDS: "INSUFFICIENT_FOUNDS",
     getUserTransactions: (user, params) => {
         params = params || {};
 
@@ -102,7 +103,14 @@ const Transactions = {
             .catch(err => {
                 // in case of parallel execution, double insert can happen
                 if(err.code === 11000) {
-                    return Features.Users.getByScId(historyPlay.artist.sc_id);
+                    return Features.Users.getByScId(historyPlay.artist.sc_id)
+                        .then(artistUser => {
+                            if(artistUser) {
+                                return artistUser;
+                            } else {
+                                throw "Error while retrieving artist User";
+                            }
+                        });
                 } else {
                     throw err;
                 }
@@ -119,12 +127,13 @@ const Transactions = {
                 transactionData.fromUser = fromUser;
                 transactionData.amount = fromUser.config && fromUser.config.pricePerPlay || defaultAmount;
             })
+            .then(() => Features.Transactions._verifyWalletBalance(transactionData))
             .then(()       => Features.Users.getByScId(historyPlay.artist.sc_id))
             .then(toUser   => {
                 if(toUser) {
                     transactionData.toUser = toUser;
                 } else {
-                    Transactions._createArtistUser(historyPlay)
+                    return Transactions._createArtistUser(historyPlay)
                         .then(artistUser => {
                             transactionData.toUser = artistUser;
                         });
@@ -159,7 +168,7 @@ const Transactions = {
                 if (transactionData.amount <= playerWallet.balance) {
                     return transactionData;
                 } else {
-                    throw "NOT_ACCOUNTABLE";
+                    throw Transactions.INSUFFICIENT_FOUNDS;
                 }
             });
     },
@@ -167,7 +176,6 @@ const Transactions = {
     askPlayTransaction(historyPlay) {
 
         return Features.Transactions._prepareTransaction(historyPlay)
-            .then(transactionData => Features.Transactions._verifyWalletBalance(transactionData))
             .then(transactionData => Features.Transactions._updateWallets(transactionData))
             .then(transactionData => {
                     let transaction = {
@@ -190,7 +198,7 @@ const Transactions = {
                     .then(() => insertedTransaction);
             })
             .catch(error => {
-                if(error === "NOT_ACCOUNTABLE") {
+                if(error === Transactions.INSUFFICIENT_FOUNDS) {
                     return false;
                 } else {
                     throw error;

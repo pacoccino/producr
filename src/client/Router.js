@@ -32,8 +32,7 @@ const checkOAuth = (authCallback) => (nextState, replace, callback) => {
             callback();
         })
         .catch(() => {
-            replace('/');
-            // TODO catch oauth error
+            replace('/login?oauthError=true');
             callback();
         });
 };
