@@ -14,6 +14,12 @@ const styles = {
         display: 'flex',
         justifyContent: 'center'
     },
+    inProgress: {
+        padding: 30,
+        width: '100%',
+        boxSizing: 'border-box',
+        textAlign: 'center',
+    },
     paper: {
         width: '100%',
         padding: 20,
@@ -86,18 +92,24 @@ class LoginCallback extends Component {
                         <h2 style={styles.header}>Hello, {this.state.username}</h2>
                         <p>This is your first connection to producr !</p>
                         <p>To celebrate this, we offer your 500<PC/> that you can spend on the platform.</p>
-                            <RaisedButton
-                                fullWidth={true}
-                                label="Thank you, let's try this !"
-                                primary={true}
-                                onClick={this.endLogin}
-                            />
+                        <RaisedButton
+                            fullWidth={true}
+                            label="Thank you, let's try this !"
+                            primary={true}
+                            onClick={this.endLogin}
+                        />
 
                     </Paper>
                 </div>
             );
         } else {
-            return <FullLoader />;
+            return (
+                <div style={styles.inProgress}>
+                    <h2 style={styles.header}>Authenticating ...</h2>
+                    <p>If this is your first login, this may take a while.</p>
+                    <FullLoader />
+                </div>
+            );
         }
     }
 }
