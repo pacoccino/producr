@@ -43,7 +43,7 @@ class HeaderButton extends Component {
         this.toggleHover = this.toggleHover.bind(this);
         this.onClick = this.onClick.bind(this);
     }
-    componentWillMount() {
+    componentDidMount() {
         this.context.router.listen(() =>{
             this.setState({selected: (this.props.href && this.context.router.isActive({pathname:this.props.href}))})
         })

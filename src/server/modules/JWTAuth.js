@@ -26,7 +26,7 @@ const SoundCloudLogin = function (username, password, cb) {
                     .catch(cb);
             } else {
                 Features.Users.newUserFromAuth(scProfile, scAuth)
-                    .then(user => cb(null, user))
+                    .then(user => cb(null, user, true))
                     .catch(cb);
             }
         })
@@ -76,7 +76,7 @@ const pwAuthMiddleware = (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    SoundCloudLogin(username, password, (reqError, user) => {
+    SoundCloudLogin(username, password, (reqError, user, isNew) => {
         if(reqError) {
             if(reqError.code === 401 && reqError.body && reqError.body.error === 'invalid_grant') {
                 return next(ApiError.BadCredentials())
@@ -96,7 +96,8 @@ const pwAuthMiddleware = (req, res, next) => {
         res.status(200).json({
             success: true,
             message: 'Enjoy your token!',
-            token: token
+            token: token,
+            isNew
         });
     });
 };

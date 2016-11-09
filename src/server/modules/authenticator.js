@@ -46,7 +46,7 @@ Authenticator.SoundCloudStrategy = (accessToken, refreshToken, profile, cb) => {
                         .catch(cb);
                 } else {
                     Features.Users.newUserFromAuth(scProfile, scAuth)
-                        .then(user => cb(null, user))
+                        .then(user => cb(null, user, {isNew: true}))
                         .catch(cb);
                 }
             })
@@ -70,7 +70,11 @@ Authenticator.Middleware = () => {
     authRouter.get('/api/auth/callback',
         passport.authenticate('soundcloud'),
         function(req, res) {
-            res.status(200).send(null);
+            const isNew = req.authInfo && req.authInfo.isNew || false;
+            res.status(200).json({
+                success: true,
+                isNew
+            });
         });
 
     authRouter.get('/api/auth/logout', Authenticator.apiLogout());

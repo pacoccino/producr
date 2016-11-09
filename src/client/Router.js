@@ -1,10 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Router, Route, IndexRoute, browserHistory, Redirect } from 'react-router';
-import { syncHistoryWithStore } from 'react-router-redux'
-import queryString from 'query-string';
+// import { syncHistoryWithStore } from 'react-router-redux'
 
-import AuthService from './services/AuthService';
 import LoginPage from './containers/LoginPage';
 
 import History from './containers/HistoryPage';
@@ -13,6 +11,7 @@ import AppPage from './components/AppPage';
 import NoMatch from './components/NoMatch';
 import FAQ from './components/FAQ';
 import FullLoader from './components/FullLoader';
+import LoginCallback from './containers/LoginCallback';
 import Welcome from './components/Welcome';
 import Profile from './containers/Profile';
 
@@ -21,21 +20,6 @@ import { checkAuthentication }  from './actions/auth';
 // import store from './store';
 // const history = syncHistoryWithStore(browserHistory, store);
 const history = browserHistory;
-
-const checkOAuth = (authCallback) => (nextState, replace, callback) => {
-
-    const qs = queryString.parse(nextState.location.search);
-    AuthService.oAuthCallback(qs.code)
-        .then(() =>{
-            replace('/');
-            authCallback();
-            callback();
-        })
-        .catch(() => {
-            replace('/login?oauthError=true');
-            callback();
-        });
-};
 
 const LoggedApp = () => (
     <Router history={history}>
@@ -53,7 +37,7 @@ const LoggedApp = () => (
 const NotLoggedApp = ({ authCallback }) => (
     <Router history={history}>
         <Route path="/" component={AppPage}>
-            <Route path="/auth/callback" onEnter={checkOAuth(authCallback)} />
+            <Route path="/auth/callback" component={LoginCallback} />
             <Route path="/welcome" component={Welcome} />
             <Route path="/qa" component={FAQ} />
             <Route path="/login" component={LoginPage} />
@@ -82,7 +66,7 @@ class AppRouter extends Component {
             if(this.props.auth.isAuthenticated) {
                 return <LoggedApp />;
             } else {
-                return <NotLoggedApp authCallback={this.props.checkAuthentication} />;
+                return <NotLoggedApp />;
             }
         }
     }

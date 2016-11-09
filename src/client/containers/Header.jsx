@@ -39,17 +39,45 @@ const styles = {
 
 class Header extends Component {
     static propTypes = {
-        profile: PropTypes.object,
+        auth: PropTypes.object,
         logout: PropTypes.func.isRequired
     };
 
     render() {
+        let authColumns = null;
+        let profile = this.props.auth.profile;
+        if(!this.props.auth.isFetching) {
+            if(profile) {
+                authColumns =
+                    <HeaderButton href="/profile">
+                        <div>
+                            <Avatar
+                                style={{marginRight: 10}}
+                                src={profile.avatar_url}
+                                size={25}
+                            />
+                        </div>
+                        <div>
+                            {profile.username}
+                        </div>
+                    </HeaderButton>
+                ;
+            } else {
+                authColumns =
+                    <HeaderButton href="/login">
+                        <div>
+                            Login
+                        </div>
+                    </HeaderButton>
+                ;
+            }
+        }
         return (
             <div>
                 <div style={styles.header}>
                     <Toolbar
-                             noGutter={true}
-                             style={styles.toolbar}
+                        noGutter={true}
+                        style={styles.toolbar}
                     >
                         <ToolbarGroup style={styles.titleGroup}>
                             <HeaderButton href="/" style={styles.title}>
@@ -57,7 +85,7 @@ class Header extends Component {
                             </HeaderButton>
 
                             {
-                                this.props.profile ?
+                                profile ?
                                     <div style={{display: 'inherit'}}>
                                         <HeaderButton href="/history">
                                             History
@@ -74,28 +102,7 @@ class Header extends Component {
                         </ToolbarGroup>
 
                         <ToolbarGroup>
-                            {
-                                this.props.profile ?
-                                    <HeaderButton href="/profile">
-                                        <div>
-                                            <Avatar
-                                                style={{marginRight: 10}}
-                                                src={this.props.profile.avatar_url}
-                                                size={25}
-                                            />
-                                        </div>
-                                        <div>
-                                            {this.props.profile.username}
-                                        </div>
-                                    </HeaderButton>
-                                    :
-                                    <HeaderButton href="/login">
-                                        <div>
-                                            Login
-                                        </div>
-                                    </HeaderButton>
-
-                            }
+                            { authColumns }
                         </ToolbarGroup>
                     </Toolbar>
                 </div>
@@ -106,7 +113,7 @@ class Header extends Component {
 
 const mapStateToProps = ({ auth }) => {
     return {
-        profile: auth.profile
+        auth
     };
 };
 

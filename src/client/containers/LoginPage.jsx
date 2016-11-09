@@ -11,6 +11,7 @@ import validator from 'validator';
 
 import { loginPW, oAuthLogin }  from '../actions/auth';
 import appTheme from '../theme';
+import { red500 } from 'material-ui/styles/colors';
 
 const styles = {
     paper: {
@@ -23,6 +24,9 @@ const styles = {
         margin: 20
     },
     oAuthBtn: {
+    },
+    oAuthError: {
+        color: red500
     },
     openCred: {
         margin: 20,
@@ -72,7 +76,8 @@ class LoginPage extends Component {
             emailError: "",
             passwordError: "",
             whyOpen: false,
-            credOpen: false
+            credOpen: false,
+            oAuthError: this.props.location.query.oauthError
         };
 
         this.switchWhy = this.switchWhy.bind(this);
@@ -152,6 +157,16 @@ class LoginPage extends Component {
                                 You will be asked your credentials and to authorize our application.
                             </p>
 
+                            {
+                                this.state.oAuthError ?
+                                    <p style={styles.oAuthError}>
+                                        There was a problem with SoundCloud connection.
+                                        <br/>
+                                        Please try again later.
+                                    </p>
+                                    :
+                                    null
+                            }
                             <RaisedButton
                                 label="Connect with SoundCloud"
                                 primary={true}
