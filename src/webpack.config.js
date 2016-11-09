@@ -15,7 +15,8 @@ let plugins = [
     new HtmlWebpackPlugin({
         template: ASSETS_DIR + '/index.tpl.html',
         inject: 'body',
-        filename: 'index.html'
+        filename: 'index.html',
+        favicon  : ASSETS_DIR + '/favicon.ico'
     })
 ];
 
