@@ -51,7 +51,7 @@ const Refresher = (isFetching, fn) => {
 };
 
 
-class History extends Component {
+class HistoryPage extends Component {
     static propTypes = {
         userHistory: PropTypes.object.isRequired,
         dispatch: PropTypes.func.isRequired
@@ -86,7 +86,7 @@ class History extends Component {
                     </AppBar>
 
                     {
-                        this.props.userHistory.isFetching ?
+                        this.props.userHistory.isFetching || !this.props.userHistory.history ?
                             <CircularProgress
                                 size={80}
                                 thickness={5}
@@ -110,4 +110,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps)(History);
+export default connect(mapStateToProps)(HistoryPage);

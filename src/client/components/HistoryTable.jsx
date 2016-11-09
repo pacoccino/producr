@@ -10,7 +10,7 @@ const colStyle = (width) => {
     }
 };
 
-class HistoryPage extends Component {
+class HistoryTable extends Component {
 
     static propTypes = {
         history: PropTypes.array.isRequired
@@ -39,4 +39,4 @@ class HistoryPage extends Component {
     }
 }
 
-export default HistoryPage;
+export default HistoryTable;

@@ -74,7 +74,6 @@ class HistoryPlay extends Component {
                         href={play.track.permalink_url}
                         target="about_blank"
                         style={styles.linkIcon}
-                        hoverColor={appTheme.palette.primary2Color}
                     >
                         <OpenInNew
                             hoverColor={appTheme.palette.primary2Color}
