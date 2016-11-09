@@ -30,7 +30,7 @@ class LoginCallback extends Component {
         super(props);
 
         this.state = {
-            welcoming: true
+            welcoming: false
         };
 
         this.endLogin = this.endLogin.bind(this);
