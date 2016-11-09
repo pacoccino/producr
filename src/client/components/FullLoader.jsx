@@ -6,12 +6,6 @@ const styles = {
         position: 'absolute',
         left: '50%',
         top: '50%',
-    },
-    paper: {
-        width: 400,
-        margin: 20,
-        padding: 20,
-        textAlign: 'center',
     }
 };
 

@@ -42,9 +42,12 @@ class HeaderButton extends Component {
         this.onClick = this.onClick.bind(this);
     }
     componentDidMount() {
-        this.context.router.listen(() =>{
+        this.listener = this.context.router.listen(() =>{
             this.setState({selected: (this.props.href && this.context.router.isActive({pathname:this.props.href}))})
-        })
+        });
+    }
+    componentWillUnmount() {
+        this.listener();
     }
 
     onClick(event){

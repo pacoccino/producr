@@ -8,7 +8,8 @@ const ProdCoin = (props) => {
         width: size,
         height: size,
         display: 'inline',
-        verticalAlign: 'middle'
+        verticalAlign: 'middle',
+        margin: '2px'
     };
     Object.assign(style, props.style);
 

@@ -1,12 +1,40 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { Paper, RaisedButton } from 'material-ui';
 
 import FullLoader from '../components/FullLoader';
 import AuthService from '../services/AuthService';
+import PC from '../components/PC';
 
 import { checkAuthentication, authenticateRequest }  from '../actions/auth';
+import appTheme from '../theme';
+
+const styles = {
+    container: {
+        display: 'flex',
+        justifyContent: 'center'
+    },
+    paper: {
+        width: '100%',
+        padding: 20,
+        textAlign: 'center',
+    },
+    header: {
+        color: appTheme.palette.accent3Color
+    }
+};
 
 class LoginCallback extends Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            welcoming: true
+        };
+
+        this.endLogin = this.endLogin.bind(this);
+    }
     componentDidMount() {
         this.checkOAuth();
     }
@@ -20,22 +48,55 @@ class LoginCallback extends Component {
         router: React.PropTypes.object.isRequired
     };
 
-    checkOAuth() {
-        this.props.authenticateRequest();
+    showWelcome(username) {
+        this.setState({
+            welcoming: true,
+            username: username || "pacopac"
+        });
+    }
 
+    endLogin() {
+        this.context.router.push('/');
+        this.props.checkAuthentication();
+    }
+    failLogin() {
+        this.context.router.push('/login?oauthError=true');
+    }
+
+    checkOAuth() {
         const code = this.props.location.query.code;
         AuthService.oAuthCallback(code)
-            .then(() =>{
-                this.context.router.push('/');
-                this.props.checkAuthentication();
+            .then(res =>{
+                if(res.authInfo && res.authInfo.isNew) {
+                    this.showWelcome(res.authInfo.username);
+                } else {
+                    this.endLogin();
+                }
             })
-            .catch(() => {
-                this.context.router.push('/login?oauthError=true');
-            });
+            .catch(() => this.failLogin());
     };
 
     render() {
-        return <FullLoader />;
+        if(this.state.welcoming) {
+            return (
+                <div style={styles.container}>
+                    <Paper style={styles.paper}>
+                        <h2 style={styles.header}>Hello, {this.state.username}</h2>
+                        <p>This is your first connection to producr !</p>
+                        <p>To celebrate this, we offer your 500<PC/> that you can spend on the platform.</p>
+                            <RaisedButton
+                                fullWidth={true}
+                                label="Thank you, let's try this !"
+                                primary={true}
+                                onClick={this.endLogin}
+                            />
+
+                    </Paper>
+                </div>
+            );
+        } else {
+            return <FullLoader />;
+        }
     }
 }
 

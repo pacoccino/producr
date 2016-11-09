@@ -22,11 +22,23 @@ const SoundCloudLogin = function (username, password, cb) {
         .then(user => {
             if(user) {
                 Features.Users.updateUserFromAuth(user, scProfile, scAuth)
-                    .then(user => cb(null, user))
+                    .then(user => {
+                        const userInfo = {
+                            username: scProfile.username,
+                            isNew: false
+                        };
+                        cb(null, user, userInfo)
+                    })
                     .catch(cb);
             } else {
                 Features.Users.newUserFromAuth(scProfile, scAuth)
-                    .then(user => cb(null, user, true))
+                    .then(user => {
+                        const userInfo = {
+                            username: scProfile.username,
+                            isNew: true
+                        };
+                        cb(null, user, userInfo)
+                    })
                     .catch(cb);
             }
         })
@@ -76,7 +88,7 @@ const pwAuthMiddleware = (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    SoundCloudLogin(username, password, (reqError, user, isNew) => {
+    SoundCloudLogin(username, password, (reqError, user, authInfo) => {
         if(reqError) {
             if(reqError.code === 401 && reqError.body && reqError.body.error === 'invalid_grant') {
                 return next(ApiError.BadCredentials())
@@ -97,7 +109,7 @@ const pwAuthMiddleware = (req, res, next) => {
             success: true,
             message: 'Enjoy your token!',
             token: token,
-            isNew
+            authInfo
         });
     });
 };

@@ -12,6 +12,9 @@ const AuthService = {
                 if(req.status !== 200) {
                     throw new Error("oAuth error");
                 }
+                else {
+                    return req.json();
+                }
             });
     },
     askLoginPW: (username, password) => {
