@@ -39,10 +39,10 @@
     "express": "^4.14.0",
     "express-session": "^1.14.2",
     "foreman": "^2.0.0",
-    "html-webpack-plugin": "^2.24.1",
     "immutable": "^3.8.1",
     "isomorphic-fetch": "^2.2.1",
     "jsonwebtoken": "^7.1.9",
+    "lodash": "^4.16.6",
     "material-ui": "^0.16.1",
     "moment": "^2.15.2",
     "mongodb": "^2.2.11",
@@ -61,8 +61,7 @@
     "redux-thunk": "^2.1.0",
     "request": "^2.78.0",
     "url-loader": "^0.5.7",
-    "validator": "^6.1.0",
-    "webpack-hot-middleware": "^2.13.2"
+    "validator": "^6.1.0"
   },
   "devDependencies": {
     "ava": "^0.16.0",
@@ -73,17 +72,17 @@
     "babel-preset-react-hmre": "^1.1.1",
     "babel-preset-stage-0": "^6.16.0",
     "css-loader": "^0.25.0",
-    "html-webpack-plugin": "^2.24.0",
+    "html-webpack-plugin": "^2.24.1",
     "nyc": "^8.4.0",
     "react-scripts": "^0.7.0",
     "sinon": "^1.17.6",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.3",
     "webpack-dev-middleware": "^1.8.4",
-    "webpack-hot-middleware": "^2.13.0"
+    "webpack-hot-middleware": "^2.13.2"
   },
   "optionalPeerDependencies": {
-    "fsevents": "^1.0.14"
+    "fsevents": "^1.0.15"
   },
   "homepage": "http://producr.ngfar.io"
 }

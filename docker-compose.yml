@@ -15,8 +15,8 @@ producr-redis:
     - "33002:6379"
 producr-api:
   build: ./
-  ports:
-    - "3000:3000"
+#  ports:
+#    - "3000:3000"
   environment:
     NODE_ENV: production
     MONGO_URL: mongodb://172.17.0.1:33001/producr
