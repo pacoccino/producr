@@ -25,9 +25,6 @@ const SoundCloud = {
             };
 
             request(options, (error, response, body) => {
-                if(body) {
-                    body = JSON.parse(body);
-                }
                 if (error || response.statusCode !== 200) {
                     reject({
                         request: options,
@@ -37,7 +34,14 @@ const SoundCloud = {
                         error:error
                     });
                 } else {
-                    resolve(body);
+                    try {
+                        body = JSON.parse(body);
+                        resolve(body);
+                    }
+                    catch (e) {
+                        console.log('Http response not deserialisable');
+                        reject(e);
+                    }
                 }
             });
         });

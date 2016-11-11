@@ -78,4 +78,9 @@ const App = () => {
         });
 };
 
+process.on('uncaughtException', function(err) {
+    // handle the error safely
+    console.log(err)
+});
+
 module.exports = App;
