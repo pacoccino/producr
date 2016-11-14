@@ -64,7 +64,9 @@ const FAQ = () => (
                 What is the purpose of this application ?
             </div>
             <div style={styles.answer}>
-                <span style={styles.producr}>producr</span> is a platform that allows people to donate money to the artists they listen on SoundCloud. After having put some money on it, each track you listen will generate a micro-transaction and the artist will receive some money. Artists can then connect on the app and get the money back.
+                <span style={styles.producr}>producr</span> is a platform that allows people to donate money to the artists they listen on SoundCloud.
+                It works like a scrobbler. After having put some money on it, each track you listen will generate a micro-transaction and the artist will receive some money.
+                Artists can then connect on the app and get the money back.
                 <br/>
                 <span style={styles.emphasis}>These transactions are only available for independent music creators.</span>
             </div>
@@ -145,10 +147,10 @@ const FAQ = () => (
 
 
             <div style={styles.question}>
-                I don’t want that anybody can access my listening history.
+                I don’t want anybody to access my listening history.
             </div>
             <div style={styles.answer}>
-                Don't be afraid, your history is only use for creating transactions and cannont be viewed by anybody else than you.
+                Don't be afraid, your history is only used for creating transactions and cannot be viewed by anybody else than you.
             </div>
 
             <div style={styles.question}>
