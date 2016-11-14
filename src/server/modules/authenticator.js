@@ -3,7 +3,7 @@ const passport = require('passport');
 const SoundCloudStrategy = require('passport-soundcloud').Strategy;
 
 const ApiError = require('./apiError');
-const Config = require('./config');
+const Config = require('../../common/config');
 const Features = require('./features');
 
 const Authenticator = {};

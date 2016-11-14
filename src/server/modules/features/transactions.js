@@ -2,7 +2,7 @@ const _ = require('lodash');
 const async = require('async');
 
 const DBModels = require('../dbModels');
-const Config = require('../config');
+const Config = require('../../../common/config');
 const SoundCloudSugar = require('../../soundcloud/index').Sugar;
 
 const Features = require('./index');

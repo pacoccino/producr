@@ -1,5 +1,5 @@
 const DBModels = require('../dbModels');
-const Config = require('../config');
+const Config = require('../../../common/config');
 const SoundCloud = require('../../soundcloud/index');
 const Features = require('./index');
 

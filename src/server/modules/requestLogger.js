@@ -3,7 +3,7 @@ const cluster = require('cluster');
 const uuid = require('node-uuid');
 const os = require('os');
 
-const Config = require('./config');
+const Config = require('../../common/config');
 
 class RequestLogger {
     constructor(options) {

@@ -1,7 +1,7 @@
 import test from 'ava';
 import sinon from 'sinon';
 
-import Config from '../../../src/server/modules/config';
+import Config from '../../../src/common/config';
 import DBModel from '../../../src/server/modules/dbModels/dbModel';
 import DBModels from '../../../src/server/modules/dbModels';
 

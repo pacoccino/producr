@@ -3,7 +3,7 @@ const MongoClient = require('mongodb').MongoClient;
 
 const Wrappers = require('./wrappers');
 const DBModels = require('./dbModels');
-const Config = require('./config');
+const Config = require('../../common/config');
 
 /*
 const getMongoUrl = function(config) {

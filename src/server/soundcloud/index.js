@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const request = require('request');
 
-const Config = require('../modules/config');
+const Config = require('../../common/config');
 
 const Sugar = require('./sugar');
 const Resource = require('./resource');

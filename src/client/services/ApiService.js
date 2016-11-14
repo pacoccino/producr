@@ -1,5 +1,7 @@
+import Config from '../../common/config';
+
 const ApiService = {
-    apiBaseUrl: '/api',
+    apiBaseUrl: Config.host + '/api',
     // apiBaseUrl: process.env.NODE_ENV === 'development' ? 'http://localhost:4000/api' : '/api',
     fetchApi: (endpoint, options) => {
         options = options || {};

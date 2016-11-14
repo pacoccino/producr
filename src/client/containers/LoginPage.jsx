@@ -100,6 +100,7 @@ class LoginPage extends Component {
             const username = this.state.email;
             const password = this.state.password;
             this.props.loginPW(username, password);
+            // TODO redir vers login callback
         }).catch(() => null);
     }
 

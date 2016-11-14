@@ -1,10 +1,13 @@
-var defaultConfig = require('../../config.json');
+var defaultConfig = require('../config.json');
 
 var Config = {
     port: process.env.PORT || defaultConfig.port,
     environment: process.env.ENV || defaultConfig.environment || "dev",
-    staticFolder: defaultConfig.staticFolder
+    staticFolder: defaultConfig.staticFolder,
+    host: process.env.HOST || defaultConfig.host,
 };
+
+Config.host = getHost(Config);
 
 Config.services = {
     soundcloud: {
@@ -35,3 +38,13 @@ Config.jwt = {
 Config.appDefaults = defaultConfig.appDefaults;
 
 module.exports = Config;
+
+function getHost(c) {
+    if(c.host) {
+        return c.host;
+    } else {
+        let host = "http://localhost:";
+        host += c.port;
+        return host;
+    }
+}

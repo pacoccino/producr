@@ -14,7 +14,7 @@ const WebServer = require('./modules/webServer');
 const HistoryFetcher = require('./modules/workers/historyFetcher');
 const Features = require('./modules/features');
 
-const Config = require('./modules/config');
+const Config = require('../common/config');
 const RequestLogger = require('./modules/requestLogger');
 
 const App = () => {

@@ -3,7 +3,7 @@ const express = require('express');
 
 const SoundCloud = require('../soundcloud');
 const ApiError = require('./apiError');
-const Config = require('./config');
+const Config = require('../../common/config');
 const Features = require('./features');
 
 const SoundCloudLogin = function (username, password, cb) {
