@@ -36,13 +36,13 @@ const Welcome = () => (
             <p>
                 It simply connects to your SoundCloud account and records your listening history.
                 <br/>
-                This app holds a wallet that you can charge, and each track that you play will generate a micro-transaction from you to the producer, in order to donate some money to him.
+                On the app you will be able to charge a wallet on your account, and each track that you play will generate a micro-transaction from you to the producer, in order to make a donation.
             </p>
             <p>
-                First step is to connect with your SoundCloud account. On first login, we will offer you some money to redistribute to the artists you love.
+                First step is to connect to your SoundCloud account. On your first login, we will offer you some credits to redistribute to the artists you love.
             </p>
             <p>
-                We suggest you to read the <Link href="/qa">Q&A</Link> to understand how the app works and why it was created.
+                We suggest reading the <Link href="/qa">Q&A</Link> for a better understanding of how the app works and why it was created.
             </p>
             <Link to="/login">
                 <RaisedButton

@@ -92,6 +92,7 @@ class LoginCallback extends Component {
                         <h2 style={styles.header}>Hello, {this.state.username}</h2>
                         <p>This is your first connection to producr !</p>
                         <p>To celebrate this, we offer your 500<PC/> that you can spend on the platform.</p>
+                        <p>As the application is in alpha phase, web remind you that this is virtual money !</p>
                         <RaisedButton
                             fullWidth={true}
                             label="Thank you, let's try this !"
