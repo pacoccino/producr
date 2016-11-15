@@ -5,6 +5,7 @@ var Config = {
     environment: process.env.ENV || defaultConfig.environment || "dev",
     staticFolder: defaultConfig.staticFolder,
     host: process.env.HOST || defaultConfig.host,
+    rollbarToken: process.env.ROLLBAR || defaultConfig.rollbarToken || null
 };
 
 Config.host = getHost(Config);

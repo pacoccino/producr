@@ -3,6 +3,7 @@ const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const cors = require('cors');
 const path = require('path');
+const rollbar = require("rollbar");
 
 const Router = require('./router');
 const ApiError = require('./modules/apiError');
@@ -26,6 +27,18 @@ const App = () => {
         })
         .then(() => {
             console.log("Connections initialized");
+
+            if(Config.rollbarToken) {
+                let opts = {
+                    environment: Config.environment,
+                    endpoint: Config.host + '/api/'
+                };
+                rollbar.init(Config.rollbarToken, opts);
+                var options = {
+                    exitOnUncaughtException: true
+                };
+                rollbar.handleUncaughtExceptions(Config.rollbarToken, options);
+            }
 
             // App definition
             var app = express();
@@ -77,10 +90,5 @@ const App = () => {
             process.exit(-1);
         });
 };
-
-process.on('uncaughtException', function(err) {
-    // handle the error safely
-    console.log(err)
-});
 
 module.exports = App;

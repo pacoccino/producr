@@ -2,6 +2,7 @@
 const cluster = require('cluster');
 const uuid = require('node-uuid');
 const os = require('os');
+const rollbar = require("rollbar");
 
 const Config = require('../../common/config');
 
@@ -36,6 +37,7 @@ class RequestLogger {
 
     // @private
     _fillWithRequest(req, res) {
+        this.logData.req = req;
         this.logData.description = res.statusCode;
         this.logData.path = req.path;
         this.logData.method = req.method;
@@ -59,6 +61,11 @@ class RequestLogger {
         this.logData.duration = Date.now() - this.logData.duration;
 
         if(this.logData.error) {
+
+            if(Config.rollbarToken) {
+                rollbar.handleError(this.logData.error, this.logData.req);
+            }
+
             if(this.logData.error.code === 401) {
                 console.error(this.logData.method + ': ' + this.logData.path, "Error",
                     this.logData.error.code
@@ -119,6 +126,10 @@ RequestLogger.Middleware = () => (req, res, next) => {
 
 RequestLogger.SendLogError = (e) => {
     // TODO send somewhere
+
+    if(Config.rollbarToken) {
+        rollbar.handleError(e);
+    }
     console.error(e);
 };
 

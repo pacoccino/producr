@@ -52,6 +52,7 @@ HistoryFetcher.fetch = () => {
             throw error;
         } else {
             if(errors.length) {
+                // TODO rollbar
                 console.error('There was some history fetch errors:', errors);
             }
             console.info('History fetch ended, updated '+updatedUsers+' users, '+tracksAdded+' tracks.');
